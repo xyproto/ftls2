@@ -69,15 +69,6 @@ func hi() string {
 	return "hi\n"
 }
 
-// TODO: Caching, look at wedgie?
-func onTheFlyRepo(ctx *web.Context) {
-	//fmt.Println("on the fly")
-	//ctx.SetHeader("Content-Type", "text/html; charset=utf-8", true)
-	//ctx.WriteString("hello")
-	ctx.ContentType("tar.gz")
-	writeTarGz(ctx.ResponseWriter)
-}
-
 func main() {
 	browserspeak.Publish("/", "/main.css", testbuilder)
 
@@ -86,11 +77,6 @@ func main() {
 	web.Get("/hi", hi)
 
 	web.Get("/hello/(.*)", hello)
-
-	// TODO: Wrap a debian repo, skip signatures for now, create a translation list for base packages
-	web.Get("/archlinux/my/os/x86_64/my.db", onTheFlyRepo)
-	web.Get("/archlinux/my/os/x86_64/my.db.sig", hi)
-	web.Get("/archlinux/my/os/x86_64/zlib-1.2.7-2-x86_64.pkg.tar.xz", hi)
 
 	web.Get("/(.*)", notFound)
 	web.Run("0.0.0.0:8080")
