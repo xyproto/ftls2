@@ -2,6 +2,8 @@ package main
 
 import (
 	"strings"
+	"time"
+	"strconv"
 
 	"github.com/hoisie/web"
 	"github.com/xyproto/browserspeak"
@@ -139,41 +141,18 @@ func addMenu(page *browserspeak.Page, links []string) {
 	div.AddStyle("top", "150px")
 	div.AddStyle("float", "left")
 
-	//ul := div.AddNewTag("ul")
-	//ul.AddAttr("id", "nav")
-
-	//ul.AddStyle("margin", "0")
-	//ul.AddStyle("padding", "0")
-	//ul.AddStyle("width", "185px")
-	//ul.AddStyle("position", "absolute")
-	//ul.AddStyle("top", "35px")
-	//ul.AddStyle("left", "0")
-	//boxStyle(ul)
-
-	//var li
 	var a *browserspeak.Tag
 	var text, url string
-	//styleadded1 := false
-	styleadded2 := false
+
+	// TODO: Fix the problem with several #id's in the CSS from browserspeak
+	styleadded := false
 	for _, text_url := range links {
 		text, url = colonsplit(text_url)
-		//li = ul.AddNewTag("li")
-		//li.AddAttr("id", "menuitem") //strings.ToLower(text))
-
-		//if !styleadded1 {
-		//	li.AddStyle("margin", "1px 5px")
-		//	li.AddStyle("padding", "0 0 8px")
-		//	li.AddStyle("float", "left")
-		//	li.AddStyle("position", "relative")
-		//	li.AddStyle("list-style", "none")
-		//	li.AddStyle("display", "inline-block")
-		//	styleadded1 = true
-		//}
 
 		a = div.AddNewTag("a")
 		a.AddAttr("id", "menulink")
 		a.AddAttr("href", url)
-		if !styleadded2 {
+		if !styleadded {
 			a.AddStyle("font-weight", "bold")
 			a.AddStyle("color", "#303030")
 			a.AddStyle("text-decoration", "none")
@@ -182,9 +161,8 @@ func addMenu(page *browserspeak.Page, links []string) {
 			a.AddStyle("font-family", "sans serif")
 			a.AddStyle("display", "block")
 			a.AddStyle("width", "60px")
-			styleadded2 = true
+			styleadded = true
 		}
-		//a.AddStyle("font-size", "0.5em")
 		a.AddContent(text)
 
 	}
@@ -216,9 +194,6 @@ func addContent(page *browserspeak.Page, contentTitle, contentHTML string) {
 	if err != nil {
 		return
 	}
-	//script := body.AddNewTag("script")
-	//script.AddAttr("language", "javascript")
-	//script.AddContent(`document.getElementById("overview").setAttribute("class", "current");`)
 
 	div := body.AddNewTag("div")
 	div.AddAttr("id", "content")
@@ -278,14 +253,6 @@ func hover(ctx *web.Context) string {
 `
 }
 
-func search(ctx *web.Context, val string) string {
-	q, found := ctx.Params["q"]
-	if found == false {
-		return browserspeak.Message("Error", "invalid params")
-	}
-	return browserspeak.Message("Search", q)
-}
-
 func BaseAPC() *ArchPageContents {
 	var apc ArchPageContents
 	apc.generatedCSSurl = "/css/style.css"
@@ -293,35 +260,125 @@ func BaseAPC() *ArchPageContents {
 	apc.bgImageFilename = "img/longbg4.png"
 	apc.bgImageURL = "/img/longbg4.png"
 	apc.title = "Arch Linux"
-	apc.subtitle = "Norway"
-	apc.links = []string{"Overview:/", "List:/list", "Submit:/submit", "Ais:http://github.com/xyproto/ais", "Setconf:http://setconf.roboticoverlords.org/", "ArchFriend:https://play.google.com/store/apps/details?id=com.xyproto.archfriend"}
+	apc.subtitle = "Norge"
+	apc.links = []string{"Overview:/", "Hello:/hello/world", "Count:/counting"}
 	apc.contentTitle = "Welcome"
 	apc.contentHTML = "Hi there!"
 	apc.searchButtonText = "Search"
 	apc.searchURL = "/search"
-	apc.footerText = "Alexander Rødseth, 2012"
+	y := time.Now().Year()
+	apc.footerText = "Alexander Rødseth, " + strconv.Itoa(y)
 	return &apc
 }
 
 func HiAPC() *ArchPageContents {
 	apc := BaseAPC()
-	apc.contentHTML = "Hi!"
+	apc.contentHTML = `Hi!</br></br>This page is under construction, you might want to visit the <a href="https://bbs.archlinux.org/">Arch Forum</a> in the mean while.</br></br>Alexander Rødseth &lt;rodseth _at gmail.com&gt;`
 	return apc
 }
 
-func main() {
-	apc := HiAPC()
+func HelloAPC() *ArchPageContents {
+	apc := BaseAPC()
+	apc.contentTitle = "This is it"
+	return apc
+}
+
+func helloSF(name string) string {
+	return "Hello, " + name
+}
+
+// Create an empty page only containing the given tag
+// Returns both the page and the tag
+func cowboyTag(tagname string) (*browserspeak.Page, *browserspeak.Tag) {
+	page := browserspeak.NewPage("blank", tagname)
+	tag, _ := page.GetTag(tagname)
+	return page, tag
+}
+
+func tagString(tagname string) string {
+	page := browserspeak.NewPage("blank", tagname)
+	return page.String()
+}
+
+// Generate a search handle. This is done in order to be able to modify the apc
+func (apc *ArchPageContents) GenerateSearchHandle() WebHandle {
+	return func (ctx *web.Context, val string) string {
+	    q, found := ctx.Params["q"]
+		var html, css string
+		if found {
+			apc.contentTitle = "Search results"
+			content := "Search: " + q
+			nl := tagString("br")
+			content += nl + nl
+			content += "No results found"
+			html, css = apc.Surround(content)
+		} else {
+			apc.contentTitle = "Error"
+			html, css = apc.Surround("Invalid parameters")
+		}
+		web.Get(apc.generatedCSSurl, css)
+		return html
+	}
+}
+
+// Make an html and css page available, plus a search handler (they are special)
+func (apc *ArchPageContents) Pub(url string, search WebHandle) {
 	archpage := archbuilder(apc)
-	web.Get("/", browserspeak.HTML(archpage))
+	web.Get(url, browserspeak.HTML(archpage))
 	web.Get(apc.generatedCSSurl, browserspeak.CSS(archpage))
 	web.Get(apc.extraCSSurl, hover)
 	web.Get(apc.bgImageURL, browserspeak.FILE(apc.bgImageFilename))
-
 	web.Get(apc.searchURL + "(.*)", search)
+}
+
+// Wrap a lonely string in an entire webpage
+func (apc *ArchPageContents) Surround(s string) (string, string) {
+	apc.contentHTML = s
+	archpage := archbuilder(apc)
+	return archpage.GetXML(true), archpage.GetCSS()
+}
+
+type WebHandle (func (ctx *web.Context, val string) string)
+type StringFunction (func (string) string)
+type APCgen (func () *ArchPageContents)
+
+// Creates a handle from s string function
+func (apc *ArchPageContents) GetHandle(fn StringFunction) WebHandle {
+	return func (ctx *web.Context, val string) string {
+		html, css := apc.Surround(fn(val))
+		web.Get(apc.generatedCSSurl, css)
+		return html
+	}
+}
+
+// Wraps the looks of an ArchPageContents + a string function together to a web.go handle
+func wrapHandle(apcgen APCgen, sf StringFunction) WebHandle {
+	apc := apcgen()
+	return apc.GetHandle(sf)
+}
+
+// Creeates a page based on ArchPageContens generated by apcgen
+// Publishes the HTML and CSS at the given URL
+func pub(url string, apcgen APCgen) {
+	apc := apcgen()
+	apc.Pub(url, apc.GenerateSearchHandle())
+}
+
+func CountAPC() *ArchPageContents {
+	apc := BaseAPC()
+	apc.contentTitle = "Counting"
+	apc.contentHTML = "1 2 3"
+	return apc
+}
+
+// TODO: Caching
+func main() {
+	pub("/", HiAPC)
+
+	web.Get("/hello/(.*)", wrapHandle(HelloAPC, helloSF))
+	pub("/counting", CountAPC)
+
 	web.Get("/error", browserspeak.Errorlog)
-
-	web.Get("/hello/(.*)", hello)
-
 	web.Get("/(.*)", browserspeak.NotFound)
 	web.Run("0.0.0.0:3000")
 }
