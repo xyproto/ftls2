@@ -24,6 +24,10 @@ type ArchPageContents struct {
 	footerText string
 }
 
+type State struct {
+	lastip string
+}
+
 const (
 	NICEBLUE = "#5080D0"
 )
@@ -260,7 +264,7 @@ func BaseAPC() *ArchPageContents {
 	apc.bgImageFilename = "img/longbg4.png"
 	apc.bgImageURL = "/img/longbg4.png"
 	apc.title = "Arch Linux"
-	apc.subtitle = "Norge"
+	apc.subtitle = "Norway"
 	apc.links = []string{"Overview:/", "Hello:/hello/world", "Count:/counting"}
 	apc.contentTitle = "Welcome"
 	apc.contentHTML = "Hi there!"
@@ -340,6 +344,7 @@ func (apc *ArchPageContents) Surround(s string) (string, string) {
 
 type WebHandle (func (ctx *web.Context, val string) string)
 type StringFunction (func (string) string)
+type SimpleWebHandle StringFunction
 type APCgen (func () *ArchPageContents)
 
 // Creates a handle from s string function
@@ -371,14 +376,38 @@ func CountAPC() *ArchPageContents {
 	return apc
 }
 
+func GenerateSetIP(state *State) WebHandle {
+	return func (ctx *web.Context, val string) string {
+		if val == "" {
+			return "Empty value, IP not set"
+		}
+		state.lastip = val
+		return "OK, set IP to " + val
+	}
+}
+
+func GenerateGetIP(state *State) SimpleWebHandle {
+	return func (val string) string {
+		return "Last set IP: " + state.lastip
+	}
+}
+
 // TODO: Caching
 func main() {
+	var state State
+
 	pub("/", HiAPC)
 
 	web.Get("/hello/(.*)", wrapHandle(HelloAPC, helloSF))
 	pub("/counting", CountAPC)
 
+	web.Get("/setip/(.*)", GenerateSetIP(&state))
+	web.Get("/getip/(.*)", GenerateGetIP(&state))
+
+	//pubTemplate("/yes", templateGenerator(), templateContent{a:2})
+
 	web.Get("/error", browserspeak.Errorlog)
+	web.Get("/errors", browserspeak.Errorlog)
 	web.Get("/(.*)", browserspeak.NotFound)
 	web.Run("0.0.0.0:3000")
 }
