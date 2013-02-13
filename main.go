@@ -4,9 +4,12 @@ import (
 	"strings"
 	"time"
 	"strconv"
+	"mime"
 
 	"github.com/hoisie/web"
 	"github.com/xyproto/browserspeak"
+
+	//"github.com/garyburd/redigo/redis"
 )
 
 type ArchPageContents struct {
@@ -42,7 +45,7 @@ func addBodyStyle(page *browserspeak.Page, bgimageurl string) {
 	body, _ := page.SetMargin(4)
 	body.RepeatBackground(bgimageurl, "repeat-x")
 	page.SetColor("gray", "#d9d9d9")
-	page.SetFontFamily("sans serif")
+	page.SetFontFamily("sans-serif")
 }
 
 func addTitle(page *browserspeak.Page, title, subtitle string) {
@@ -61,7 +64,7 @@ func addTitle(page *browserspeak.Page, title, subtitle string) {
 	}
 	h1 := body.AddNewTag("h1")
 	h1.AddAttr("id", "titletext")
-	h1.AddStyle("font-family", "Russo One")
+	h1.AddStyle("font-family", "sans-serif")
 
 	a := h1.AddNewTag("a")
 	a.AddAttr("id", "homelink")
@@ -162,7 +165,7 @@ func addMenu(page *browserspeak.Page, links []string) {
 			a.AddStyle("text-decoration", "none")
 			a.AddStyle("padding", "8px 1.2em")
 			a.AddStyle("margin", "0")
-			a.AddStyle("font-family", "sans serif")
+			a.AddStyle("font-family", "sans-serif")
 			a.AddStyle("display", "block")
 			a.AddStyle("width", "60px")
 			styleadded = true
@@ -203,15 +206,16 @@ func addContent(page *browserspeak.Page, contentTitle, contentHTML string) {
 	div.AddAttr("id", "content")
 	div.AddStyle("z-index", "-1")
 	div.AddStyle("color", "black")
-	div.AddStyle("width", "85%")
-	div.AddStyle("min-height", "600px")
+	div.AddStyle("min-height", "80%")
+	div.AddStyle("min-width", "60%")
 	div.AddStyle("float", "left")
 	div.AddStyle("position", "relative")
 	div.AddStyle("margin-left", "150px")
-	div.AddStyle("padding-left", "5em")
-	div.AddStyle("padding-bottom", "0.5em")
-	div.AddStyle("margin-top", "1.5em")
+	div.AddStyle("margin-top", "1em")
+	div.AddStyle("padding-left", "4em")
+	div.AddStyle("padding-right", "5em")
 	div.AddStyle("padding-top", "1em")
+	div.AddStyle("padding-bottom", "2em")
 	boxStyle(div)
 
 	h2 := div.AddNewTag("h2")
@@ -221,7 +225,7 @@ func addContent(page *browserspeak.Page, contentTitle, contentHTML string) {
 	p := div.AddNewTag("p")
 	p.AddAttr("id", "textparagraph")
 	p.AddStyle("margin-top", "0.5em")
-	p.AddStyle("font-family", "sans serif")
+	p.AddStyle("font-family", "sans-serif")
 	p.AddStyle("font-size", "1.0em")
 	p.AddStyle("color", "black")
 	p.AddContent(contentHTML)
@@ -264,9 +268,9 @@ func BaseAPC() *ArchPageContents {
 	apc.bgImageFilename = "img/longbg4.png"
 	apc.bgImageURL = "/img/longbg4.png"
 	apc.title = "Arch Linux"
-	apc.subtitle = "Norway"
+	apc.subtitle = "no"
 	apc.links = []string{"Overview:/", "Hello:/hello/world", "Count:/counting"}
-	apc.contentTitle = "Welcome"
+	apc.contentTitle = "Hi"
 	apc.contentHTML = "Hi there!"
 	apc.searchButtonText = "Search"
 	apc.searchURL = "/search"
@@ -277,7 +281,7 @@ func BaseAPC() *ArchPageContents {
 
 func HiAPC() *ArchPageContents {
 	apc := BaseAPC()
-	apc.contentHTML = `Hi!</br></br>This page is under construction, you might want to visit the <a href="https://bbs.archlinux.org/">Arch Forum</a> in the mean while.</br></br>Alexander Rødseth &lt;rodseth _at gmail.com&gt;`
+	apc.contentHTML = `This site is currently under construction.</br>You may want to visit the <a href="https://bbs.archlinux.org/">Arch Linux Forum</a> in the mean time.</br></br><i>&nbsp;&nbsp;&nbsp;&nbsp;- Alexander Rødseth &lt;rodseth / gmail&gt;</i>`
 	return apc
 }
 
@@ -376,12 +380,22 @@ func CountAPC() *ArchPageContents {
 	return apc
 }
 
+func (state *State) Save() {
+	//db := state.db
+	//db.Run("INSERT BLABLA")
+}
+
+func (state *State) LoadFromDatabase(dbname string) {
+	//state.db = NewDB(dbname)
+}
+
 func GenerateSetIP(state *State) WebHandle {
 	return func (ctx *web.Context, val string) string {
 		if val == "" {
 			return "Empty value, IP not set"
 		}
 		state.lastip = val
+		state.Save()
 		return "OK, set IP to " + val
 	}
 }
@@ -392,22 +406,55 @@ func GenerateGetIP(state *State) SimpleWebHandle {
 	}
 }
 
+func Hello() string {
+	msg := "Hi"
+	return browserspeak.Message("Hello", msg)
+}
+
+func TestRedis() string {
+	msg := "YES"
+	//c, err := redis.Dial("tcp", ":6379")
+	//if err != nil {
+	//	// handle errors
+	//}
+	//defer c.Close()
+	return browserspeak.Message("Redis Test", msg)
+}
+
+func Publish(url, filename string) {
+	web.Get(url, browserspeak.FILE(filename))
+}
+
 // TODO: Caching
 func main() {
-	var state State
+
+	// This one is missing!
+	mime.AddExtensionType(".txt", "text/plain; charset=utf-8")
+
+	state := new(State)
+	state.LoadFromDatabase("statebase2000")
 
 	pub("/", HiAPC)
 
 	web.Get("/hello/(.*)", wrapHandle(HelloAPC, helloSF))
 	pub("/counting", CountAPC)
 
-	web.Get("/setip/(.*)", GenerateSetIP(&state))
-	web.Get("/getip/(.*)", GenerateGetIP(&state))
+	web.Get("/setip/(.*)", GenerateSetIP(state))
+	web.Get("/getip/(.*)", GenerateGetIP(state))
+
+	Publish("/robots.txt", "various/robots.txt")
+	Publish("/sitemap_index.xml", "various/sitemap_index.xml")
 
 	//pubTemplate("/yes", templateGenerator(), templateContent{a:2})
 
 	web.Get("/error", browserspeak.Errorlog)
 	web.Get("/errors", browserspeak.Errorlog)
+
+	web.Get("/index.php", Hello)
+	web.Get("/viewtopic.php", Hello)
+
+	web.Get("/redis", TestRedis)
+
 	web.Get("/(.*)", browserspeak.NotFound)
 	web.Run("0.0.0.0:3000")
 }
