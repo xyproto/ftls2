@@ -13,6 +13,8 @@ package main
 //
 //     Make the color of the background beneath the titlebox a bit lighter (not black)
 //
+//     Refactor out getip/setip and the redis parts to a separate project which is an alternative to dyndns
+//
 
 import (
 	"fmt"
