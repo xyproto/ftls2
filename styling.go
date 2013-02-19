@@ -13,8 +13,7 @@ import (
 func RoundedBox(tag *browserspeak.Tag) {
 	tag.AddStyle("border", "solid 1px #b4b4b4")
 	tag.AddStyle("border-radius", "10px")
-	tag.AddStyle("box-shadow", "0 1px 3px rgba(0,0,0, .3)")
-	tag.AddStyle("background-color", "#e0e0e0") // light gray
+	tag.AddStyle("box-shadow", "1px 1px 3px rgba(0,0,0, .5)")
 }
 
 // Set the tag font to some sort of sans-serif
@@ -50,9 +49,9 @@ func AddBodyStyle(page *browserspeak.Page, bgimageurl string) {
 // extra.css
 // TODO: Rename this function
 func hover(ctx *web.Context) string {
-	menucolor := NICEBLUE
-	hovercolor := "#c0c0a0" // light gray, with some yellow
-	activecolor := "#d0d0b0" // very light gray, with some yellow
+	menucolor := "#c0c0c0" // light gray
+	hovercolor := "#efefe0" // very light gray, with some yellow
+	activecolor := "#ffffff" // white
 	ctx.ContentType("css")
 	return `
 #menulink:link {color:` + menucolor + `;}

@@ -19,7 +19,7 @@ func AddTopBox(page *browserspeak.Page, title, subtitle, searchURL, searchButton
 	div.AddStyle("display", "block")
 	div.AddStyle("width", "100%")
 	div.AddStyle("margin", "0")
-	div.AddStyle("padding", "1em 0 2em 0")
+	div.AddStyle("padding", "0 0 1em 0")
 	div.AddStyle("position", "absolute")
 	div.AddStyle("top", "0")
 	div.AddStyle("left", "0")
@@ -29,10 +29,13 @@ func AddTopBox(page *browserspeak.Page, title, subtitle, searchURL, searchButton
 	titlebox := AddTitleBox(div, title, subtitle)
 	titlebox.AddAttr("id", "titlebox")
 	titlebox.AddStyle("margin", "0")
-	titlebox.AddStyle("padding", "0 0 0 4em")
+	titlebox.AddStyle("padding", "0 0 0 2.8em")
 	titlebox.AddStyle("width", "100%")
 	titlebox.AddStyle("position", "fixed")
 	titlebox.AddStyle("background-color", NICEGRAY) // gray, could be a gradient
+	//titlebox.AddStyle("background", "url('http://xooplate.com/assets/template/9352/p16p8ki0v91d351nsk1rg0ga51anp9.jpg')")
+	//titlebox.AddStyle("background", "url('http://turbo.designwoop.com/uploads/2012/03/16_free_subtle_textures_subtle_dark_vertical.jpg')")
+	titlebox.AddStyle("background", "url('http://wptheming.wpengine.netdna-cdn.com/wp-content/uploads/2010/04/gray-texture.jpg')")
 	//titlebox.AddStyle("position", "absolute")
 	//titlebox.AddStyle("top", "0")
 	//titlebox.AddStyle("left", "0")
@@ -73,6 +76,7 @@ func AddFooter(page *browserspeak.Page, footerText string) (*browserspeak.Tag, e
 	//div.AddStyle("left", "85%")
 	div.AddStyle("font-size", "0.6em")
 	div.AddStyle("text-align", "right")
+	div.AddStyle("box-shadow", "1px -2px 3px rgba(0,0,0, .5)")
 
 	innerdiv := div.AddNewTag("div")
 	innerdiv.AddAttr("id", "innernotice")
@@ -105,6 +109,7 @@ func AddContent(page *browserspeak.Page, contentTitle, contentHTML string) (*bro
 	div.AddStyle("padding-right", "5em")
 	div.AddStyle("padding-top", "1em")
 	div.AddStyle("padding-bottom", "2em")
+	div.AddStyle("background-color", "rgba(255,255,255,0.92)") // light gray
 	RoundedBox(div)
 
 	h2 := div.AddNewTag("h2")
@@ -230,10 +235,14 @@ func AddMenuBox(page *browserspeak.Page, links []string) (*browserspeak.Tag, err
 	div.AddStyle("margin", "0")
 	div.AddStyle("padding", "0.1em 0 0.2em 0")
 	div.AddStyle("position", "absolute")
-	div.AddStyle("top", "6em")
+	div.AddStyle("top", "5em")
 	div.AddStyle("left", "0")
-	div.AddStyle("background-color", "#0c0c0c") // dark gray
+	//div.AddStyle("background-color", "#0c0c0c") // dark gray
+	div.AddStyle("background", "url('http://turbo.designwoop.com/uploads/2012/03/16_free_subtle_textures_subtle_dark_vertical.jpg')")
 	div.AddStyle("position", "fixed")
+	//div.AddStyle("-moz-box-shadow", "10px 10px 5px #606060")
+	//div.AddStyle("-webkit-box-shadow", "10px 10px 5px #606060")
+	div.AddStyle("box-shadow", "1px 3px 5px rgba(0,0,0, .8)")
 
 	ul := div.AddNewTag("ul")
 	ul.AddStyle("list-style-type", "none")
@@ -273,6 +282,7 @@ func AddMenuBox(page *browserspeak.Page, links []string) (*browserspeak.Tag, err
 			sep = li.AddNewTag("div")
 			sep.AddContent("|")
 			sep.AddStyle("display", "inline")
+			sep.AddStyle("color", "#a0a0a0")
 		}
 	}
 

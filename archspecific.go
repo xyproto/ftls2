@@ -51,7 +51,9 @@ func BaseAPC() *ArchPageContents {
 	apc.faviconurl = "/favicon.ico"
 	apc.bgImageFilename = "static/img/longbg.png"
 	apc.bgImageURL = "/img/longbg.png"
-	apc.bgImageURL = "http://home.online.no/~hakrist/Elg%20i%20solnedgang%201024.JPG"
+	//apc.bgImageURL = "http://home.online.no/~hakrist/Elg%20i%20solnedgang%201024.JPG"
+	//apc.bgImageURL = "http://upload.wikimedia.org/wikipedia/commons/1/1f/Theodor_Kittelsen,_Soria_Moria.jpg"
+	apc.bgImageURL = "http://www.dks-hordaland.no/media/bilde/elgisolnedgang.jpg"
 	apc.title = "Arch Linux"
 	apc.subtitle = "no"
 	apc.links = []string{"Overview:/", "Hello:/hello/world", "Count:/counting"}
