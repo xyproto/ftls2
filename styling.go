@@ -3,8 +3,8 @@ package main
 // Various functions that can be used to style a webpage
 
 import (
-	"github.com/xyproto/browserspeak"
 	"github.com/hoisie/web"
+	"github.com/xyproto/browserspeak"
 )
 
 // TODO: get style values from a file
@@ -49,8 +49,8 @@ func AddBodyStyle(page *browserspeak.Page, bgimageurl string) {
 // extra.css
 // TODO: Rename this function
 func hover(ctx *web.Context) string {
-	menucolor := "#c0c0c0" // light gray
-	hovercolor := "#efefe0" // very light gray, with some yellow
+	menucolor := "#c0c0c0"   // light gray
+	hovercolor := "#efefe0"  // very light gray, with some yellow
 	activecolor := "#ffffff" // white
 	ctx.ContentType("css")
 	return `
@@ -63,6 +63,5 @@ body {
 	background-size: cover;
 }
 `
-// The load order of background-color, background-size and background-image is actually significant in Chrome! Do not reorder lightly!
+	// The load order of background-color, background-size and background-image is actually significant in Chrome! Do not reorder lightly!
 }
-

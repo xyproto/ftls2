@@ -41,5 +41,3 @@ func SetWidthAndSide(tag *browserspeak.Tag, width string, leftside bool) {
 	tag.AddStyle("float", side)
 	tag.AddStyle("width", width)
 }
-
-

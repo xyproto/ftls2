@@ -3,6 +3,8 @@ package main
 //
 // TODO:
 //
+//     Separate stuff like the ip-related functions into a "Sniplet" type, that has Init(), Close() and Routing()
+//
 //     Refactor into:
 //       * database related functions
 //       * routing-related functions
@@ -30,10 +32,9 @@ const (
 	NICEGRAY = "#202020"
 )
 
-
 type (
-	WebHandle (func(ctx *web.Context, val string) string)
-	StringFunction (func(string) string)
+	WebHandle       (func(ctx *web.Context, val string) string)
+	StringFunction  (func(string) string)
 	SimpleWebHandle StringFunction
 )
 
@@ -103,9 +104,7 @@ func main() {
 	web.Get("/error", browserspeak.Errorlog)
 	web.Get("/errors", browserspeak.Errorlog)
 
-	// Honeypot? Found these in the logs
-	web.Get("/index.php", Hello)
-	web.Get("/viewtopic.php", ParamExample)
+	ServeForFun()
 
 	// Not found
 	web.Get("/(.*)", browserspeak.NotFound)

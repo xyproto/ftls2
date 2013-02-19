@@ -8,7 +8,7 @@ import (
 	"github.com/xyproto/browserspeak"
 )
 
-func AddTopBox(page *browserspeak.Page, title, subtitle, searchURL, searchButtonText string) (*browserspeak.Tag, error) {
+func AddTopBox(page *browserspeak.Page, title, subtitle, searchURL, searchButtonText, backgroundTextureURL string) (*browserspeak.Tag, error) {
 	body, err := page.GetTag("body")
 	if err != nil {
 		return nil, err
@@ -33,29 +33,18 @@ func AddTopBox(page *browserspeak.Page, title, subtitle, searchURL, searchButton
 	titlebox.AddStyle("width", "100%")
 	titlebox.AddStyle("position", "fixed")
 	titlebox.AddStyle("background-color", NICEGRAY) // gray, could be a gradient
-	//titlebox.AddStyle("background", "url('http://xooplate.com/assets/template/9352/p16p8ki0v91d351nsk1rg0ga51anp9.jpg')")
-	//titlebox.AddStyle("background", "url('http://turbo.designwoop.com/uploads/2012/03/16_free_subtle_textures_subtle_dark_vertical.jpg')")
-	titlebox.AddStyle("background", "url('http://wptheming.wpengine.netdna-cdn.com/wp-content/uploads/2010/04/gray-texture.jpg')")
-	//titlebox.AddStyle("position", "absolute")
-	//titlebox.AddStyle("top", "0")
-	//titlebox.AddStyle("left", "0")
+	titlebox.AddStyle("background", "url('" + backgroundTextureURL + "')")
 
 	searchbox := AddSearchBox(div, searchURL, searchButtonText)
 	searchbox.AddAttr("id", "searchbox")
 	searchbox.AddStyle("position", "relative")
-	//searchbox.AddStyle("top", "200")
-	//searchbox.AddStyle("left", "200")
-	//searchbox.AddStyle("margin", "-3em 4em 0 0")
-	//searchbox.AddStyle("float", "right")
 	searchbox.AddStyle("margin-top", "2em")
 	searchbox.AddStyle("margin-right", "2%")
-	//searchbox.AddStyle("width", "75%")
-	//searchbox.AddStyle("background-color", "#a0a0e0") // light blue
 
 	return div, nil
 }
 
-func AddFooter(page *browserspeak.Page, footerText string) (*browserspeak.Tag, error) {
+func AddFooter(page *browserspeak.Page, footerText, footerColor string) (*browserspeak.Tag, error) {
 	body, err := page.GetTag("body")
 	if err != nil {
 		return nil, err
@@ -65,15 +54,11 @@ func AddFooter(page *browserspeak.Page, footerText string) (*browserspeak.Tag, e
 	div.AddStyle("position", "fixed")
 	div.AddStyle("bottom", "0")
 	div.AddStyle("left", "0")
-	//div.AddStyle("clear", "both")
 	div.AddStyle("width", "100%")
 	div.AddStyle("display", "block")
 	div.AddStyle("padding", "0")
 	div.AddStyle("margin", "0")
 	div.AddStyle("background-color", NICEGRAY)
-	//div.AddStyle("bottom", "1")
-	//div.AddStyle("top", "90%")
-	//div.AddStyle("left", "85%")
 	div.AddStyle("font-size", "0.6em")
 	div.AddStyle("text-align", "right")
 	div.AddStyle("box-shadow", "1px -2px 3px rgba(0,0,0, .5)")
@@ -82,7 +67,7 @@ func AddFooter(page *browserspeak.Page, footerText string) (*browserspeak.Tag, e
 	innerdiv.AddAttr("id", "innernotice")
 	innerdiv.AddStyle("padding", "0 2em 0 0")
 	innerdiv.AddStyle("margin", "0")
-	innerdiv.AddStyle("color", "black")
+	innerdiv.AddStyle("color", footerColor)
 	innerdiv.AddContent(footerText)
 
 	return div, nil
@@ -222,7 +207,7 @@ func colonsplit(s string) (string, string) {
 }
 
 // Takes a page and a colon-separated string slice of text:url
-func AddMenuBox(page *browserspeak.Page, links []string) (*browserspeak.Tag, error) {
+func AddMenuBox(page *browserspeak.Page, links []string, darkBackgroundTexture string) (*browserspeak.Tag, error) {
 	body, err := page.GetTag("body")
 	if err != nil {
 		return nil, err
@@ -237,8 +222,8 @@ func AddMenuBox(page *browserspeak.Page, links []string) (*browserspeak.Tag, err
 	div.AddStyle("position", "absolute")
 	div.AddStyle("top", "5em")
 	div.AddStyle("left", "0")
-	//div.AddStyle("background-color", "#0c0c0c") // dark gray
-	div.AddStyle("background", "url('http://turbo.designwoop.com/uploads/2012/03/16_free_subtle_textures_subtle_dark_vertical.jpg')")
+	div.AddStyle("background-color", "#0c0c0c") // dark gray, fallback
+	div.AddStyle("background", "url('" + darkBackgroundTexture + "')")
 	div.AddStyle("position", "fixed")
 	//div.AddStyle("-moz-box-shadow", "10px 10px 5px #606060")
 	//div.AddStyle("-webkit-box-shadow", "10px 10px 5px #606060")
@@ -288,17 +273,3 @@ func AddMenuBox(page *browserspeak.Page, links []string) (*browserspeak.Tag, err
 
 	return div, nil
 }
-
-// Add TitleBox, SearchBox and MenuBox
-func AddTitleSearchMenu(page *browserspeak.Page, title, subtitle string, links []string, searchButtonText, searchURL string) error {
-	_, err := AddTopBox(page, title, subtitle, searchURL, searchButtonText)
-	if err != nil {
-		return err
-	}
-	_, err = AddMenuBox(page, links)
-	if err != nil {
-		return err
-	}
-	return nil
-}
-

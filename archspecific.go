@@ -1,28 +1,30 @@
 package main
 
-
 import (
-	"time"
 	"strconv"
+	"time"
 
-	"github.com/xyproto/browserspeak"
 	"github.com/hoisie/web"
+	"github.com/xyproto/browserspeak"
 )
 
 type ArchPageContents struct {
-	generatedCSSurl  string
-	extraCSSurl      string
-	faviconurl       string
-	bgImageFilename  string
-	bgImageURL       string
-	title            string
-	subtitle         string
-	links            []string
-	contentTitle     string
-	contentHTML      string
-	searchButtonText string
-	searchURL        string
-	footerText       string
+	generatedCSSurl          string
+	extraCSSurl              string
+	faviconurl               string
+	bgImageFilename          string
+	bgImageURL               string
+	title                    string
+	subtitle                 string
+	links                    []string
+	contentTitle             string
+	contentHTML              string
+	searchButtonText         string
+	searchURL                string
+	footerText               string
+	backgroundTextureURL     string
+	darkBackgroundTextureURL string
+	footerColor              string
 }
 
 type APCgen (func() *ArchPageContents)
@@ -37,9 +39,10 @@ func archbuilder(apc *ArchPageContents) *browserspeak.Page {
 
 	AddHeader(page)
 	AddBodyStyle(page, apc.bgImageURL)
-	AddTitleSearchMenu(page, apc.title, apc.subtitle, apc.links, apc.searchButtonText, apc.searchURL)
+	AddTopBox(page, apc.title, apc.subtitle, apc.searchURL, apc.searchButtonText, apc.backgroundTextureURL)
+	AddMenuBox(page, apc.links, apc.darkBackgroundTextureURL)
 	AddContent(page, apc.contentTitle, apc.contentHTML)
-	AddFooter(page, apc.footerText)
+	AddFooter(page, apc.footerText, apc.footerColor)
 
 	return page
 }
@@ -61,16 +64,22 @@ func BaseAPC() *ArchPageContents {
 	apc.contentHTML = "Hi there!"
 	apc.searchButtonText = "Search"
 	apc.searchURL = "/search"
+	apc.backgroundTextureURL = "http://wptheming.wpengine.netdna-cdn.com/wp-content/uploads/2010/04/gray-texture.jpg"
+	apc.darkBackgroundTextureURL = "http://turbo.designwoop.com/uploads/2012/03/16_free_subtle_textures_subtle_dark_vertical.jpg"
+	apc.footerColor = "black"
 	y := time.Now().Year()
-	apc.footerText = "Alexander Rødseth &lt;rodseth@gmail.com&gt;, " + strconv.Itoa(y)
+	//apc.footerText = "Alexander Rødseth &lt;rodseth@gmail.com&gt;, " + strconv.Itoa(y)
+	apc.footerText = "Alexander Rødseth, " + strconv.Itoa(y)
 	return &apc
 }
 
 func HiAPC() *ArchPageContents {
 	apc := BaseAPC()
-	//apc.contentHTML = `This site is currently under construction.<br />You may wish to visit the <a href="https://bbs.archlinux.org/">Arch Linux Forum</a> in the mean time.<br /><br /><i>- Alexander Rødseth &lt;rodseth / gmail&gt;</i>`
-	apc.contentTitle = "YOLO narwhal"
-	apc.contentHTML = `
+	apc.contentTitle = "Overview"
+	apc.contentHTML = `This site is currently under construction.<br />You may wish to visit the <a href="https://bbs.archlinux.org/">Arch Linux Forum</a> in the mean time.<br /><br /><i>- Alexander Rødseth &lt;rodseth / gmail&gt;</i>`
+	//apc.contentTitle = "YOLO narwhal"
+	//apc.contentHTML = 
+	_ = `
 <p>Locavore Austin fanny pack pickled.  Marfa hoodie pitchfork american apparel, flexitarian YOLO pickled keytar twee cred craft beer seitan authentic raw denim kogi.  Selvage mixtape blog, pickled cosby sweater williamsburg skateboard brooklyn lo-fi twee.  Blue bottle echo park kale chips, selvage fap skateboard swag chambray tousled.  Street art etsy four loko fap, iphone carles cliche banh mi fashion axe PBR authentic leggings.  Narwhal mumblecore street art tumblr.  Messenger bag vice art party, next level aesthetic church-key tumblr direct trade  typewriter street art.</p><p>Messenger bag blue bottle VHS before they sold out.  Artisan pickled swag, VHS meggings jean shorts blog tonx salvia cosby sweater mumblecore aesthetic literally narwhal.  Brunch tofu gluten-free disrupt blog occupy.  Austin bicycle rights sartorial narwhal, butcher trust fund cred.  Neutra kale chips letterpress literally, williamsburg kogi brunch bicycle rights.  Williamsburg craft beer brunch quinoa, forage YOLO swag put a bird on it four loko mixtape banksy.  Tumblr semiotics yr fixie.</p><p>Iphone banksy wolf squid wayfarers, VHS photo booth banh mi fap.  Tonx flexitarian vinyl scenester terry richardson squid synth deep v.  VHS tousled godard, cardigan american apparel lo-fi flannel.  Vice church-key cliche, hashtag banh mi direct trade  skateboard.  Sriracha meh pitchfork, wayfarers helvetica leggings try-hard viral YOLO lo-fi fingerstache synth ennui next level ugh.  Wayfarers organic american apparel fingerstache craft beer bicycle rights, beard keffiyeh banksy four loko butcher hashtag mumblecore banjo wes anderson.  Williamsburg next level deep v pickled typewriter kogi.</p><p>Meggings gastropub flexitarian, before they sold out DIY wes anderson cred authentic artisan dreamcatcher aesthetic ennui food truck.  Fanny pack selvage synth vegan pug.  YOLO shoreditch pitchfork, letterpress whatever put a bird on it truffaut mumblecore flannel terry richardson irony cray master cleanse ethnic gluten-free.  Fap banksy blog pickled meh ethnic food truck +1, vice leggings retro quinoa.  Small batch vice pop-up mustache.  +1 ethnic echo park semiotics letterpress raw denim.  Keytar photo booth wes anderson, freegan before they sold out skateboard seitan brooklyn.</p><p>Wes anderson high life banksy messenger bag art party plaid disrupt tattooed, next level swag viral raw denim.  Cliche meggings terry richardson cray.  Next level 3 wolf moon retro marfa.  Pork belly authentic banjo, iphone lomo williamsburg letterpress cosby sweater Austin typewriter quinoa skateboard hoodie.  Plaid kale chips godard farm-to-table.  Fashion axe mixtape freegan, pop-up chambray ugh etsy YOLO jean shorts dreamcatcher meggings.  Banh mi letterpress tousled, skateboard stumptown high life vegan fap typewriter shoreditch 8-bit lo-fi master cleanse selfies bespoke.</p>
 `
 	return apc
