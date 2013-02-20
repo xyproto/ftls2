@@ -3,19 +3,8 @@ package main
 //
 // TODO:
 //
-//     Separate stuff like the ip-related functions into a "Sniplet" type, that has Init(), Close() and Routing()
-//
-//     Refactor into:
-//       * database related functions
-//       * routing-related functions
-//       * archlinux specific functions
-//       * fronted specific functions
-//
-//     Add a <div> titlebox, make it fixed, let it be the title and search box
-//
-//     Make the color of the background beneath the titlebox a bit lighter (not black)
-//
-//     Refactor out getip/setip and the redis parts to a separate project which is an alternative to dyndns
+//     Make the title text <a href>
+//     Refactor out getip/setip part to a separate project which is an alternative to dyndns
 //
 
 import (
@@ -59,6 +48,7 @@ func ParamExample(ctx *web.Context) string {
 	return fmt.Sprintf("%v\n", ctx.Params)
 }
 
+// TODO: Don't write to a file, but return the image data
 func genFavicon(filename string) {
 	img := canvas.New()
 	img.Blank(16, 16)
@@ -96,9 +86,18 @@ func main() {
 	// The archlinux.no webpage
 	ServeArchlinuxNo()
 
-	// The dynamic IP webpage
-	state := ServeIPs()
-	defer state.Close()
+	// Connect to Redis
+	connection, err := NewRedisConnection()
+	if err != nil {
+		panic("ERROR: Can't connect to redis")
+	}
+	defer connection.Close()
+
+	// The dynamic IP webpage, returns an IPState
+	_ = ServeIPs(connection)
+
+	// The login system, returns a UserState
+	_ = ServeUserSystem(connection)
 
 	// Compilation errors
 	web.Get("/error", browserspeak.Errorlog)

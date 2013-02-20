@@ -33,7 +33,7 @@ func AddTopBox(page *browserspeak.Page, title, subtitle, searchURL, searchButton
 	titlebox.AddStyle("width", "100%")
 	titlebox.AddStyle("position", "fixed")
 	titlebox.AddStyle("background-color", NICEGRAY) // gray, could be a gradient
-	titlebox.AddStyle("background", "url('" + backgroundTextureURL + "')")
+	titlebox.AddStyle("background", "url('"+backgroundTextureURL+"')")
 
 	searchbox := AddSearchBox(div, searchURL, searchButtonText)
 	searchbox.AddAttr("id", "searchbox")
@@ -223,7 +223,7 @@ func AddMenuBox(page *browserspeak.Page, links []string, darkBackgroundTexture s
 	div.AddStyle("top", "5em")
 	div.AddStyle("left", "0")
 	div.AddStyle("background-color", "#0c0c0c") // dark gray, fallback
-	div.AddStyle("background", "url('" + darkBackgroundTexture + "')")
+	div.AddStyle("background", "url('"+darkBackgroundTexture+"')")
 	div.AddStyle("position", "fixed")
 	//div.AddStyle("-moz-box-shadow", "10px 10px 5px #606060")
 	//div.AddStyle("-webkit-box-shadow", "10px 10px 5px #606060")

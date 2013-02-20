@@ -1,47 +1,44 @@
 package main
 
 import (
+	"github.com/garyburd/redigo/redis"
 	"github.com/hoisie/web"
 	"github.com/xyproto/browserspeak"
 )
 
-type State struct {
-	ips *RedisList
+type IPState struct {
+	data       *RedisList
+	connection redis.Conn
 }
 
-func setupIPs() *State {
-
-	// Connect to Redis
-	client, err := NewRedisConnection()
-	if err != nil {
-		panic("ERROR: Can't connect to redis")
-	}
+func InitIPs(connection redis.Conn) *IPState {
 
 	// Create a RedisList for storing IP adresses
-	ips := NewRedisList(client, "IPs")
+	ips := NewRedisList(connection, "IPs")
 
-	state := new(State)
-	state.ips = ips
+	state := new(IPState)
+	state.data = ips
+	state.connection = connection
 
 	return state
 }
 
 // Set an IP adress and generate a confirmation page for it
-func GenerateSetIP(state *State) WebHandle {
+func GenerateSetIP(state *IPState) WebHandle {
 	return func(ctx *web.Context, val string) string {
 		if val == "" {
 			return "Empty value, IP not set"
 		}
-		state.ips.Store(val)
+		state.data.Store(val)
 		return "OK, set IP to " + val
 	}
 }
 
 // Get all the stored IP adresses and generate a page for it
-func GenerateGetAllIPs(state *State) SimpleWebHandle {
+func GenerateGetAllIPs(state *IPState) SimpleWebHandle {
 	return func(val string) string {
 		s := ""
-		iplist, err := state.ips.GetAll()
+		iplist, err := state.data.GetAll()
 		if err == nil {
 			for _, val := range iplist {
 				s += "IP: " + val + "<br />"
@@ -52,10 +49,10 @@ func GenerateGetAllIPs(state *State) SimpleWebHandle {
 }
 
 // Get the last stored IP adress and generate a page for it
-func GenerateGetLastIP(state *State) SimpleWebHandle {
+func GenerateGetLastIP(state *IPState) SimpleWebHandle {
 	return func(val string) string {
 		s := ""
-		ip, err := state.ips.GetLast()
+		ip, err := state.data.GetLast()
 		if err == nil {
 			s = "IP: " + ip
 		}
@@ -63,15 +60,9 @@ func GenerateGetLastIP(state *State) SimpleWebHandle {
 	}
 }
 
-// Close the connection in the RedisList in the state
-// TODO: Put the connection in the State instead
-func (state *State) Close() {
-	state.ips.c.Close()
-}
-
 // TODO: RESTful services
-func ServeIPs() *State {
-	state := setupIPs()
+func ServeIPs(connection redis.Conn) *IPState {
+	state := InitIPs(connection)
 
 	web.Get("/setip/(.*)", GenerateSetIP(state))
 	web.Get("/getip/(.*)", GenerateGetLastIP(state))

@@ -1,6 +1,6 @@
 #!/bin/sh
 SOURCE=*.go
-BIN=main
+BIN=archweb
 PIDFILE=$BIN.pid
 LOG=error.log
 M5=nop
