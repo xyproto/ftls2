@@ -1,15 +1,15 @@
 package main
 
 import (
-	"github.com/hoisie/web"
 	"github.com/garyburd/redigo/redis"
+	"github.com/hoisie/web"
 	"github.com/xyproto/browserspeak"
 )
 
 type UserState struct {
 	// see: http://redis.io/topics/data-types
-	users *RedisHashMap // "users:"username "loggedin" "true"/"false"
-	usernames *RedisSet // "usernames" username,username,username
+	users      *RedisHashMap // "users:"username "loggedin" "true"/"false"
+	usernames  *RedisSet     // "usernames" username,username,username
 	connection redis.Conn
 }
 
@@ -24,7 +24,7 @@ func InitUserSystem(connection redis.Conn) *UserState {
 }
 
 func (state *UserState) HasUser(username string) bool {
-	val, err :=  state.usernames.Has(username)
+	val, err := state.usernames.Has(username)
 	if err != nil {
 		return false
 	}
@@ -111,8 +111,6 @@ func GenerateGetAllUsernames(state *UserState) SimpleWebHandle {
 		return browserspeak.Message("Usernames", s)
 	}
 }
-
-
 
 // Converts "true" or "false" to a bool
 func truthValue(val string) bool {
