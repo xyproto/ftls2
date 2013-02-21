@@ -9,23 +9,6 @@ import (
 
 // TODO: get style values from a file
 
-// Boxes for content
-func RoundedBox(tag *browserspeak.Tag) {
-	tag.AddStyle("border", "solid 1px #b4b4b4")
-	tag.AddStyle("border-radius", "10px")
-	tag.AddStyle("box-shadow", "1px 1px 3px rgba(0,0,0, .5)")
-}
-
-// Set the tag font to some sort of sans-serif
-func SansSerif(tag *browserspeak.Tag) {
-	tag.AddStyle("font-family", "Verdana, Geneva, sans-serif")
-}
-
-// Set the tag font to the given font or just some sort of sans-serif
-func CustomSansSerif(tag *browserspeak.Tag, custom string) {
-	tag.AddStyle("font-family", custom+", Verdana, Geneva, sans-serif")
-}
-
 func AddHeader(page *browserspeak.Page) {
 	page.MetaCharset("UTF-8")
 	page.LinkToGoogleFont("Armata")
@@ -34,7 +17,7 @@ func AddHeader(page *browserspeak.Page) {
 
 func AddBodyStyle(page *browserspeak.Page, bgimageurl string) {
 	body, _ := page.SetMargin(1)
-	SansSerif(body)
+	body.SansSerif()
 	body.AddStyle("background", "url('"+bgimageurl+"') no-repeat center center fixed")
 	//body.AddStyle("background-size", "cover")
 	//body.AddStyle("background-color", "#808080")

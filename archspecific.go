@@ -53,7 +53,7 @@ func (apc *ArchPageContents) Pub(url string, search WebHandle) {
 	web.Get(url, browserspeak.HTML(archpage))
 	web.Get(apc.generatedCSSurl, browserspeak.CSS(archpage))
 	web.Get(apc.extraCSSurl, hover)
-	web.Get(apc.bgImageURL, browserspeak.FILE(apc.bgImageFilename))
+	web.Get(apc.bgImageURL, browserspeak.File(apc.bgImageFilename))
 	web.Get(apc.searchURL+"(.*)", search)
 }
 
@@ -98,7 +98,7 @@ func CountAPC() *ArchPageContents {
 func HiAPC() *ArchPageContents {
 	apc := BaseAPC()
 	apc.contentTitle = "Overview"
-	apc.contentHTML = `This site is currently under construction.<br />You may wish to visit the <a href="https://bbs.archlinux.org/">Arch Linux Forum</a> in the mean time.<br /><br /><i>- Alexander Rødseth &lt;rodseth / gmail&gt;</i>`
+	apc.contentHTML = `This site is currently under construction.<br />You may wish to visit the <a href="https://bbs.archlinux.org/viewtopic.php?id=4998">Arch Linux Forum</a> in the mean time.<br /><br /><i>- Alexander Rødseth &lt;rodseth / gmail&gt;</i>`
 	//apc.contentTitle = "YOLO narwhal"
 	//apc.contentHTML = 
 	_ = `

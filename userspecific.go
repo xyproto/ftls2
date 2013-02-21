@@ -133,6 +133,13 @@ func GenerateUserStatus(state *UserState) SimpleWebHandle {
 	}
 }
 
+func GenerateSetCookie(state *UserState) WebHandle {
+	return func(ctx *web.Context, val string) string {
+		ctx.SetSecureCookie("ost", "kake", 123)
+		return "Cookiezyzz!"
+	}
+}
+
 // TODO: RESTful services
 func ServeUserSystem(connection redis.Conn) *UserState {
 	state := InitUserSystem(connection)
@@ -143,6 +150,7 @@ func ServeUserSystem(connection redis.Conn) *UserState {
 	web.Get("/create/(.*)", GenerateCreateUser(state))
 	web.Get("/remove/(.*)", GenerateRemoveUser(state))
 	web.Get("/users/(.*)", GenerateGetAllUsernames(state))
+	web.Get("/cookie/(.*)", GenerateSetCookie(state))
 
 	return state
 }

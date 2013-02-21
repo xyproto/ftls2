@@ -95,17 +95,17 @@ func AddContent(page *browserspeak.Page, contentTitle, contentHTML string) (*bro
 	div.AddStyle("padding-top", "1em")
 	div.AddStyle("padding-bottom", "2em")
 	div.AddStyle("background-color", "rgba(255,255,255,0.92)") // light gray
-	RoundedBox(div)
+	div.RoundedBox()
 
 	h2 := div.AddNewTag("h2")
 	h2.AddAttr("id", "textheader")
 	h2.AddContent(contentTitle)
-	CustomSansSerif(h2, "Armata")
+	h2.CustomSansSerif("Armata")
 
 	p := div.AddNewTag("p")
 	p.AddAttr("id", "textparagraph")
 	p.AddStyle("margin-top", "0.5em")
-	CustomSansSerif(p, "Junge")
+	p.CustomSansSerif("Junge")
 	p.AddStyle("font-size", "1.0em")
 	p.AddStyle("color", "black") // content text color
 	p.AddContent(contentHTML)
@@ -148,7 +148,7 @@ func AddSearchBox(tag *browserspeak.Tag, actionURL, buttonText string) *browsers
 	inputButton.AddStyle("float", "right")
 	inputButton.AddAttr("type", "submit")
 	inputButton.AddAttr("value", buttonText)
-	CustomSansSerif(inputButton, "Armata")
+	inputButton.CustomSansSerif("Armata")
 	//inputButton.AddStyle("vertical-align", "middle")
 	//inputButton.AddStyle("top", "100px")
 	//inputButton.AddStyle("position", "absolute")
@@ -172,7 +172,7 @@ func AddTitleBox(tag *browserspeak.Tag, title, subtitle string) *browserspeak.Ta
 
 	h1 := div.AddNewTag("h1")
 	h1.AddAttr("id", "titletext")
-	CustomSansSerif(h1, "Armata")
+	h1.CustomSansSerif("Armata")
 	//body.RepeatBackground(bgimageurl, "repeat-x")
 
 	a := h1.AddNewTag("a")
@@ -254,7 +254,7 @@ func AddMenuBox(page *browserspeak.Page, links []string, darkBackgroundTexture s
 			a.AddStyle("text-decoration", "none")
 			//a.AddStyle("padding", "8px 1.2em")
 			//a.AddStyle("margin", "0")
-			CustomSansSerif(a, "Armata")
+			a.CustomSansSerif("Armata")
 			//a.AddStyle("display", "block")
 			//a.AddStyle("width", "60px")
 			styleadded = true

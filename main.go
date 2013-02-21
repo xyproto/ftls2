@@ -27,6 +27,12 @@ type (
 	SimpleWebHandle StringFunction
 )
 
+
+func Publish(url, filename string) {
+	web.Get(url, browserspeak.File(filename))
+}
+
+
 func hello(val string) string {
 	return browserspeak.Message("root page", "hello: "+val)
 }
@@ -38,10 +44,6 @@ func helloSF(name string) string {
 func Hello() string {
 	msg := "Hi"
 	return browserspeak.Message("Hello", msg)
-}
-
-func Publish(url, filename string) {
-	web.Get(url, browserspeak.FILE(filename))
 }
 
 func ParamExample(ctx *web.Context) string {
@@ -103,6 +105,7 @@ func main() {
 	web.Get("/error", browserspeak.Errorlog)
 	web.Get("/errors", browserspeak.Errorlog)
 
+	// Various .php and .asp urls that showed up in the log
 	ServeForFun()
 
 	// Not found
