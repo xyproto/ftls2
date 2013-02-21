@@ -3,7 +3,7 @@ package main
 // Handle various request that just appeared in the log
 
 import (
-	"github.com/hoisie/web"
+	"github.com/xyproto/web"
 )
 
 // Honeypot?

@@ -2,7 +2,7 @@ package main
 
 import (
 	"github.com/garyburd/redigo/redis"
-	"github.com/hoisie/web"
+	"github.com/xyproto/web"
 	"github.com/xyproto/browserspeak"
 )
 

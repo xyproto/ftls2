@@ -4,7 +4,7 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/hoisie/web"
+	"github.com/xyproto/web"
 	"github.com/xyproto/browserspeak"
 )
 

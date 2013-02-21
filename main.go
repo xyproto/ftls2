@@ -12,7 +12,7 @@ import (
 	"mime"
 
 	"github.com/gosexy/canvas"        // For generating images
-	"github.com/hoisie/web"           // For serving webpages and handling requests
+	"github.com/xyproto/web"           // For serving webpages and handling requests
 	"github.com/xyproto/browserspeak" // For generating html/xml/css
 )
 

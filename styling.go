@@ -3,7 +3,7 @@ package main
 // Various functions that can be used to style a webpage
 
 import (
-	"github.com/hoisie/web"
+	"github.com/xyproto/web"
 	"github.com/xyproto/browserspeak"
 )
 
