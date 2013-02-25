@@ -5,10 +5,10 @@ package main
 import (
 	"strings"
 
-	"github.com/xyproto/browserspeak"
+	. "github.com/xyproto/browserspeak"
 )
 
-func AddTopBox(page *browserspeak.Page, title, subtitle, searchURL, searchButtonText, backgroundTextureURL string) (*browserspeak.Tag, error) {
+func AddTopBox(page *Page, title, subtitle, searchURL, searchButtonText, backgroundTextureURL string, roundedLook bool) (*Tag, error) {
 	body, err := page.GetTag("body")
 	if err != nil {
 		return nil, err
@@ -36,17 +36,22 @@ func AddTopBox(page *browserspeak.Page, title, subtitle, searchURL, searchButton
 	titlebox.AddStyle("position", "fixed")
 	titlebox.AddStyle("background-color", NICEGRAY) // gray, could be a gradient
 	titlebox.AddStyle("background", "url('"+backgroundTextureURL+"')")
+	//titlebox.AddStyle("z-index", "2") // 2 is above the search box which is 1
 
-	searchbox := AddSearchBox(div, searchURL, searchButtonText)
+	searchbox := AddSearchBox(titlebox, searchURL, searchButtonText, roundedLook)
 	searchbox.AddAttr("id", "searchbox")
 	searchbox.AddStyle("position", "relative")
-	searchbox.AddStyle("margin-top", "2em")
-	searchbox.AddStyle("margin-right", "2%")
+	searchbox.AddStyle("float", "right")
+	// The padding decides the position for this one
+	searchbox.AddStyle("padding", "0 5em 0 0")
+	searchbox.AddStyle("margin", "0")
+	//searchbox.AddStyle("line-height", "10em")
+	//searchbox.AddStyle("z-index", "1") // below the title
 
 	return div, nil
 }
 
-func AddFooter(page *browserspeak.Page, footerText, footerTextColor, footerColor string) (*browserspeak.Tag, error) {
+func AddFooter(page *Page, footerText, footerTextColor, footerColor string) (*Tag, error) {
 	body, err := page.GetTag("body")
 	if err != nil {
 		return nil, err
@@ -75,7 +80,7 @@ func AddFooter(page *browserspeak.Page, footerText, footerTextColor, footerColor
 	return div, nil
 }
 
-func AddContent(page *browserspeak.Page, contentTitle, contentHTML string) (*browserspeak.Tag, error) {
+func AddContent(page *Page, contentTitle, contentHTML string) (*Tag, error) {
 	body, err := page.GetTag("body")
 	if err != nil {
 		return nil, err
@@ -97,6 +102,7 @@ func AddContent(page *browserspeak.Page, contentTitle, contentHTML string) (*bro
 	div.AddStyle("padding-top", "1em")
 	div.AddStyle("padding-bottom", "2em")
 	div.AddStyle("background-color", "rgba(255,255,255,0.92)") // light gray
+	div.AddStyle("text-align", "justify")
 	div.RoundedBox()
 
 	h2 := div.AddNewTag("h2")
@@ -117,7 +123,7 @@ func AddContent(page *browserspeak.Page, contentTitle, contentHTML string) (*bro
 
 // Add a search box to the page, actionURL is the url to use as a get action,
 // buttonText is the text on the search button
-func AddSearchBox(tag *browserspeak.Tag, actionURL, buttonText string) *browserspeak.Tag {
+func AddSearchBox(tag *Tag, actionURL, buttonText string, roundedLook bool) *Tag {
 
 	div := tag.AddNewTag("div")
 	div.AddAttr("id", "searchboxdiv")
@@ -134,31 +140,33 @@ func AddSearchBox(tag *browserspeak.Tag, actionURL, buttonText string) *browsers
 	innerDiv.AddStyle("overflow", "hidden")
 	innerDiv.AddStyle("padding-right", "0.5em")
 	innerDiv.AddStyle("display", "inline-block")
-	//innerDiv.AddStyle("background-color", "red")
-	//innerDiv.AddStyle("display", "box")
-	//innerDiv.AddStyle("box-align", "center")
-	//innerDiv.AddStyle("display", "table-cell")
-	//innerDiv.AddStyle("float", "left")
 
 	inputText := innerDiv.AddNewTag("input")
+	inputText.AddAttr("id", "inputtext")
 	inputText.AddAttr("name", "q")
 	inputText.AddAttr("size", "22")
-	//inputText.AddStyle("position", "absolute")
+	inputText.AddStyle("padding", "0.4em")
+	inputText.CustomSansSerif("Armata")
+	if roundedLook {
+		inputText.RoundedBox()
+	}
 
 	inputButton := form.AddNewTag("input")
-	inputButton.AddStyle("margin-left", "0.4em")
+	inputButton.AddAttr("id", "inputbutton")
+	inputButton.AddStyle("margin", "0.15em 0 0 0.4em")
+	inputButton.AddStyle("padding", "0.2em 0.6em 0.2em 0.6em")
 	inputButton.AddStyle("float", "right")
 	inputButton.AddAttr("type", "submit")
 	inputButton.AddAttr("value", buttonText)
-	inputButton.CustomSansSerif("Armata")
-	//inputButton.AddStyle("vertical-align", "middle")
-	//inputButton.AddStyle("top", "100px")
-	//inputButton.AddStyle("position", "absolute")
+	inputButton.SansSerif()
+	if roundedLook {
+		inputButton.RoundedBox()
+	}
 
 	return div
 }
 
-func AddTitleBox(tag *browserspeak.Tag, title, subtitle string) *browserspeak.Tag {
+func AddTitleBox(tag *Tag, title, subtitle string) *Tag {
 
 	div := tag.AddNewTag("div")
 	div.AddAttr("id", "titlebox")
@@ -216,7 +224,7 @@ func colonsplit(s string) (string, string) {
 }
 
 // Takes a page and a colon-separated string slice of text:url
-func AddMenuBox(page *browserspeak.Page, links []string, darkBackgroundTexture string) (*browserspeak.Tag, error) {
+func AddMenuBox(page *Page, links []string, darkBackgroundTexture string) (*Tag, error) {
 	body, err := page.GetTag("body")
 	if err != nil {
 		return nil, err
@@ -244,7 +252,7 @@ func AddMenuBox(page *browserspeak.Page, links []string, darkBackgroundTexture s
 	ul.AddStyle("margin", "0")
 	//ul.AddStyle("padding", "0")
 
-	var a, li, sep *browserspeak.Tag
+	var a, li, sep *Tag
 	var text, url string
 
 	styleadded := false

@@ -46,5 +46,6 @@ while true; do
     pgrep $BIN > $PIDFILE
   fi
   # Wait for the source to be changed
-  inotifywait $SOURCE
+  inotifywait -q $SOURCE
+  sleep 1
 done

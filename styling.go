@@ -3,19 +3,19 @@ package main
 // Various functions that can be used to style a webpage
 
 import (
-	"github.com/xyproto/browserspeak"
+	. "github.com/xyproto/browserspeak"
 	"github.com/xyproto/web"
 )
 
 // TODO: get style values from a file
 
-func AddHeader(page *browserspeak.Page) {
+func AddHeader(page *Page) {
 	page.MetaCharset("UTF-8")
 	page.LinkToGoogleFont("Armata")
 	page.LinkToGoogleFont("Junge")
 }
 
-func AddBodyStyle(page *browserspeak.Page, bgimageurl string, stretchBackground bool) {
+func AddBodyStyle(page *Page, bgimageurl string, stretchBackground bool) {
 	body, _ := page.SetMargin(1)
 	body.SansSerif()
 	if stretchBackground {

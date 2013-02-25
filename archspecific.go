@@ -4,8 +4,9 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/xyproto/browserspeak"
+	. "github.com/xyproto/browserspeak"
 	"github.com/xyproto/web"
+	//"github.com/hoisie/mustache"
 )
 
 type ArchPageContents struct {
@@ -27,13 +28,14 @@ type ArchPageContents struct {
 	footerTextColor          string
 	footerColor              string
 	userState                *UserState
+	roundedLook              bool
 }
 
 type APCgen (func(userState *UserState) *ArchPageContents)
 
-// TODO: Consider using Mustache as well
-func archbuilder(apc *ArchPageContents) *browserspeak.Page {
-	page := browserspeak.NewHTML5Page(apc.title + " " + apc.subtitle)
+// TODO: Use mustache for easy replacement of "login" or "register" on the menu
+func archbuilder(apc *ArchPageContents) *Page {
+	page := NewHTML5Page(apc.title + " " + apc.subtitle)
 
 	page.LinkToCSS(apc.generatedCSSurl)
 	page.LinkToCSS(apc.extraCSSurl)
@@ -41,7 +43,12 @@ func archbuilder(apc *ArchPageContents) *browserspeak.Page {
 
 	AddHeader(page)
 	AddBodyStyle(page, apc.bgImageURL, apc.stretchBackground)
-	AddTopBox(page, apc.title, apc.subtitle, apc.searchURL, apc.searchButtonText, apc.backgroundTextureURL)
+	AddTopBox(page, apc.title, apc.subtitle, apc.searchURL, apc.searchButtonText, apc.backgroundTextureURL, apc.roundedLook)
+
+	// TODO:
+	// Use something dynamic to add or remove /login and /register depending on the login status
+	// The login status can be fetched over AJAX or REST or something.
+
 	AddMenuBox(page, apc.links, apc.darkBackgroundTextureURL)
 	AddContent(page, apc.contentTitle, apc.contentHTML)
 	AddFooter(page, apc.footerText, apc.footerTextColor, apc.footerColor)
@@ -52,8 +59,8 @@ func archbuilder(apc *ArchPageContents) *browserspeak.Page {
 // Make an html and css page available, plus a search handler (they are special)
 func (apc *ArchPageContents) Pub(url string, search WebHandle) {
 	archpage := archbuilder(apc)
-	web.Get(url, browserspeak.HTML(archpage))
-	web.Get(apc.generatedCSSurl, browserspeak.CSS(archpage))
+	web.Get(url, HTML(archpage))
+	web.Get(apc.generatedCSSurl, CSS(archpage))
 	web.Get(apc.extraCSSurl, GenerateExtraCSS(apc.stretchBackground))
 	web.Get(apc.searchURL+"(.*)", search)
 }
@@ -99,10 +106,9 @@ func CountAPC(userState *UserState) *ArchPageContents {
 func HiAPC(userState *UserState) *ArchPageContents {
 	apc := BaseAPC(userState)
 	apc.contentTitle = "Overview"
-	apc.contentHTML = `This site is currently under construction.<br />You may wish to visit the <a href="https://bbs.archlinux.org/viewtopic.php?id=4998">Arch Linux Forum</a> in the mean time.<br /><br /><i>- Alexander Rødseth &lt;rodseth / gmail&gt;</i>`
+	//apc.contentHTML = `This site is currently under construction.<br />You may wish to visit the <a href="https://bbs.archlinux.org/viewtopic.php?id=4998">Arch Linux Forum</a> in the mean time.<br /><br /><i>- Alexander Rødseth &lt;rodseth / gmail&gt;</i>`
 	//apc.contentTitle = "YOLO narwhal"
-	//apc.contentHTML = 
-	_ = `
+	apc.contentHTML = `
 <p>Locavore Austin fanny pack pickled.  Marfa hoodie pitchfork american apparel, flexitarian YOLO pickled keytar twee cred craft beer seitan authentic raw denim kogi.  Selvage mixtape blog, pickled cosby sweater williamsburg skateboard brooklyn lo-fi twee.  Blue bottle echo park kale chips, selvage fap skateboard swag chambray tousled.  Street art etsy four loko fap, iphone carles cliche banh mi fashion axe PBR authentic leggings.  Narwhal mumblecore street art tumblr.  Messenger bag vice art party, next level aesthetic church-key tumblr direct trade  typewriter street art.</p><p>Messenger bag blue bottle VHS before they sold out.  Artisan pickled swag, VHS meggings jean shorts blog tonx salvia cosby sweater mumblecore aesthetic literally narwhal.  Brunch tofu gluten-free disrupt blog occupy.  Austin bicycle rights sartorial narwhal, butcher trust fund cred.  Neutra kale chips letterpress literally, williamsburg kogi brunch bicycle rights.  Williamsburg craft beer brunch quinoa, forage YOLO swag put a bird on it four loko mixtape banksy.  Tumblr semiotics yr fixie.</p><p>Iphone banksy wolf squid wayfarers, VHS photo booth banh mi fap.  Tonx flexitarian vinyl scenester terry richardson squid synth deep v.  VHS tousled godard, cardigan american apparel lo-fi flannel.  Vice church-key cliche, hashtag banh mi direct trade  skateboard.  Sriracha meh pitchfork, wayfarers helvetica leggings try-hard viral YOLO lo-fi fingerstache synth ennui next level ugh.  Wayfarers organic american apparel fingerstache craft beer bicycle rights, beard keffiyeh banksy four loko butcher hashtag mumblecore banjo wes anderson.  Williamsburg next level deep v pickled typewriter kogi.</p><p>Meggings gastropub flexitarian, before they sold out DIY wes anderson cred authentic artisan dreamcatcher aesthetic ennui food truck.  Fanny pack selvage synth vegan pug.  YOLO shoreditch pitchfork, letterpress whatever put a bird on it truffaut mumblecore flannel terry richardson irony cray master cleanse ethnic gluten-free.  Fap banksy blog pickled meh ethnic food truck +1, vice leggings retro quinoa.  Small batch vice pop-up mustache.  +1 ethnic echo park semiotics letterpress raw denim.  Keytar photo booth wes anderson, freegan before they sold out skateboard seitan brooklyn.</p><p>Wes anderson high life banksy messenger bag art party plaid disrupt tattooed, next level swag viral raw denim.  Cliche meggings terry richardson cray.  Next level 3 wolf moon retro marfa.  Pork belly authentic banjo, iphone lomo williamsburg letterpress cosby sweater Austin typewriter quinoa skateboard hoodie.  Plaid kale chips godard farm-to-table.  Fashion axe mixtape freegan, pop-up chambray ugh etsy YOLO jean shorts dreamcatcher meggings.  Banh mi letterpress tousled, skateboard stumptown high life vegan fap typewriter shoreditch 8-bit lo-fi master cleanse selfies bespoke.</p>
 `
 	return apc
@@ -177,6 +183,7 @@ func BaseAPC(userState *UserState) *ArchPageContents {
 	//apc.footerText = "Alexander Rødseth &lt;rodseth@gmail.com&gt;, " + strconv.Itoa(y)
 	apc.footerText = "Alexander Rødseth, " + strconv.Itoa(y)
 	apc.userState = userState
+	apc.roundedLook = false
 	return &apc
 }
 

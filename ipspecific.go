@@ -2,7 +2,7 @@ package main
 
 import (
 	"github.com/garyburd/redigo/redis"
-	"github.com/xyproto/browserspeak"
+	. "github.com/xyproto/browserspeak"
 	"github.com/xyproto/web"
 )
 
@@ -44,7 +44,7 @@ func GenerateGetAllIPs(state *IPState) SimpleWebHandle {
 				s += "IP: " + val + "<br />"
 			}
 		}
-		return browserspeak.Message("IPs", s)
+		return Message("IPs", s)
 	}
 }
 

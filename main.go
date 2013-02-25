@@ -24,13 +24,8 @@ const (
 type (
 	// Every input from the user must be intitially stored in a UserInput variable, not in a string!
 	// This is for security and to keep it clean.
-	UserInput string
-
-	// Various function signatures for handling requests
-	WebHandle           (func(ctx *web.Context, val string) string)
-	StringFunction      (func(string) string)
-	SimpleWebHandle     StringFunction
-	SimpleContextHandle (func(ctx *web.Context) string)
+	UserInput      string
+	StringFunction browserspeak.SimpleWebHandle
 )
 
 func Publish(url, filename string) {

@@ -5,7 +5,7 @@ import (
 	"time"
 
 	"github.com/garyburd/redigo/redis"
-	"github.com/xyproto/browserspeak"
+	. "github.com/xyproto/browserspeak"
 	"github.com/xyproto/web"
 )
 
@@ -118,7 +118,7 @@ func GenerateGetAllUsernames(state *UserState) SimpleWebHandle {
 				s += "USERNAME: " + val + "<br />"
 			}
 		}
-		return browserspeak.Message("Usernames", s)
+		return Message("Usernames", s)
 	}
 }
 
@@ -141,6 +141,21 @@ func GenerateUserStatus(state *UserState) SimpleWebHandle {
 		}
 		return val + " is not logged in"
 	}
+}
+
+// Checks if the given username is logged in or not
+func (state *UserState) IsLoggedIn(username string) bool {
+	if !state.HasUser(username) {
+		return false
+	}
+	status, err := state.users.Get(username, "loggedin")
+	if err != nil {
+		return false
+	}
+	if !truthValue(status) {
+		return false
+	}
+	return true
 }
 
 func GenerateGetCookie(state *UserState) SimpleContextHandle {
