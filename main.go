@@ -12,8 +12,8 @@ import (
 	"mime"
 
 	"github.com/gosexy/canvas"        // For generating images
-	"github.com/xyproto/web"           // For serving webpages and handling requests
 	"github.com/xyproto/browserspeak" // For generating html/xml/css
+	"github.com/xyproto/web"          // For serving webpages and handling requests
 )
 
 const (
@@ -22,16 +22,20 @@ const (
 )
 
 type (
-	WebHandle       (func(ctx *web.Context, val string) string)
-	StringFunction  (func(string) string)
-	SimpleWebHandle StringFunction
-)
+	// Every input from the user must be intitially stored in a UserInput variable, not in a string!
+	// This is for security and to keep it clean.
+	UserInput string
 
+	// Various function signatures for handling requests
+	WebHandle           (func(ctx *web.Context, val string) string)
+	StringFunction      (func(string) string)
+	SimpleWebHandle     StringFunction
+	SimpleContextHandle (func(ctx *web.Context) string)
+)
 
 func Publish(url, filename string) {
 	web.Get(url, browserspeak.File(filename))
 }
-
 
 func hello(val string) string {
 	return browserspeak.Message("root page", "hello: "+val)
@@ -85,9 +89,6 @@ func main() {
 	mime.AddExtensionType(".txt", "text/plain; charset=utf-8")
 	mime.AddExtensionType(".ico", "image/x-icon")
 
-	// The archlinux.no webpage
-	ServeArchlinuxNo()
-
 	// Connect to Redis
 	connection, err := NewRedisConnection()
 	if err != nil {
@@ -95,11 +96,14 @@ func main() {
 	}
 	defer connection.Close()
 
-	// The dynamic IP webpage, returns an IPState
-	_ = ServeIPs(connection)
+	// The dynamic IP webpage (returns an *IPState)
+	ServeIPs(connection)
 
-	// The login system, returns a UserState
-	_ = ServeUserSystem(connection)
+	// The login system, returns a *UserState
+	userState := ServeUserSystem(connection)
+
+	// The archlinux.no webpage
+	ServeArchlinuxNo(userState)
 
 	// Compilation errors
 	web.Get("/error", browserspeak.Errorlog)

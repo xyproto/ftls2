@@ -1,9 +1,12 @@
 package main
 
 import (
+	"math/rand"
+	"time"
+
 	"github.com/garyburd/redigo/redis"
-	"github.com/xyproto/web"
 	"github.com/xyproto/browserspeak"
+	"github.com/xyproto/web"
 )
 
 type UserState struct {
@@ -15,6 +18,12 @@ type UserState struct {
 
 func InitUserSystem(connection redis.Conn) *UserState {
 
+	// For the secure cookies
+	rand.Seed(time.Now().UnixNano())
+	// TODO: Move this somewhere else?
+	web.Config.CookieSecret = "3a19QRmwf7mHZ9CPAaPQ0hsWezfKz"
+
+	// For the database
 	state := new(UserState)
 	state.users = NewRedisHashMap(connection, "users")
 	state.usernames = NewRedisSet(connection, "usernames")
@@ -23,6 +32,7 @@ func InitUserSystem(connection redis.Conn) *UserState {
 	return state
 }
 
+// TODO: Don't return false if there is an error, the user may exist
 func (state *UserState) HasUser(username string) bool {
 	val, err := state.usernames.Has(username)
 	if err != nil {
@@ -133,10 +143,27 @@ func GenerateUserStatus(state *UserState) SimpleWebHandle {
 	}
 }
 
+func GenerateGetCookie(state *UserState) SimpleContextHandle {
+	return func(ctx *web.Context) string {
+		username, _ := ctx.GetSecureCookie("user")
+		return "Cookie: username = " + username // + " err: " + fmt.Sprintf("%v", exists) + " val: " + val
+	}
+}
+
+// NB! Set the cookie at / for it to work in the paths underneath!
 func GenerateSetCookie(state *UserState) WebHandle {
 	return func(ctx *web.Context, val string) string {
-		ctx.SetSecureCookie("ost", "kake", 123)
-		return "Cookiezyzz!"
+		username := val
+		if username == "" {
+			return "Can't set cookie for empty username"
+		}
+		if !state.HasUser(val) {
+			return "Can't store cookie for non-existsing user"
+		}
+		// Create a cookie that lasts for one hour,
+		// this is the equivivalent of a session for a given username
+		ctx.SetSecureCookie("user", username, 3600)
+		return "Cookie stored: user = " + username + "."
 	}
 }
 
@@ -150,6 +177,7 @@ func ServeUserSystem(connection redis.Conn) *UserState {
 	web.Get("/create/(.*)", GenerateCreateUser(state))
 	web.Get("/remove/(.*)", GenerateRemoveUser(state))
 	web.Get("/users/(.*)", GenerateGetAllUsernames(state))
+	web.Get("/cookie", GenerateGetCookie(state))
 	web.Get("/cookie/(.*)", GenerateSetCookie(state))
 
 	return state

@@ -28,8 +28,10 @@ func AddTopBox(page *browserspeak.Page, title, subtitle, searchURL, searchButton
 
 	titlebox := AddTitleBox(div, title, subtitle)
 	titlebox.AddAttr("id", "titlebox")
-	titlebox.AddStyle("margin", "0")
-	titlebox.AddStyle("padding", "0 0 0 2.8em")
+	titlebox.AddStyle("margin", "0 0 0 0")
+	// Padding-top + height should be 5em, padding decides the position
+	titlebox.AddStyle("padding", "1.8em 0 0 2.8em")
+	titlebox.AddStyle("height", "3.2em")
 	titlebox.AddStyle("width", "100%")
 	titlebox.AddStyle("position", "fixed")
 	titlebox.AddStyle("background-color", NICEGRAY) // gray, could be a gradient
@@ -44,7 +46,7 @@ func AddTopBox(page *browserspeak.Page, title, subtitle, searchURL, searchButton
 	return div, nil
 }
 
-func AddFooter(page *browserspeak.Page, footerText, footerColor string) (*browserspeak.Tag, error) {
+func AddFooter(page *browserspeak.Page, footerText, footerTextColor, footerColor string) (*browserspeak.Tag, error) {
 	body, err := page.GetTag("body")
 	if err != nil {
 		return nil, err
@@ -58,7 +60,7 @@ func AddFooter(page *browserspeak.Page, footerText, footerColor string) (*browse
 	div.AddStyle("display", "block")
 	div.AddStyle("padding", "0")
 	div.AddStyle("margin", "0")
-	div.AddStyle("background-color", NICEGRAY)
+	div.AddStyle("background-color", footerColor)
 	div.AddStyle("font-size", "0.6em")
 	div.AddStyle("text-align", "right")
 	div.AddStyle("box-shadow", "1px -2px 3px rgba(0,0,0, .5)")
@@ -67,7 +69,7 @@ func AddFooter(page *browserspeak.Page, footerText, footerColor string) (*browse
 	innerdiv.AddAttr("id", "innernotice")
 	innerdiv.AddStyle("padding", "0 2em 0 0")
 	innerdiv.AddStyle("margin", "0")
-	innerdiv.AddStyle("color", footerColor)
+	innerdiv.AddStyle("color", footerTextColor)
 	innerdiv.AddContent(footerText)
 
 	return div, nil
@@ -170,28 +172,35 @@ func AddTitleBox(tag *browserspeak.Tag, title, subtitle string) *browserspeak.Ta
 		word2 = strings.SplitN(title, " ", 2)[1]
 	}
 
-	h1 := div.AddNewTag("h1")
-	h1.AddAttr("id", "titletext")
-	h1.CustomSansSerif("Armata")
-	//body.RepeatBackground(bgimageurl, "repeat-x")
-
-	a := h1.AddNewTag("a")
+	a := div.AddNewTag("a")
 	a.AddAttr("id", "homelink")
 	a.AddAttr("href", "/")
-	a.AddContent(word1)
-	a.AddStyle("color", "white")
 	a.AddStyle("text-decoration", "none")
 
-	font := a.AddNewTag("font")
-	font.AddAttr("id", "bluetitle")
-	font.AddStyle("color", NICEBLUE)
-	font.AddContent(word2)
+	font0 := a.AddNewTag("font")
+	font0.AddAttr("id", "whitetitle")
+	font0.AddStyle("color", "white")
+	font0.CustomSansSerif("Armata")
+	font0.AddStyle("font-size", "2.0em")
+	font0.AddStyle("font-weight", "bolder")
+	font0.AddContent(word1)
 
-	font = a.AddNewTag("font")
-	font.AddAttr("id", "graytitle")
-	font.AddStyle("font-size", "0.5em")
-	font.AddStyle("color", "#707070")
-	font.AddContent(subtitle)
+	font1 := a.AddNewTag("font")
+	font1.AddAttr("id", "bluetitle")
+	font1.AddStyle("color", NICEBLUE)
+	font1.CustomSansSerif("Armata")
+	font1.AddStyle("font-size", "2.0em")
+	font1.AddStyle("font-weight", "bold")
+	font1.AddContent(word2)
+
+	font2 := a.AddNewTag("font")
+	font2.AddAttr("id", "graytitle")
+	font2.AddStyle("font-size", "0.5em")
+	font2.AddStyle("color", "#707070")
+	font2.CustomSansSerif("Armata")
+	font2.AddStyle("font-size", "1.25em")
+	font2.AddStyle("font-weight", "normal")
+	font2.AddContent(subtitle)
 
 	return div
 }
