@@ -12,6 +12,7 @@ import (
 type ArchPageContents struct {
 	generatedCSSurl          string
 	extraCSSurl              string
+	jqueryJSurl              string
 	faviconurl               string
 	bgImageURL               string
 	stretchBackground        bool
@@ -20,6 +21,7 @@ type ArchPageContents struct {
 	links                    []string
 	contentTitle             string
 	contentHTML              string
+	contentJS                string
 	searchButtonText         string
 	searchURL                string
 	footerText               string
@@ -33,12 +35,14 @@ type ArchPageContents struct {
 
 type APCgen (func(userState *UserState) *ArchPageContents)
 
-// TODO: Use mustache for easy replacement of "login" or "register" on the menu
+// TODO: Consider using Mustache for replacing elements after the page has been generated
+// (for showing/hiding "login", "logout" or "register"
 func archbuilder(apc *ArchPageContents) *Page {
 	page := NewHTML5Page(apc.title + " " + apc.subtitle)
 
 	page.LinkToCSS(apc.generatedCSSurl)
 	page.LinkToCSS(apc.extraCSSurl)
+	page.LinkToJS(apc.jqueryJSurl)
 	page.LinkToFavicon(apc.faviconurl)
 
 	AddHeader(page)
@@ -49,8 +53,9 @@ func archbuilder(apc *ArchPageContents) *Page {
 	// Use something dynamic to add or remove /login and /register depending on the login status
 	// The login status can be fetched over AJAX or REST or something.
 
+	// TODO: Move the menubox into the TopBox
 	AddMenuBox(page, apc.links, apc.darkBackgroundTextureURL)
-	AddContent(page, apc.contentTitle, apc.contentHTML)
+	AddContent(page, apc.contentTitle, apc.contentHTML + BodyJS(apc.contentJS))
 	AddFooter(page, apc.footerText, apc.footerTextColor, apc.footerColor)
 
 	return page
@@ -103,20 +108,63 @@ func CountAPC(userState *UserState) *ArchPageContents {
 	return apc
 }
 
-func HiAPC(userState *UserState) *ArchPageContents {
+// TODO: Find out why this only happens once the server starts
+// and not every time the page reloads. Probably have to use
+// more functions in functions. Try to use the model from sitespecific and ipspecific!
+// That works fairly well.
+func BobAPC(userState *UserState) *ArchPageContents {
+	apc := BaseAPC(userState)
+	apc.contentTitle = "Bob"
+	if userState.HasUser("bob") {
+		apc.contentHTML = "has bob, l "
+	} else {
+		apc.contentHTML = "no bob, l "
+	}
+	if userState.IsLoggedIn("bob") {
+		apc.contentHTML += "yes"
+	} else {
+		apc.contentHTML += "no"
+	}
+	return apc
+}
+
+func OverviewAPC(userState *UserState) *ArchPageContents {
 	apc := BaseAPC(userState)
 	apc.contentTitle = "Overview"
-	//apc.contentHTML = `This site is currently under construction.<br />You may wish to visit the <a href="https://bbs.archlinux.org/viewtopic.php?id=4998">Arch Linux Forum</a> in the mean time.<br /><br /><i>- Alexander Rødseth &lt;rodseth / gmail&gt;</i>`
-	//apc.contentTitle = "YOLO narwhal"
-	apc.contentHTML = `
-<p>Locavore Austin fanny pack pickled.  Marfa hoodie pitchfork american apparel, flexitarian YOLO pickled keytar twee cred craft beer seitan authentic raw denim kogi.  Selvage mixtape blog, pickled cosby sweater williamsburg skateboard brooklyn lo-fi twee.  Blue bottle echo park kale chips, selvage fap skateboard swag chambray tousled.  Street art etsy four loko fap, iphone carles cliche banh mi fashion axe PBR authentic leggings.  Narwhal mumblecore street art tumblr.  Messenger bag vice art party, next level aesthetic church-key tumblr direct trade  typewriter street art.</p><p>Messenger bag blue bottle VHS before they sold out.  Artisan pickled swag, VHS meggings jean shorts blog tonx salvia cosby sweater mumblecore aesthetic literally narwhal.  Brunch tofu gluten-free disrupt blog occupy.  Austin bicycle rights sartorial narwhal, butcher trust fund cred.  Neutra kale chips letterpress literally, williamsburg kogi brunch bicycle rights.  Williamsburg craft beer brunch quinoa, forage YOLO swag put a bird on it four loko mixtape banksy.  Tumblr semiotics yr fixie.</p><p>Iphone banksy wolf squid wayfarers, VHS photo booth banh mi fap.  Tonx flexitarian vinyl scenester terry richardson squid synth deep v.  VHS tousled godard, cardigan american apparel lo-fi flannel.  Vice church-key cliche, hashtag banh mi direct trade  skateboard.  Sriracha meh pitchfork, wayfarers helvetica leggings try-hard viral YOLO lo-fi fingerstache synth ennui next level ugh.  Wayfarers organic american apparel fingerstache craft beer bicycle rights, beard keffiyeh banksy four loko butcher hashtag mumblecore banjo wes anderson.  Williamsburg next level deep v pickled typewriter kogi.</p><p>Meggings gastropub flexitarian, before they sold out DIY wes anderson cred authentic artisan dreamcatcher aesthetic ennui food truck.  Fanny pack selvage synth vegan pug.  YOLO shoreditch pitchfork, letterpress whatever put a bird on it truffaut mumblecore flannel terry richardson irony cray master cleanse ethnic gluten-free.  Fap banksy blog pickled meh ethnic food truck +1, vice leggings retro quinoa.  Small batch vice pop-up mustache.  +1 ethnic echo park semiotics letterpress raw denim.  Keytar photo booth wes anderson, freegan before they sold out skateboard seitan brooklyn.</p><p>Wes anderson high life banksy messenger bag art party plaid disrupt tattooed, next level swag viral raw denim.  Cliche meggings terry richardson cray.  Next level 3 wolf moon retro marfa.  Pork belly authentic banjo, iphone lomo williamsburg letterpress cosby sweater Austin typewriter quinoa skateboard hoodie.  Plaid kale chips godard farm-to-table.  Fashion axe mixtape freegan, pop-up chambray ugh etsy YOLO jean shorts dreamcatcher meggings.  Banh mi letterpress tousled, skateboard stumptown high life vegan fap typewriter shoreditch 8-bit lo-fi master cleanse selfies bespoke.</p>
-`
+	apc.contentHTML = `This site is currently under construction.<br />You may wish to visit the <a href="https://bbs.archlinux.org/viewtopic.php?id=4998">Arch Linux Forum</a> in the mean time.<br /><br /><i>- Alexander Rødseth &lt;rodseth / gmail&gt;</i>`
+	return apc
+}
+
+func TextAPC(userState *UserState) *ArchPageContents {
+	apc := BaseAPC(userState)
+	apc.contentTitle = "YOLO narwhal"
+	apc.contentHTML = `<p>Locavore Austin fanny pack pickled.  Marfa hoodie pitchfork american apparel, flexitarian YOLO pickled keytar twee cred craft beer seitan authentic raw denim kogi.  Selvage mixtape blog, pickled cosby sweater williamsburg skateboard brooklyn lo-fi twee.  Blue bottle echo park kale chips, selvage fap skateboard swag chambray tousled.  Street art etsy four loko fap, iphone carles cliche banh mi fashion axe PBR authentic leggings.  Narwhal mumblecore street art tumblr.  Messenger bag vice art party, next level aesthetic church-key tumblr direct trade  typewriter street art.</p><p>Messenger bag blue bottle VHS before they sold out.  Artisan pickled swag, VHS meggings jean shorts blog tonx salvia cosby sweater mumblecore aesthetic literally narwhal.  Brunch tofu gluten-free disrupt blog occupy.  Austin bicycle rights sartorial narwhal, butcher trust fund cred.  Neutra kale chips letterpress literally, williamsburg kogi brunch bicycle rights.  Williamsburg craft beer brunch quinoa, forage YOLO swag put a bird on it four loko mixtape banksy.  Tumblr semiotics yr fixie.</p><p>Iphone banksy wolf squid wayfarers, VHS photo booth banh mi fap.  Tonx flexitarian vinyl scenester terry richardson squid synth deep v.  VHS tousled godard, cardigan american apparel lo-fi flannel.  Vice church-key cliche, hashtag banh mi direct trade  skateboard.  Sriracha meh pitchfork, wayfarers helvetica leggings try-hard viral YOLO lo-fi fingerstache synth ennui next level ugh.  Wayfarers organic american apparel fingerstache craft beer bicycle rights, beard keffiyeh banksy four loko butcher hashtag mumblecore banjo wes anderson.  Williamsburg next level deep v pickled typewriter kogi.</p><p>Meggings gastropub flexitarian, before they sold out DIY wes anderson cred authentic artisan dreamcatcher aesthetic ennui food truck.  Fanny pack selvage synth vegan pug.  YOLO shoreditch pitchfork, letterpress whatever put a bird on it truffaut mumblecore flannel terry richardson irony cray master cleanse ethnic gluten-free.  Fap banksy blog pickled meh ethnic food truck +1, vice leggings retro quinoa.  Small batch vice pop-up mustache.  +1 ethnic echo park semiotics letterpress raw denim.  Keytar photo booth wes anderson, freegan before they sold out skateboard seitan brooklyn.</p><p>Wes anderson high life banksy messenger bag art party plaid disrupt tattooed, next level swag viral raw denim.  Cliche meggings terry richardson cray.  Next level 3 wolf moon retro marfa.  Pork belly authentic banjo, iphone lomo williamsburg letterpress cosby sweater Austin typewriter quinoa skateboard hoodie.  Plaid kale chips godard farm-to-table.  Fashion axe mixtape freegan, pop-up chambray ugh etsy YOLO jean shorts dreamcatcher meggings.  Banh mi letterpress tousled, skateboard stumptown high life vegan fap typewriter shoreditch 8-bit lo-fi master cleanse selfies bespoke.</p>`
 	return apc
 }
 
 func HelloAPC(userState *UserState) *ArchPageContents {
 	apc := BaseAPC(userState)
 	apc.contentTitle = "This is it"
+	return apc
+}
+
+
+
+func JQueryAPC(userState *UserState) *ArchPageContents {
+	apc := BaseAPC(userState)
+	apc.contentTitle = "JQuery"
+
+	apc.contentHTML = "<button id=clickme>bob</button><br />"
+	apc.contentHTML += "<div id=status>status</div>"
+
+	//apc.contentJS = OnClick("#clickme", GetTest())
+	//apc.contentJS += OnClick("#clickme", SetText("#clickme", "ost"))
+	//apc.contentJS += OnClick("#clickme", SetTextFromURL("#clickme", "http://archlinux.no/status/bob"))
+    //apc.contentJS += OnClick("#clickme", GetTest())
+
+	apc.contentJS += Load("#status", "/status/elg")
+	apc.contentJS += OnClick("#clickme", Load("#status", "/status/bob"))
+
 	return apc
 }
 
@@ -147,6 +195,7 @@ func BaseAPC(userState *UserState) *ArchPageContents {
 	var apc ArchPageContents
 	apc.generatedCSSurl = "/css/style.css"
 	apc.extraCSSurl = "/css/extra.css"
+	apc.jqueryJSurl = "//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js" // "/js/jquery-1.9.1.js"
 	apc.faviconurl = "/favicon.ico"
 	//apc.bgImageURL = "/img/longbg.png"
 	//apc.bgImageURL = "http://home.online.no/~hakrist/Elg%20i%20solnedgang%201024.JPG"
@@ -168,9 +217,11 @@ func BaseAPC(userState *UserState) *ArchPageContents {
 	apc.stretchBackground = true
 	apc.title = "Arch Linux"
 	apc.subtitle = "no"
-	apc.links = []string{"Overview:/", "Mirrors:/mirrors", "Login:/login", "Register:/register", "Hello:/hello/world", "Count:/counting", "Feedback:/feedback"}
+	//apc.links = []string{"Overview:/", "Mirrors:/mirrors", "Login:/login", "Register:/register", "Hello:/hello/world", "Count:/counting", "Feedback:/feedback"}
+	apc.links = []string{"Overview:/", "Text:/text", "Bob:/bob", "JQuery:/jquery", "Register:/register", "Hello:/hello/world", "Count:/counting", "Feedback:/feedback"}
 	apc.contentTitle = "Hi"
 	apc.contentHTML = "Hi there!"
+	apc.contentJS = ""
 	apc.searchButtonText = "Search"
 	apc.searchURL = "/search"
 	// http://wptheming.wpengine.netdna-cdn.com/wp-content/uploads/2010/04/gray-texture.jpg
@@ -192,8 +243,12 @@ func ServeArchlinuxNo(userState *UserState) {
 	faviconFilename := "generated/img/favicon.ico"
 	genFavicon(faviconFilename)
 
-	pub("/", HiAPC, userState)
 	web.Get("/hello/(.*)", wrapHandle(HelloAPC, helloSF, userState))
+
+	pub("/", OverviewAPC, userState)
+	pub("/text", TextAPC, userState)
+	pub("/jquery", JQueryAPC, userState)
+	pub("/bob", BobAPC, userState)
 	pub("/counting", CountAPC, userState)
 
 	pub("/mirrors", HelloAPC, userState)
@@ -201,13 +256,15 @@ func ServeArchlinuxNo(userState *UserState) {
 	pub("/register", HelloAPC, userState)
 	pub("/feedback", HelloAPC, userState)
 
-	Publish("/robots.txt", "static/various/robots.txt")
-	Publish("/sitemap_index.xml", "static/various/sitemap_index.xml")
+	Publish("/js/jquery-1.9.1.js", "static/js/jquery-1.9.1.js", true)
+	Publish("/robots.txt", "static/various/robots.txt", false)
+	Publish("/sitemap_index.xml", "static/various/sitemap_index.xml", false)
+	Publish("/favicon.ico", faviconFilename, false)
 
 	// Images
 	//Publish("/img/rough.png", "static/img/rough.png")
 	//Publish("/img/longbg.png", "static/img/longbg.png")
-	Publish("/img/donutbg.png", "static/img/donutbg.png")
+	//Publish("/img/donutbg.png", "static/img/donutbg.png")
 	//Publish("/img/donutbg_light.jpg", "static/img/donutbg_light.jpg")
 	//Publish("/img/boxes_cartoon2.png", "static/img/boxes_cartoon2.png")
 	//Publish("/img/boxes_softglow.png", "static/img/boxes_softglow.png")
@@ -215,14 +272,12 @@ func ServeArchlinuxNo(userState *UserState) {
 	//Publish("/img/space_predator.png", "static/img/space_predator.png")
 	//Publish("/img/centerimage.png", "static/img/centerimage.png")
 	//Publish("/img/underwater.png", "static/img/underwater.png")
-	Publish("/img/underwater.jpg", "static/img/underwater.jpg")
 	//Publish("/img/norway.jpg", "static/img/norway.jpg")
 	//Publish("/img/norway2.jpg", "static/img/norway2.jpg")
-	Publish("/img/norway3.jpg", "static/img/norway3.jpg")
-	Publish("/img/gray.jpg", "static/img/gray.jpg")
-	Publish("/img/darkgray.jpg", "static/img/darkgray.jpg")
-
-	Publish("/favicon.ico", faviconFilename)
+	//Publish("/img/underwater.jpg", "static/img/underwater.jpg")
+	Publish("/img/norway3.jpg", "static/img/norway3.jpg", true)
+	Publish("/img/gray.jpg", "static/img/gray.jpg", true)
+	Publish("/img/darkgray.jpg", "static/img/darkgray.jpg", true)
 
 	//pubTemplate("/yes", templateGenerator(), templateContent{a:2})
 }

@@ -143,6 +143,12 @@ func GenerateUserStatus(state *UserState) SimpleWebHandle {
 	}
 }
 
+// Gets the username of the current session, if available
+func GetSessionUsername(ctx *web.Context) string {
+	username, _ := ctx.GetSecureCookie("user")
+	return username
+}
+
 // Checks if the given username is logged in or not
 func (state *UserState) IsLoggedIn(username string) bool {
 	if !state.HasUser(username) {
@@ -152,15 +158,13 @@ func (state *UserState) IsLoggedIn(username string) bool {
 	if err != nil {
 		return false
 	}
-	if !truthValue(status) {
-		return false
-	}
-	return true
+	return truthValue(status)
 }
 
 func GenerateGetCookie(state *UserState) SimpleContextHandle {
 	return func(ctx *web.Context) string {
-		username, _ := ctx.GetSecureCookie("user")
+		username := GetSessionUsername(ctx)
+		//username, _ := ctx.GetSecureCookie("user")
 		return "Cookie: username = " + username // + " err: " + fmt.Sprintf("%v", exists) + " val: " + val
 	}
 }

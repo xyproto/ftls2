@@ -20,11 +20,11 @@ func AddTopBox(page *Page, title, subtitle, searchURL, searchButtonText, backgro
 	div.AddStyle("width", "100%")
 	div.AddStyle("margin", "0")
 	div.AddStyle("padding", "0 0 1em 0")
-	div.AddStyle("position", "absolute")
 	div.AddStyle("top", "0")
 	div.AddStyle("left", "0")
 	div.AddStyle("background-color", NICEGRAY)
 	div.AddStyle("position", "fixed")
+	div.AddStyle("display", "block")
 
 	titlebox := AddTitleBox(div, title, subtitle)
 	titlebox.AddAttr("id", "titlebox")
@@ -45,12 +45,14 @@ func AddTopBox(page *Page, title, subtitle, searchURL, searchButtonText, backgro
 	// The padding decides the position for this one
 	searchbox.AddStyle("padding", "0 5em 0 0")
 	searchbox.AddStyle("margin", "0")
+	//searchbox.AddStyle("min-width", "10em")
 	//searchbox.AddStyle("line-height", "10em")
 	//searchbox.AddStyle("z-index", "1") // below the title
 
 	return div, nil
 }
 
+// TODO: Place at the bottom of the content instead of at the bottom of the window
 func AddFooter(page *Page, footerText, footerTextColor, footerColor string) (*Tag, error) {
 	body, err := page.GetTag("body")
 	if err != nil {
@@ -128,7 +130,7 @@ func AddSearchBox(tag *Tag, actionURL, buttonText string, roundedLook bool) *Tag
 	div := tag.AddNewTag("div")
 	div.AddAttr("id", "searchboxdiv")
 	div.AddStyle("text-align", "right")
-	div.AddStyle("display", "block")
+	div.AddStyle("display", "inline-block")
 
 	form := div.AddNewTag("form")
 	form.AddAttr("id", "search")
@@ -144,24 +146,31 @@ func AddSearchBox(tag *Tag, actionURL, buttonText string, roundedLook bool) *Tag
 	inputText := innerDiv.AddNewTag("input")
 	inputText.AddAttr("id", "inputtext")
 	inputText.AddAttr("name", "q")
-	inputText.AddAttr("size", "22")
-	inputText.AddStyle("padding", "0.4em")
+	inputText.AddAttr("size", "18")
+	inputText.AddStyle("padding", "0.25em")
 	inputText.CustomSansSerif("Armata")
+	inputText.AddStyle("background-color", "#f0f0f0")
 	if roundedLook {
 		inputText.RoundedBox()
+	} else {
+		inputText.AddStyle("border", "none")
 	}
 
-	inputButton := form.AddNewTag("input")
-	inputButton.AddAttr("id", "inputbutton")
-	inputButton.AddStyle("margin", "0.15em 0 0 0.4em")
-	inputButton.AddStyle("padding", "0.2em 0.6em 0.2em 0.6em")
-	inputButton.AddStyle("float", "right")
-	inputButton.AddAttr("type", "submit")
-	inputButton.AddAttr("value", buttonText)
-	inputButton.SansSerif()
-	if roundedLook {
-		inputButton.RoundedBox()
-	}
+	// inputButton := form.AddNewTag("input")
+	// inputButton.AddAttr("id", "inputbutton")
+	// // The position is in the margin
+	// inputButton.AddStyle("margin", "0.08em 0 0 0.4em")
+	// inputButton.AddStyle("padding", "0.2em 0.6em 0.2em 0.6em")
+	// inputButton.AddStyle("float", "right")
+	// inputButton.AddAttr("type", "submit")
+	// inputButton.AddAttr("value", buttonText)
+	// inputButton.SansSerif()
+	// //inputButton.AddStyle("overflow", "hidden")
+	// if roundedLook {
+	// 	inputButton.RoundedBox()
+	// } else {
+	// 	inputButton.AddStyle("border", "none")
+	// }
 
 	return div
 }
@@ -188,7 +197,8 @@ func AddTitleBox(tag *Tag, title, subtitle string) *Tag {
 	font0 := a.AddNewTag("font")
 	font0.AddAttr("id", "whitetitle")
 	font0.AddStyle("color", "white")
-	font0.CustomSansSerif("Armata")
+	//font0.CustomSansSerif("Armata")
+	font0.SansSerif()
 	font0.AddStyle("font-size", "2.0em")
 	font0.AddStyle("font-weight", "bolder")
 	font0.AddContent(word1)
@@ -196,9 +206,11 @@ func AddTitleBox(tag *Tag, title, subtitle string) *Tag {
 	font1 := a.AddNewTag("font")
 	font1.AddAttr("id", "bluetitle")
 	font1.AddStyle("color", NICEBLUE)
-	font1.CustomSansSerif("Armata")
+	//font1.CustomSansSerif("Armata")
+	font1.SansSerif()
 	font1.AddStyle("font-size", "2.0em")
 	font1.AddStyle("font-weight", "bold")
+	font1.AddStyle("overflow", "hidden")
 	font1.AddContent(word2)
 
 	font2 := a.AddNewTag("font")
@@ -208,6 +220,7 @@ func AddTitleBox(tag *Tag, title, subtitle string) *Tag {
 	font2.CustomSansSerif("Armata")
 	font2.AddStyle("font-size", "1.25em")
 	font2.AddStyle("font-weight", "normal")
+	font2.AddStyle("overflow", "hidden")
 	font2.AddContent(subtitle)
 
 	return div
@@ -242,40 +255,26 @@ func AddMenuBox(page *Page, links []string, darkBackgroundTexture string) (*Tag,
 	div.AddStyle("background-color", "#0c0c0c") // dark gray, fallback
 	div.AddStyle("background", "url('"+darkBackgroundTexture+"')")
 	div.AddStyle("position", "fixed")
-	//div.AddStyle("-moz-box-shadow", "10px 10px 5px #606060")
-	//div.AddStyle("-webkit-box-shadow", "10px 10px 5px #606060")
 	div.AddStyle("box-shadow", "1px 3px 5px rgba(0,0,0, .8)")
 
 	ul := div.AddNewTag("ul")
 	ul.AddStyle("list-style-type", "none")
 	ul.AddStyle("float", "left")
 	ul.AddStyle("margin", "0")
-	//ul.AddStyle("padding", "0")
 
 	var a, li, sep *Tag
 	var text, url string
 
-	styleadded := false
 	for i, text_url := range links {
 		text, url = colonsplit(text_url)
 
 		li = ul.AddNewTag("li")
-		li.AddStyle("display", "inline")
 
 		a = li.AddNewTag("a")
-		a.AddAttr("id", "menulink")
+		a.AddAttr("id", "menu" + text)
 		a.AddAttr("href", url)
-		if !styleadded {
-			a.AddStyle("font-weight", "bold")
-			a.AddStyle("color", "#303030")
-			a.AddStyle("text-decoration", "none")
-			//a.AddStyle("padding", "8px 1.2em")
-			//a.AddStyle("margin", "0")
-			a.CustomSansSerif("Armata")
-			//a.AddStyle("display", "block")
-			//a.AddStyle("width", "60px")
-			styleadded = true
-		}
+		a.SansSerif()
+		//a.CustomSansSerif("Armata")
 		a.AddContent(text)
 
 		// For every element, but not the last one
@@ -283,10 +282,12 @@ func AddMenuBox(page *Page, links []string, darkBackgroundTexture string) (*Tag,
 			// Insert a '|' character in a div
 			sep = li.AddNewTag("div")
 			sep.AddContent("|")
-			sep.AddStyle("display", "inline")
-			sep.AddStyle("color", "#a0a0a0")
 		}
 	}
+
+	li.AddStyle("display", "inline")
+	sep.AddStyle("display", "inline")
+	sep.AddStyle("color", "#a0a0a0")
 
 	return div, nil
 }

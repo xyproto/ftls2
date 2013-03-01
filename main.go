@@ -11,9 +11,9 @@ import (
 	"fmt"
 	"mime"
 
-	"github.com/gosexy/canvas"        // For generating images
-	"github.com/xyproto/browserspeak" // For generating html/xml/css
-	"github.com/xyproto/web"          // For serving webpages and handling requests
+	"github.com/gosexy/canvas"          // For generating images
+	. "github.com/xyproto/browserspeak" // For generating html/xml/css
+	"github.com/xyproto/web"            // For serving webpages and handling requests
 )
 
 const (
@@ -25,15 +25,33 @@ type (
 	// Every input from the user must be intitially stored in a UserInput variable, not in a string!
 	// This is for security and to keep it clean.
 	UserInput      string
-	StringFunction browserspeak.SimpleWebHandle
+	StringFunction SimpleWebHandle
 )
 
-func Publish(url, filename string) {
-	web.Get(url, browserspeak.File(filename))
+func Publish(url, filename string, cache bool) {
+	if cache {
+		web.Get(url, CacheWrapper(url, File(filename)))
+	} else {
+		web.Get(url, File(filename))
+	}
+}
+
+var globalStringCache map[string]string
+
+// Wrap a SimpleContextHandle so that the output is cached (with an id)
+// Do not cache functions with side-effects! (that sets the mimetype for instance)
+// The safest thing for now is to only cache images.
+func CacheWrapper(id string, f SimpleContextHandle) SimpleContextHandle {
+	return func(ctx *web.Context) string {
+		if _, ok := globalStringCache[id]; !ok {
+			globalStringCache[id] = f(ctx)
+		}
+		return globalStringCache[id]
+	}
 }
 
 func hello(val string) string {
-	return browserspeak.Message("root page", "hello: "+val)
+	return Message("root page", "hello: "+val)
 }
 
 func helloSF(name string) string {
@@ -42,7 +60,7 @@ func helloSF(name string) string {
 
 func Hello() string {
 	msg := "Hi"
-	return browserspeak.Message("Hello", msg)
+	return Message("Hello", msg)
 }
 
 func ParamExample(ctx *web.Context) string {
@@ -101,14 +119,14 @@ func main() {
 	ServeArchlinuxNo(userState)
 
 	// Compilation errors
-	web.Get("/error", browserspeak.Errorlog)
-	web.Get("/errors", browserspeak.Errorlog)
+	web.Get("/error", Errorlog)
+	web.Get("/errors", Errorlog)
 
 	// Various .php and .asp urls that showed up in the log
 	ServeForFun()
 
 	// Not found
-	web.Get("/(.*)", browserspeak.NotFound)
+	web.Get("/(.*)", NotFound)
 
 	// Serve on port 3000 for the Nginx instance to use
 	web.Run("0.0.0.0:3000")

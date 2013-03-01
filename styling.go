@@ -41,17 +41,22 @@ func GenerateExtraCSS(stretchBackground bool) SimpleContextHandle {
 		activecolor := "#ffffff" // white
 		ctx.ContentType("css")
 		retval := `
-#menulink:link {color:` + menucolor + `;}
-#menulink:visited {color:` + menucolor + `;}
-#menulink:hover {color:` + hovercolor + `;}
-#menulink:active {color:` + activecolor + `;}
+a {
+  text-decoration: none;
+  color: #303030;
+  font-weight: bold;
+}
+a:link {color:` + menucolor + `;}
+a:visited {color:` + menucolor + `;}
+a:hover {color:` + hovercolor + `;}
+a:active {color:` + activecolor + `;}
 `
 		// The load order of background-color, background-size and background-image
 		// is actually significant in Chrome! Do not reorder lightly!
 		if stretchBackground {
-			retval += "body {\nbackground-color: #808080;\nbackground-size: cover;\n}"
+			retval = "body {\nbackground-color: #808080;\nbackground-size: cover;\n}\n" + retval
 		} else {
-			retval += "body {\nbackground-color: #808080;\n}"
+			retval = "body {\nbackground-color: #808080;\n}\n" + retval
 		}
 		return retval
 	}
