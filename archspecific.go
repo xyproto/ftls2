@@ -131,7 +131,7 @@ func BobAPC(userState *UserState) *ArchPageContents {
 func OverviewAPC(userState *UserState) *ArchPageContents {
 	apc := BaseAPC(userState)
 	apc.contentTitle = "Overview"
-	apc.contentHTML = `This site is currently under construction.<br />You may wish to visit the <a href="https://bbs.archlinux.org/viewtopic.php?id=4998">Arch Linux Forum</a> in the mean time.<br /><br /><i>- Alexander Rødseth &lt;rodseth / gmail&gt;</i>`
+	apc.contentHTML = `This site is currently under construction.<br />You may wish to visit the <a href="https://bbs.archlinux.org/viewtopic.php?id=4998">Arch Linux Forum</a> in the meantime.<br /><br /><i>- Alexander Rødseth &lt;rodseth / gmail&gt;</i>`
 	return apc
 }
 
