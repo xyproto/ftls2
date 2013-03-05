@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"math/rand"
 	"time"
 
@@ -84,14 +85,16 @@ func GenerateRemoveUser(state *UserState) WebHandle {
 // Log in a user by changing the loggedin value
 func GenerateLoginUser(state *UserState) WebHandle {
 	return func(ctx *web.Context, val string) string {
-		if val == "" {
+		username := val
+		if username == "" {
 			return "Can't log in a blank user"
 		}
-		if !state.HasUser(val) {
-			return "user " + val + " does not exist, could not log in"
+		if !state.HasUser(username) {
+			return "user " + username + " does not exist, could not log in"
 		}
-		state.users.Set(val, "loggedin", "true")
-		return "OK, user " + val + " logged in"
+		state.users.Set(username, "loggedin", "true")
+		state.SetBrowserUsername(ctx, username)
+		return "OK, user " + username + " logged in"
 	}
 }
 
@@ -143,14 +146,8 @@ func GenerateUserStatus(state *UserState) SimpleWebHandle {
 	}
 }
 
-// Gets the username of the current session, if available
-func GetSessionUsername(ctx *web.Context) string {
-	username, _ := ctx.GetSecureCookie("user")
-	return username
-}
-
 // Checks if the given username is logged in or not
-func (state *UserState) IsLoggedIn(username string) bool {
+func (state *UserState) LoggedIn(username string) bool {
 	if !state.HasUser(username) {
 		return false
 	}
@@ -163,10 +160,30 @@ func (state *UserState) IsLoggedIn(username string) bool {
 
 func GenerateGetCookie(state *UserState) SimpleContextHandle {
 	return func(ctx *web.Context) string {
-		username := GetSessionUsername(ctx)
+		username := GetBrowserUsername(ctx)
 		//username, _ := ctx.GetSecureCookie("user")
 		return "Cookie: username = " + username // + " err: " + fmt.Sprintf("%v", exists) + " val: " + val
 	}
+}
+
+// Gets the username that is stored in a cookie in the browser, if available
+func GetBrowserUsername(ctx *web.Context) string {
+	username, _ := ctx.GetSecureCookie("user")
+	return username
+}
+
+func (state *UserState) SetBrowserUsername(ctx *web.Context, username string) error {
+	if username == "" {
+		return errors.New("Can't set cookie for empty username")
+	}
+	if !state.HasUser(username) {
+		return errors.New("Can't store cookie for non-existsing user")
+	}
+	// Create a cookie that lasts for one hour,
+	// this is the equivivalent of a session for a given username
+	ctx.SetSecureCookiePath("user", username, 3600, "/")
+	//"Cookie stored: user = " + username + "."
+	return nil
 }
 
 // NB! Set the cookie at / for it to work in the paths underneath!
@@ -176,12 +193,12 @@ func GenerateSetCookie(state *UserState) WebHandle {
 		if username == "" {
 			return "Can't set cookie for empty username"
 		}
-		if !state.HasUser(val) {
+		if !state.HasUser(username) {
 			return "Can't store cookie for non-existsing user"
 		}
 		// Create a cookie that lasts for one hour,
 		// this is the equivivalent of a session for a given username
-		ctx.SetSecureCookie("user", username, 3600)
+		ctx.SetSecureCookiePath("user", username, 3600, "/")
 		return "Cookie stored: user = " + username + "."
 	}
 }
@@ -196,8 +213,8 @@ func ServeUserSystem(connection redis.Conn) *UserState {
 	web.Get("/create/(.*)", GenerateCreateUser(state))
 	web.Get("/remove/(.*)", GenerateRemoveUser(state))
 	web.Get("/users/(.*)", GenerateGetAllUsernames(state))
-	web.Get("/cookie", GenerateGetCookie(state))
-	web.Get("/cookie/(.*)", GenerateSetCookie(state))
+	web.Get("/cookie/get", GenerateGetCookie(state))
+	web.Get("/cookie/set/(.*)", GenerateSetCookie(state))
 
 	return state
 }

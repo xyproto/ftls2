@@ -8,7 +8,7 @@ import (
 
 // Create an empty page only containing the given tag
 // Returns both the page and the tag
-func cowboyTag(tagname string) (*browserspeak.Page, *browserspeak.Tag) {
+func CowboyTag(tagname string) (*browserspeak.Page, *browserspeak.Tag) {
 	page := browserspeak.NewPage("blank", tagname)
 	tag, _ := page.GetTag(tagname)
 	return page, tag

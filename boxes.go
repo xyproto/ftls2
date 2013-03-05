@@ -96,8 +96,8 @@ func AddContent(page *Page, contentTitle, contentHTML string) (*Tag, error) {
 	div.AddStyle("min-width", "60%")
 	div.AddStyle("float", "left")
 	div.AddStyle("position", "relative")
-	div.AddStyle("margin-left", "5%")
-	div.AddStyle("margin-top", "10em")
+	div.AddStyle("margin-left", "4%")
+	div.AddStyle("margin-top", "8.5em")
 	div.AddStyle("margin-right", "5em")
 	div.AddStyle("padding-left", "4em")
 	div.AddStyle("padding-right", "5em")
@@ -146,7 +146,7 @@ func AddSearchBox(tag *Tag, actionURL, buttonText string, roundedLook bool) *Tag
 	inputText := innerDiv.AddNewTag("input")
 	inputText.AddAttr("id", "inputtext")
 	inputText.AddAttr("name", "q")
-	inputText.AddAttr("size", "18")
+	inputText.AddAttr("size", "25")
 	inputText.AddStyle("padding", "0.25em")
 	inputText.CustomSansSerif("Armata")
 	inputText.AddStyle("background-color", "#f0f0f0")
@@ -236,8 +236,8 @@ func colonsplit(s string) (string, string) {
 	return s, ""
 }
 
-// Takes a page and a colon-separated string slice of text:url
-func AddMenuBox(page *Page, links []string, darkBackgroundTexture string) (*Tag, error) {
+// Takes a page and a colon-separated string slice of text:url, hiddenlinks is just a list of the url part
+func AddMenuBox(page *Page, links, hiddenlinks []string, darkBackgroundTexture string) (*Tag, error) {
 	body, err := page.GetTag("body")
 	if err != nil {
 		return nil, err
@@ -269,23 +269,32 @@ func AddMenuBox(page *Page, links []string, darkBackgroundTexture string) (*Tag,
 		text, url = colonsplit(text_url)
 
 		li = ul.AddNewTag("li")
+		li.AddAttr("id", "menu"+text)
+		li.AddStyle("display", "inline")
+		li.SansSerif()
+		//li.CustomSansSerif("Armata")
 
-		a = li.AddNewTag("a")
-		a.AddAttr("id", "menu" + text)
-		a.AddAttr("href", url)
-		a.SansSerif()
-		//a.CustomSansSerif("Armata")
-		a.AddContent(text)
+		// Hide the menu items with matching urls
+		for _, val := range hiddenlinks {
+			if val == url {
+				li.AddStyle("display", "none")
+				break
+			}
+		}
 
-		// For every element, but not the last one
-		if i < (len(links) - 1) {
+		// For every element, but not the first one
+		if i > 0 {
 			// Insert a '|' character in a div
 			sep = li.AddNewTag("div")
 			sep.AddContent("|")
 		}
+
+		a = li.AddNewTag("a")
+		a.AddAttr("id", "menulink")
+		a.AddAttr("href", url)
+		a.AddContent(text)
 	}
 
-	li.AddStyle("display", "inline")
 	sep.AddStyle("display", "inline")
 	sep.AddStyle("color", "#a0a0a0")
 

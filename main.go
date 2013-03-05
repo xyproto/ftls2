@@ -21,12 +21,9 @@ const (
 	NICEGRAY = "#202020"
 )
 
-type (
-	// Every input from the user must be intitially stored in a UserInput variable, not in a string!
-	// This is for security and to keep it clean.
-	UserInput      string
-	StringFunction SimpleWebHandle
-)
+// Every input from the user must be intitially stored in a UserInput variable, not in a string!
+// This is just to be aware of which data one should be careful with, and to keep it clean.
+type UserInput string
 
 func Publish(url, filename string, cache bool) {
 	if cache {

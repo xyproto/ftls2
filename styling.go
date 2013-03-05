@@ -9,10 +9,27 @@ import (
 
 // TODO: get style values from a file
 
-func AddHeader(page *Page) {
+func AddHeader(page *Page, js string) {
 	page.MetaCharset("UTF-8")
 	page.LinkToGoogleFont("Armata")
 	page.LinkToGoogleFont("Junge")
+	// TODO: Move to browserspeak
+	AddScriptToHeader(page, js)
+}
+
+func AddScriptToHeader(page *Page, js string) error {
+	// Check if there's anything to add
+	if js == "" {
+		// Nope
+		return nil
+	}
+	// Add a script tag
+	head, err := page.GetTag("head")
+	if err == nil {
+		script := head.AddNewTag("script")
+		script.AddContent(js)
+	}
+	return err
 }
 
 func AddBodyStyle(page *Page, bgimageurl string, stretchBackground bool) {
@@ -44,7 +61,7 @@ func GenerateExtraCSS(stretchBackground bool) SimpleContextHandle {
 a {
   text-decoration: none;
   color: #303030;
-  font-weight: bold;
+  font-weight: regular;
 }
 a:link {color:` + menucolor + `;}
 a:visited {color:` + menucolor + `;}

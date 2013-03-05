@@ -59,24 +59,57 @@ func Hide(tagname string) string {
 	return "$(" + quote(tagname) + ").hide();"
 }
 
+func HideAnimated(tagname string) string {
+	return "$(" + quote(tagname) + ").hide('fast');"
+}
+
 func Show(tagname string) string {
 	return "$(" + quote(tagname) + ").show();"
+}
+
+func ShowAnimated(tagname string) string {
+	return "$(" + quote(tagname) + ").show('fast');"
+}
+
+// Same as Show, but set display to inline instead of block
+func ShowInline(tagname string) string {
+	return "$(" + quote(tagname) + ").css('display', 'inline');"
+}
+
+// Same as Show, but set display to inline instead of block
+func ShowInlineAnimated(tagname string) string {
+	return ShowInline(tagname) + Hide(tagname) + ShowAnimated(tagname)
 }
 
 func Load(tagname, url string) string {
 	return methodString(tagname, "load", url)
 }
 
-// This never worked?
-//func SetTextFromURL(tagname, url string) string {
-//	//return "$.ajax({url: " + quote(url) + "}).done( function(data) {" + SetRawValue(tagname, "data") + "});"
-//	return "$.get(" + quote(url) + ", function(data) {" + SetHTML(tagname, "data") + "});"
-//}
+// Hide a tag if booleanURL doesn't return "1" (true)
+func HideIfNot(booleanURL, tagname string) string {
+	return "$.get(" + quote(booleanURL) + ", function(data) { if (data != \"1\") {" + Hide(tagname) + "}; });"
+}
 
-// This works
-// TODO: Use this to check the result of get and toggle menu items depending on the situation
-func GetTest() string {
-	return "$.get(\"/status/bob\", function(data) { alert(\"Data Loaded: \" + data); });"
+// Optimized function for login, logout and register
+func HideIfNotLoginLogoutRegister(threeBooleanURL, logintag, logouttag, registertag string) string {
+	src := "$.get(" + quote(threeBooleanURL) + ", function(data) {"
+	// TODO: See what happens if data < 3 length
+	src += "if (data[0] != \"1\") {" + Hide(logintag) + "};"
+	src += "if (data[1] != \"1\") {" + Hide(logouttag) + "};"
+	src += "if (data[2] != \"1\") {" + Hide(registertag) + "};"
+	src += "});"
+	return src
+}
+
+// Optimized function for login, logout and register
+func ShowIfLoginLogoutRegister(threeBooleanURL, logintag, logouttag, registertag string) string {
+	src := "$.get(" + quote(threeBooleanURL) + ", function(data) {"
+	// TODO: See what happens if data < 3 length
+	src += "if (data[0] == \"1\") {" + ShowInline(logintag) + "};"
+	src += "if (data[1] == \"1\") {" + ShowInline(logouttag) + "};"
+	src += "if (data[2] == \"1\") {" + ShowInline(registertag) + "};"
+	src += "});"
+	return src
 }
 
 // Returns html to run javascript once the document is ready
