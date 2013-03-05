@@ -5,9 +5,19 @@ import (
 	"math/rand"
 	"time"
 
-	"github.com/garyburd/redigo/redis"
 	. "github.com/xyproto/browserspeak"
+	"github.com/garyburd/redigo/redis"
 	"github.com/xyproto/web"
+)
+
+const (
+	ONLY_LOGIN = "100"
+	ONLY_LOGOUT = "010"
+	ONLY_REGISTER = "001"
+	EXCEPT_LOGIN = "011"
+	EXCEPT_LOGOUT = "101"
+	EXCEPT_REGISTER = "110"
+	NOTHING = "000"
 )
 
 type UserState struct {
@@ -31,6 +41,37 @@ func InitUserSystem(connection redis.Conn) *UserState {
 	state.connection = connection
 
 	return state
+}
+
+// TODO: Rethink this. Use templates for Login/Logout button?
+// Generate "1" or "0" values for showing the login, logout or register menus,
+// depending on the cookie status and UserState
+func GenerateShowLoginLogoutRegister(state *UserState) SimpleContextHandle {
+	return func(ctx *web.Context) string {
+		if username := GetBrowserUsername(ctx); username != "" {
+			//print("USERNAME", username)
+			// Has a username stored in the browser
+			if state.LoggedIn(username) {
+				// Ok, logged in to the system + login cookie in the browser
+				// Only present the "Logout" menu
+				return ONLY_LOGOUT
+			} else {
+				// Has a login cookie, but is not logged in.
+				// Keep the browser cookie (could be tempting to remove it)
+				// Present only the "Login" menu
+				//return "100"
+				// Present both "Login" and "Register", just in case it's a new user
+				// in the same browser.
+				return EXCEPT_LOGOUT
+			}
+		} else {
+			// Does not have a username stored in the browser
+			// Present the "Register" and "Login" menu
+			return EXCEPT_LOGOUT
+		}
+		// Everything went wrong, should never reach this point
+		return NOTHING
+	}
 }
 
 // TODO: Don't return false if there is an error, the user may exist

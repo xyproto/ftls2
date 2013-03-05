@@ -6,10 +6,10 @@ import (
 )
 
 // The main page / default settings
-func BaseAPC(userState *UserState) *ArchPageContents {
-	var apc ArchPageContents
+func BaseCP(userState *UserState) *ContentPage {
+	var apc ContentPage
 	apc.generatedCSSurl = "/css/style.css"
-	apc.extraCSSurl = "/css/extra.css"
+	apc.extraCSSurls = []string{"/css/extra.css"}
 	apc.jqueryJSurl = "//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js" // "/js/jquery-1.9.1.js"
 	apc.faviconurl = "/favicon.ico"
 	apc.bgImageURL = "/img/norway3.jpg"
@@ -50,8 +50,8 @@ func BaseAPC(userState *UserState) *ArchPageContents {
 	return &apc
 }
 
-func LoginAPC(userState *UserState, url string) *ArchPageContents {
-	apc := BaseAPC(userState)
+func LoginCP(userState *UserState, url string) *ContentPage {
+	apc := BaseCP(userState)
 	apc.contentTitle = "Login"
 	// TODO: jquery get + ensure cookie is set
 	apc.contentHTML = "<a href=\"/login/bob\">login</a>"
@@ -59,24 +59,24 @@ func LoginAPC(userState *UserState, url string) *ArchPageContents {
 	return apc
 }
 
-func LogoutAPC(userState *UserState, url string) *ArchPageContents {
-	apc := BaseAPC(userState)
+func LogoutCP(userState *UserState, url string) *ContentPage {
+	apc := BaseCP(userState)
 	apc.contentTitle = "Logout"
 	apc.contentHTML = "<a href=\"/logout/bob\">logout</a>"
 	apc.url = url
 	return apc
 }
 
-func RegisterAPC(userState *UserState, url string) *ArchPageContents {
-	apc := BaseAPC(userState)
+func RegisterCP(userState *UserState, url string) *ContentPage {
+	apc := BaseCP(userState)
 	apc.contentTitle = "Register"
 	apc.contentHTML = "<a href=\"/create/bob\">register</a>"
 	apc.url = url
 	return apc
 }
 
-func OverviewAPC(userState *UserState, url string) *ArchPageContents {
-	apc := BaseAPC(userState)
+func OverviewCP(userState *UserState, url string) *ContentPage {
+	apc := BaseCP(userState)
 	apc.contentTitle = "Overview"
 	apc.contentHTML = `This site is currently under construction.<br />You may wish to visit the <a href="https://bbs.archlinux.org/viewtopic.php?id=4998">Arch Linux Forum</a> in the meantime.<br /><br /><i>- Alexander Rødseth &lt;rodseth / gmail&gt;</i>`
 	apc.url = url

@@ -52,11 +52,11 @@ func AddBodyStyle(page *Page, bgimageurl string, stretchBackground bool) {
 
 func GenerateExtraCSS(stretchBackground bool) SimpleContextHandle {
 	return func(ctx *web.Context) string {
+		ctx.ContentType("css")
 		// extra.css, loaded after the other CSS
 		menucolor := "#c0c0c0"   // light gray
 		hovercolor := "#efefe0"  // very light gray, with some yellow
 		activecolor := "#ffffff" // white
-		ctx.ContentType("css")
 		retval := `
 a {
   text-decoration: none;

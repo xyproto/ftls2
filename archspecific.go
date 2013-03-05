@@ -9,9 +9,9 @@ import (
 	//"github.com/hoisie/mustache"
 )
 
-type ArchPageContents struct {
+type ContentPage struct {
 	generatedCSSurl          string
-	extraCSSurl              string
+	extraCSSurls             []string
 	jqueryJSurl              string
 	faviconurl               string
 	bgImageURL               string
@@ -35,15 +35,20 @@ type ArchPageContents struct {
 	url                      string
 }
 
-type APCgen (func(userState *UserState) *ArchPageContents)
+type CPgen (func(userState *UserState) *ContentPage)
+
+// A collection of ContentPages
+type PageCollection []ContentPage
 
 // TODO: Consider using Mustache for replacing elements after the page has been generated
 // (for showing/hiding "login", "logout" or "register"
-func archbuilder(apc *ArchPageContents) *Page {
+func archbuilder(apc *ContentPage) *Page {
 	page := NewHTML5Page(apc.title + " " + apc.subtitle)
 
 	page.LinkToCSS(apc.generatedCSSurl)
-	page.LinkToCSS(apc.extraCSSurl)
+	for _, cssurl := range apc.extraCSSurls {
+		page.LinkToCSS(cssurl)
+	}
 	page.LinkToJS(apc.jqueryJSurl)
 	page.LinkToFavicon(apc.faviconurl)
 
@@ -57,6 +62,7 @@ func archbuilder(apc *ArchPageContents) *Page {
 
 	// TODO: Move the menubox into the TopBox
 
+	// TODO: Do this with templates instead
 	// Hide login/logout/register by default
 	hidelist := []string{"/login", "/logout", "/register"}
 	AddMenuBox(page, apc.links, hidelist, apc.darkBackgroundTextureURL)
@@ -68,22 +74,22 @@ func archbuilder(apc *ArchPageContents) *Page {
 }
 
 // Make an html and css page available
-func (apc *ArchPageContents) Pub(url string) {
+func (apc *ContentPage) Pub(url, cssurl string) {
 	archpage := archbuilder(apc)
 	web.Get(url, HTML(archpage))
 	web.Get(apc.generatedCSSurl, CSS(archpage))
-	web.Get(apc.extraCSSurl, GenerateExtraCSS(apc.stretchBackground))
+	web.Get(cssurl, GenerateExtraCSS(apc.stretchBackground))
 }
 
 // Wrap a lonely string in an entire webpage
-func (apc *ArchPageContents) Surround(s string) (string, string) {
+func (apc *ContentPage) Surround(s string) (string, string) {
 	apc.contentHTML = s
 	archpage := archbuilder(apc)
 	return archpage.GetXML(true), archpage.GetCSS()
 }
 
 // Uses a given SimpleWebHandle as the contents for the the ArchPage contents
-func (apc *ArchPageContents) WrapSimpleWebHandle(swh SimpleWebHandle) WebHandle {
+func (apc *ContentPage) WrapSimpleWebHandle(swh SimpleWebHandle) WebHandle {
 	return func(ctx *web.Context, val string) string {
 		html, css := apc.Surround(swh(val))
 		web.Get(apc.generatedCSSurl, css)
@@ -92,7 +98,7 @@ func (apc *ArchPageContents) WrapSimpleWebHandle(swh SimpleWebHandle) WebHandle 
 }
 
 // Uses a given SimpleWebHandle as the contents for the the ArchPage contents
-func (apc *ArchPageContents) WrapWebHandle(wh WebHandle) WebHandle {
+func (apc *ContentPage) WrapWebHandle(wh WebHandle) WebHandle {
 	return func(ctx *web.Context, val string) string {
 		html, css := apc.Surround(wh(ctx, val))
 		web.Get(apc.generatedCSSurl, css)
@@ -100,64 +106,12 @@ func (apc *ArchPageContents) WrapWebHandle(wh WebHandle) WebHandle {
 	}
 }
 
-
-
-// Publish a list of ArchPageContents
-func PublishAPCs(apcs []ArchPageContents) {
-	for _, apc := range apcs {
-		apc.Pub(apc.url)
-	}
-}
-
-// Generate "true" or "false" depending on the cookie status
-func GenerateShowLogin(state *UserState) SimpleContextHandle {
-	return func(ctx *web.Context) string {
-		return "1" // true
-	}
-}
-
-// Generate "true" or "false" depending on the cookie status
-func GenerateShowLogout(state *UserState) SimpleContextHandle {
-	return func(ctx *web.Context) string {
-		return "1" // true
-	}
-}
-
-// Generate "true" or "false" depending on the cookie status
-func GenerateShowRegister(state *UserState) SimpleContextHandle {
-	return func(ctx *web.Context) string {
-		return "1" // true
-	}
-}
-
-// TODO: Rethink this. Use templates for Login/Logout button?
-// Generate "1" or "0" values for showing the login, logout or register menus,
-// depending on the cookie status and UserState
-func GenerateShowLoginLogoutRegister(state *UserState) SimpleContextHandle {
-	return func(ctx *web.Context) string {
-		if username := GetBrowserUsername(ctx); username != "" {
-			//print("USERNAME", username)
-			// Has a username stored in the browser
-			if state.LoggedIn(username) {
-				// Ok, logged in to the system + login cookie in the browser
-				// Only present the "Logout" menu
-				return "010"
-			} else {
-				// Has a login cookie, but is not logged in.
-				// Keep the browser cookie (could be tempting to remove it)
-				// Present only the "Login" menu
-				//return "100"
-				// Present both "Login" and "Register", just in case it's a new user
-				// in the same browser.
-				return "101"
-			}
-		} else {
-			// Does not have a username stored in the browser
-			// Present the "Register" and "Login" menu
-			return "101"
-		}
-		// Everything went wrong, should never reach this point
-		return "000"
+// Publish a list of ContentPage
+func PublishCPs(pc PageCollection) {
+	// For each content page in the page collection
+	for _, cp := range pc {
+		// TODO: different css urls for all of these?
+		cp.Pub(cp.url, "/css/extra.css")
 	}
 }
 
@@ -168,9 +122,9 @@ func min(a, b int) int {
 	return b
 }
 
-// Search a list of ArchPageContents for a given searchText
+// Search a list of ContentPage for a given searchText
 // Returns a list of urls or an empty list, a list of page titles and the string that was actually searched for
-func searchResults(userSearchText UserInput, apcs []ArchPageContents) ([]string, []string, string) {
+func searchResults(userSearchText UserInput, pc PageCollection) ([]string, []string, string) {
 	// Search for maximum 100 letters, lowercase and trimmed
 	searchText := strings.ToLower(strings.TrimSpace(string(userSearchText)[:min(100, len(string(userSearchText)))]))
 
@@ -180,8 +134,10 @@ func searchResults(userSearchText UserInput, apcs []ArchPageContents) ([]string,
 	}
 
 	var matches, titles []string
-	for _, apc := range apcs {
-		if strings.Contains(strings.ToLower(apc.contentTitle), searchText) || strings.Contains(strings.ToLower(apc.contentHTML), searchText) {
+	for _, apc := range pc {
+		if strings.Contains(strings.ToLower(apc.url), searchText) ||
+		   strings.Contains(strings.ToLower(apc.contentTitle), searchText) ||
+		   strings.Contains(strings.ToLower(apc.contentHTML), searchText) {
 			// Check if the url is already in the matches slices
 			found := false
 			for _, url := range matches {
@@ -201,8 +157,8 @@ func searchResults(userSearchText UserInput, apcs []ArchPageContents) ([]string,
 }
 
 // Generate a search handle. This is done in order to be able to modify the apc
-// Searches a list of ArchPageContents structs
-func GenerateSearchHandle(apcs []ArchPageContents) WebHandle {
+// Searches a list of ContentPage structs
+func GenerateSearchHandle(pc PageCollection) WebHandle {
 	return func(ctx *web.Context, val string) string {
 		q, found := ctx.Params["q"]
 		searchText := UserInput(q)
@@ -211,7 +167,7 @@ func GenerateSearchHandle(apcs []ArchPageContents) WebHandle {
 			nl := tagString("br")
 			content += nl + nl
 			startTime := time.Now()
-			urls, titles, searchedFor := searchResults(searchText, apcs)
+			urls, titles, searchedFor := searchResults(searchText, pc)
 			elapsed := time.Since(startTime)
 			page, p := CowboyTag("p")
 			if len(urls) == 0 {
@@ -221,90 +177,98 @@ func GenerateSearchHandle(apcs []ArchPageContents) WebHandle {
 				for i, url := range urls {
 					a := p.AddNewTag("a")
 					a.AddAttr("id", "searchresult")
+					a.AddStyle("color", "red")
 					a.AddAttr("href", url)
 					a.AddContent(titles[i])
 					font := p.AddNewTag("font")
-					font.AddContent(" - contains \"" + searchedFor + "\"")
+					font.AddContent(" - contains \"" + searchedFor + "\" in the url, title or content")
 					p.AddNewTag("br")
 				}
 			}
 			p.AddNewTag("br")
-			p.AddContent("Search took: " + elapsed.String())
+			p.AddLastContent("Search took: " + elapsed.String())
 			return page.String()
 		}
 		return "Invalid parameters"
 	}
 }
 
-func ServeImages() {
+func PublishImages() {
 	faviconFilename := "generated/img/favicon.ico"
 	genFavicon(faviconFilename)
 	Publish("/favicon.ico", faviconFilename, false)
 
-	// Images
-	//Publish("/img/rough.png", "static/img/rough.png")
-	//Publish("/img/longbg.png", "static/img/longbg.png")
-	//Publish("/img/donutbg.png", "static/img/donutbg.png")
-	//Publish("/img/donutbg_light.jpg", "static/img/donutbg_light.jpg")
-	//Publish("/img/boxes_cartoon2.png", "static/img/boxes_cartoon2.png")
-	//Publish("/img/boxes_softglow.png", "static/img/boxes_softglow.png")
-	//Publish("/img/felix_predator2.jpg", "static/img/felix_predator2.jpg")
-	//Publish("/img/space_predator.png", "static/img/space_predator.png")
-	//Publish("/img/centerimage.png", "static/img/centerimage.png")
-	//Publish("/img/underwater.png", "static/img/underwater.png")
-	//Publish("/img/norway.jpg", "static/img/norway.jpg")
-	//Publish("/img/norway2.jpg", "static/img/norway2.jpg")
-	//Publish("/img/underwater.jpg", "static/img/underwater.jpg")
-	Publish("/img/norway3.jpg", "static/img/norway3.jpg", true)
-	Publish("/img/gray.jpg", "static/img/gray.jpg", true)
-	Publish("/img/darkgray.jpg", "static/img/darkgray.jpg", true)
+	// Tried previously:
+	// "rough.png", "longbg.png", "donutbg.png", "donutbg_light.jpg",
+	// "felix_predator2.jpg", "centerimage.png", "underwater.png",
+	// "norway.jpg", "norway2.jpg", "underwater.jpg"
+
+	// Publish and cache images
+	imgs := []string{"norway3.jpg", "gray.jpg", "darkgray.jpg"}
+	for _, img := range imgs {
+		Publish("/img/"+img, "static/img/"+img, true)
+	}
 }
 
-// Returns a BaseAPC with the contentTitle set
-func BaseTitleAPC(contentTitle string, userState *UserState) *ArchPageContents {
-	apc := BaseAPC(userState)
+// Returns a BaseCP with the contentTitle set
+func BaseTitleCP(contentTitle string, userState *UserState) *ContentPage {
+	apc := BaseCP(userState)
 	apc.contentTitle = contentTitle
 	return apc
 }
 
-// Routing for the archlinux.no webpage
-func ServeArchlinuxNo(userState *UserState) {
+func GenerateSearchCSS() SimpleContextHandle {
+	return func(ctx *web.Context) string {
+		ctx.ContentType("css")
+		return `
+#searchresult {
+	color: ` + NICEBLUE + `;
+	text-decoration: underline;
+}
+`
+	}
+}
 
-	helloAPC := BaseAPC(userState)
-	helloAPC.contentTitle = "Hello"
-	web.Get("/hello/(.*)", helloAPC.WrapSimpleWebHandle(helloSF))
+func ServeDynamicPages(userState *UserState, cps []ContentPage) {
+	web.Get("/hello/(.*)", BaseTitleCP("Hello", userState).WrapSimpleWebHandle(helloSF))
+	// Note, no slash between "search" and "(.*)". A typical search is "/search?q=blabla"
+	searchCP := BaseTitleCP("Search results", userState)
+	searchCP.extraCSSurls = append(searchCP.extraCSSurls, "/css/search.css")
+	web.Get("/search(.*)", searchCP.WrapWebHandle(GenerateSearchHandle(cps)))
+	web.Get("/css/search.css", GenerateSearchCSS())
+}
 
-	//web.Get("/showmenu/login", GenerateShowLogin(userState))
-	//web.Get("/showmenu/logout", GenerateShowLogout(userState))
-	//web.Get("/showmenu/register", GenerateShowRegister(userState))
+func ServeSite(userState *UserState, cps []ContentPage) {
+	// Add pages for login, logout and register
+	cps = append(cps, *LoginCP(userState, "/login"))
+	cps = append(cps, *LogoutCP(userState, "/logout"))
+	cps = append(cps, *RegisterCP(userState, "/register"))
+
 	web.Get("/showmenu/loginlogoutregister", GenerateShowLoginLogoutRegister(userState))
 
-	// Pages that only depends on the user state
-	apcs := []ArchPageContents{
-		*OverviewAPC(userState, "/"),
-		*LoginAPC(userState, "/login"),
-		*LogoutAPC(userState, "/logout"),
-		*RegisterAPC(userState, "/register"),
-		*TextAPC(userState, "/text"),
-		*JQueryAPC(userState, "/jquery"),
-		*BobAPC(userState, "/bob"),
-		*CountAPC(userState, "/counting"),
-		*HelloAPC(userState, "/mirrors"),
-		*HelloAPC(userState, "/feedback"),
-	}
-	PublishAPCs(apcs)
+	PublishCPs(cps)
 
-	// Dynamic pages
+	ServeDynamicPages(userState, cps)
 
-	// Note, no slash between "search" and "(.*)". A typical search is "/search?q=blabla"
-	web.Get("/search(.*)", BaseTitleAPC("Search results", userState).WrapWebHandle(GenerateSearchHandle(apcs)))
-
-	// TODO: Add fallback to this version
-	Publish("/js/jquery-1.9.1.js", "static/js/jquery-1.9.1.js", true)
+	// TODO: Add fallback to this local version
+	Publish("/js/jquery-"+JQUERY_VERSION+".js", "static/js/jquery-"+JQUERY_VERSION+".js", true)
 	Publish("/robots.txt", "static/various/robots.txt", false)
 	Publish("/sitemap_index.xml", "static/various/sitemap_index.xml", false)
 
-	//web.Get(apc.searchURL+"(.*)", search)
+	PublishImages()
+}
 
-	ServeImages()
+// Routing for the archlinux.no webpage
+func ServeArchlinuxNo(userState *UserState) {
+	// Pages that only depends on the user state
+	cps := []ContentPage{
+		*OverviewCP(userState, "/"),
+		*TextCP(userState, "/text"),
+		*JQueryCP(userState, "/jquery"),
+		*BobCP(userState, "/bob"),
+		*CountCP(userState, "/counting"),
+		*HelloCP(userState, "/mirrors"),
+		*HelloCP(userState, "/feedback"),
+	}
+	ServeSite(userState, cps)
 }

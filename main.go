@@ -17,8 +17,10 @@ import (
 )
 
 const (
-	NICEBLUE = "#5080D0"
-	NICEGRAY = "#202020"
+	NICEGRAY  = "#202020"
+	NICEBLUE  = "#5080D0"
+
+	JQUERY_VERSION = "1.9.1"
 )
 
 // Every input from the user must be intitially stored in a UserInput variable, not in a string!
