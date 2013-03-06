@@ -295,6 +295,9 @@ func AddMenuBox(page *Page, links, hiddenlinks []string, darkBackgroundTexture s
 		a.AddContent(text)
 	}
 
+	// For Login, Logout and Register
+	ul.AddLastContent("{{{yihaa}}}")
+
 	sep.AddStyle("display", "inline")
 	sep.AddStyle("color", "#a0a0a0")
 

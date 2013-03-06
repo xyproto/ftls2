@@ -17,9 +17,6 @@ import (
 )
 
 const (
-	NICEGRAY  = "#202020"
-	NICEBLUE  = "#5080D0"
-
 	JQUERY_VERSION = "1.9.1"
 )
 

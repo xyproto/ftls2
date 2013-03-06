@@ -7,14 +7,44 @@ import (
 	"github.com/xyproto/web"
 )
 
+const (
+	NICEGRAY  = "#202020"
+	NICEBLUE  = "#5080D0"
+)
+
+type ColorScheme struct {
+	darkgray string
+	niceblue string
+	menu_link string
+	menu_hover string
+	menu_active string
+	default_background string
+}
+
+func NewArchColorScheme() *ColorScheme {
+	var cs ColorScheme
+	cs.darkgray  = "#202020"
+	cs.niceblue  = "#5080D0"
+	cs.menu_link = "#c0c0c0" // light gray
+	cs.menu_hover = "#efefe0" // light gray, somewhat yellow
+	cs.menu_active = "#ffffff" // white
+	cs.default_background = "#808080"
+	return &cs
+}
+
 // TODO: get style values from a file
 
 func AddHeader(page *Page, js string) {
-	page.MetaCharset("UTF-8")
-	page.LinkToGoogleFont("Armata")
-	page.LinkToGoogleFont("Junge")
+	AddGoogleFonts(page, []string{"Armata", "Junge"})
 	// TODO: Move to browserspeak
+	page.MetaCharset("UTF-8")
 	AddScriptToHeader(page, js)
+}
+
+func AddGoogleFonts(page *Page, googleFonts []string) {
+	for _, fontname := range googleFonts {
+		page.LinkToGoogleFont(fontname)
+	}
 }
 
 func AddScriptToHeader(page *Page, js string) error {
@@ -40,40 +70,29 @@ func AddBodyStyle(page *Page, bgimageurl string, stretchBackground bool) {
 	} else {
 		body.AddStyle("background", "url('"+bgimageurl+"')")
 	}
-	//body.AddStyle("background-size", "cover")
-	//body.AddStyle("background-color", "#808080")
-	//body.AddStyle("background-size", "100% 100%")
-	////body.AddStyle("background-repeat", "no-repeat")
-	////body.RepeatBackground(bgimageurl, "repeat-x")
-	//page.SetColor("gray", "#a0e0e0") // gray text, turquise background color
-	//page.SetColor("gray", "#202020") // gray text, turquise background color
-	//page.SetColor("gray", "#202020") // gray text, turquise background color
 }
 
-func GenerateExtraCSS(stretchBackground bool) SimpleContextHandle {
+func GenerateArchMenuCSS(stretchBackground bool, cs *ColorScheme) SimpleContextHandle {
 	return func(ctx *web.Context) string {
 		ctx.ContentType("css")
-		// extra.css, loaded after the other CSS
-		menucolor := "#c0c0c0"   // light gray
-		hovercolor := "#efefe0"  // very light gray, with some yellow
-		activecolor := "#ffffff" // white
+		// one of the extra css files that are loaded after the main style
 		retval := `
 a {
   text-decoration: none;
   color: #303030;
   font-weight: regular;
 }
-a:link {color:` + menucolor + `;}
-a:visited {color:` + menucolor + `;}
-a:hover {color:` + hovercolor + `;}
-a:active {color:` + activecolor + `;}
+a:link {color:` + cs.menu_link + `;}
+a:visited {color:` + cs.menu_link + `;}
+a:hover {color:` + cs.menu_hover + `;}
+a:active {color:` + cs.menu_active + `;}
 `
 		// The load order of background-color, background-size and background-image
 		// is actually significant in Chrome! Do not reorder lightly!
 		if stretchBackground {
-			retval = "body {\nbackground-color: #808080;\nbackground-size: cover;\n}\n" + retval
+			retval = "body {\nbackground-color: " + cs.default_background + ";\nbackground-size: cover;\n}\n" + retval
 		} else {
-			retval = "body {\nbackground-color: #808080;\n}\n" + retval
+			retval = "body {\nbackground-color: " + cs.default_background + ";\n}\n" + retval
 		}
 		return retval
 	}

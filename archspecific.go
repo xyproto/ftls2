@@ -76,9 +76,10 @@ func archbuilder(apc *ContentPage) *Page {
 // Make an html and css page available
 func (apc *ContentPage) Pub(url, cssurl string) {
 	archpage := archbuilder(apc)
-	web.Get(url, HTML(archpage))
-	web.Get(apc.generatedCSSurl, CSS(archpage))
-	web.Get(cssurl, GenerateExtraCSS(apc.stretchBackground))
+	web.Get(url, GenerateHTMLwithTemplate(archpage, Kake()))
+	web.Get(apc.generatedCSSurl, GenerateCSS(archpage))
+	cs := NewArchColorScheme()
+	web.Get(cssurl, GenerateArchMenuCSS(apc.stretchBackground, cs))
 }
 
 // Wrap a lonely string in an entire webpage
