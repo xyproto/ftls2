@@ -97,13 +97,15 @@ func AddContent(page *Page, contentTitle, contentHTML string) (*Tag, error) {
 	div.AddStyle("float", "left")
 	div.AddStyle("position", "relative")
 	div.AddStyle("margin-left", "4%")
-	div.AddStyle("margin-top", "8.5em")
+	div.AddStyle("margin-top", "9.5em")
 	div.AddStyle("margin-right", "5em")
 	div.AddStyle("padding-left", "4em")
 	div.AddStyle("padding-right", "5em")
 	div.AddStyle("padding-top", "1em")
 	div.AddStyle("padding-bottom", "2em")
-	div.AddStyle("background-color", "rgba(255,255,255,0.92)") // light gray
+	div.AddStyle("background-color", "rgba(255,255,255,0.92)") // light gray. Transparency with rgba() doesn't work in IE
+	div.AddStyle("filter", "progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#dcffffff', endColorstr='#dcffffff');") // for transparency in IE
+
 	div.AddStyle("text-align", "justify")
 	div.RoundedBox()
 
@@ -115,7 +117,8 @@ func AddContent(page *Page, contentTitle, contentHTML string) (*Tag, error) {
 	p := div.AddNewTag("p")
 	p.AddAttr("id", "textparagraph")
 	p.AddStyle("margin-top", "0.5em")
-	p.CustomSansSerif("Junge")
+	//p.CustomSansSerif("Junge")
+	p.SansSerif()
 	p.AddStyle("font-size", "1.0em")
 	p.AddStyle("color", "black") // content text color
 	p.AddContent(contentHTML)
@@ -194,7 +197,7 @@ func AddTitleBox(tag *Tag, title, subtitle string) *Tag {
 	a.AddAttr("href", "/")
 	a.AddStyle("text-decoration", "none")
 
-	font0 := a.AddNewTag("font")
+	font0 := a.AddNewTag("div")
 	font0.AddAttr("id", "whitetitle")
 	font0.AddStyle("color", "white")
 	//font0.CustomSansSerif("Armata")
@@ -203,7 +206,7 @@ func AddTitleBox(tag *Tag, title, subtitle string) *Tag {
 	font0.AddStyle("font-weight", "bolder")
 	font0.AddContent(word1)
 
-	font1 := a.AddNewTag("font")
+	font1 := a.AddNewTag("div")
 	font1.AddAttr("id", "bluetitle")
 	font1.AddStyle("color", NICEBLUE)
 	//font1.CustomSansSerif("Armata")
@@ -213,7 +216,7 @@ func AddTitleBox(tag *Tag, title, subtitle string) *Tag {
 	font1.AddStyle("overflow", "hidden")
 	font1.AddContent(word2)
 
-	font2 := a.AddNewTag("font")
+	font2 := a.AddNewTag("div")
 	font2.AddAttr("id", "graytitle")
 	font2.AddStyle("font-size", "0.5em")
 	font2.AddStyle("color", "#707070")
@@ -296,6 +299,7 @@ func AddMenuBox(page *Page, links, hiddenlinks []string, darkBackgroundTexture s
 	}
 
 	// For Login, Logout and Register
+	// TODO: Implement this method too
 	ul.AddLastContent("{{{yihaa}}}")
 
 	sep.AddStyle("display", "inline")

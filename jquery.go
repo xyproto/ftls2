@@ -116,7 +116,7 @@ func ShowIfLoginLogoutRegister(threeBooleanURL, logintag, logouttag, registertag
 // Returns an empty string if there is no javascript to run.
 func BodyJS(source string) string {
 	if source != "" {
-		return "<script>" + OnDocumentReady(source) + "</script>"
+		return "<script type=\"text/javascript\">" + OnDocumentReady(source) + "</script>"
 	}
 	return ""
 }

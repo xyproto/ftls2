@@ -91,6 +91,11 @@ func genFavicon(filename string) {
 	img.Write(filename)
 }
 
+func notFound2(ctx *web.Context, val string) {
+	ctx.ResponseWriter.WriteHeader(404)
+	ctx.ResponseWriter.Write([]byte(NotFound(ctx, val)))
+}
+
 // TODO: Caching, login
 func main() {
 
@@ -121,8 +126,13 @@ func main() {
 	// Various .php and .asp urls that showed up in the log
 	ServeForFun()
 
+	// TODO: Incorporate this check into web.go, to only return
+	// stuff in the header when the HEAD method is requested:
+	// if ctx.Request.Method == "HEAD" { return }
+	// See also: curl -I
+
 	// Not found
-	web.Get("/(.*)", NotFound)
+	//web.Get("/(.*)", notFound2)
 
 	// Serve on port 3000 for the Nginx instance to use
 	web.Run("0.0.0.0:3000")

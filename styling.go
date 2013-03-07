@@ -28,14 +28,13 @@ func NewArchColorScheme() *ColorScheme {
 	cs.menu_link = "#c0c0c0" // light gray
 	cs.menu_hover = "#efefe0" // light gray, somewhat yellow
 	cs.menu_active = "#ffffff" // white
-	cs.default_background = "#808080"
+	cs.default_background = "#000030"
 	return &cs
 }
 
-// TODO: get style values from a file
-
+// TODO: get style values from a file instead?
 func AddHeader(page *Page, js string) {
-	AddGoogleFonts(page, []string{"Armata", "Junge"})
+	AddGoogleFonts(page, []string{"Armata"}) //, "Junge"})
 	// TODO: Move to browserspeak
 	page.MetaCharset("UTF-8")
 	AddScriptToHeader(page, js)
@@ -57,6 +56,7 @@ func AddScriptToHeader(page *Page, js string) error {
 	head, err := page.GetTag("head")
 	if err == nil {
 		script := head.AddNewTag("script")
+		script.AddAttr("type", "text/javascript")
 		script.AddContent(js)
 	}
 	return err
