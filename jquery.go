@@ -60,7 +60,7 @@ func Hide(tagname string) string {
 }
 
 func HideAnimated(tagname string) string {
-	return "$(" + quote(tagname) + ").hide('fast');"
+	return "$(" + quote(tagname) + ").hide('normal');" // 'fast', 'normal', 'slow' or milliseconds
 }
 
 func Show(tagname string) string {
@@ -68,7 +68,7 @@ func Show(tagname string) string {
 }
 
 func ShowAnimated(tagname string) string {
-	return "$(" + quote(tagname) + ").show('fast');"
+	return "$(" + quote(tagname) + ").show('normal');" // 'fast', 'normal', 'slow' or milliseconds
 }
 
 // Same as Show, but set display to inline instead of block
@@ -119,4 +119,8 @@ func BodyJS(source string) string {
 		return "<script type=\"text/javascript\">" + OnDocumentReady(source) + "</script>"
 	}
 	return ""
+}
+
+func Redirect(url string) string {
+	return "window.location.href = \"" + url + "\";"
 }

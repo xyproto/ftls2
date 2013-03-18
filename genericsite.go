@@ -1,9 +1,9 @@
 package main
 
 import (
-	"github.com/xyproto/web"
-	. "github.com/xyproto/browserspeak"
 	"github.com/drbawb/mustache"
+	. "github.com/xyproto/browserspeak"
+	"github.com/xyproto/web"
 )
 
 type ContentPage struct {
@@ -42,18 +42,10 @@ func LoginCP(userState *UserState, url string) *ContentPage {
 	cp := BaseCP(userState)
 	cp.contentTitle = "Login"
 	// TODO: jquery get + ensure cookie is set
-	// TODO: a form
-	cp.contentHTML = "<a href=\"/login/bob\">login</a>"
-	cp.url = url
-	return cp
-}
-
-// TODO: just log right out, get the username from the cookie
-func LogoutCP(userState *UserState, url string) *ContentPage {
-	cp := BaseCP(userState)
-	cp.contentTitle = "Logout"
-	cp.contentHTML = "<a href=\"/logout/bob\">logout</a>"
-	cp.contentJS += "" // Just add jquery to get("/logout/$username")
+	// TODO: a form using jquery to post
+	// TODO
+	cp.contentHTML = LoginForm()
+	cp.contentJS += OnClick("#loginButton", "$('#loginForm').get(0).setAttribute('action', '/login/' + $('#username').val());")
 	cp.url = url
 	return cp
 }
@@ -62,7 +54,8 @@ func LogoutCP(userState *UserState, url string) *ContentPage {
 func RegisterCP(userState *UserState, url string) *ContentPage {
 	cp := BaseCP(userState)
 	cp.contentTitle = "Register"
-	cp.contentHTML = "<a href=\"/create/bob\">register</a>"
+	cp.contentHTML = RegisterForm()
+	cp.contentJS += OnClick("#registerButton", "$('#registerForm').get(0).setAttribute('action', '/register/' + $('#username').val());")
 	cp.url = url
 	return cp
 }
@@ -132,7 +125,6 @@ func BaseTitleCP(contentTitle string, userState *UserState) *ContentPage {
 func ServeSite(userState *UserState, cps PageCollection, tp map[string]string, cs *ColorScheme) {
 	// Add pages for login, logout and register
 	cps = append(cps, *LoginCP(userState, "/login"))
-	cps = append(cps, *LogoutCP(userState, "/logout"))
 	cps = append(cps, *RegisterCP(userState, "/register"))
 
 	web.Get("/showmenu/loginlogoutregister", GenerateShowLoginLogoutRegister(userState))
@@ -187,5 +179,3 @@ func (cp *ContentPage) WrapWebHandle(wh WebHandle, tp map[string]string) WebHand
 		return html
 	}
 }
-
-

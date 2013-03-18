@@ -28,6 +28,8 @@ func BaseCP(userState *UserState) *ContentPage {
 	cp.subtitle = "no"
 	//cp.links = []string{"Overview:/", "Mirrors:/mirrors", "Login:/login", "Register:/register", "Hello:/hello/world", "Count:/counting", "Feedback:/feedback"}
 	//cp.links = []string{"Overview:/", "Text:/text", "Bob:/bob", "JQuery:/jquery", "Register:/register", "Hello:/hello/world", "Count:/counting", "Feedback:/feedback"}
+	//News, Norwegian AUR
+
 	cp.links = []string{"Overview:/", "Login:/login", "Logout:/logout", "Register:/register"}
 	cp.contentTitle = "NOP"
 	cp.contentHTML = "NOP NOP NOP"
@@ -80,9 +82,10 @@ func MirrorsCP(userState *UserState, url string) *ContentPage {
 }
 
 func PublishArchImages() {
-	faviconFilename := "/static/generated/img/favicon.ico"
-	genFavicon(faviconFilename)
-	Publish("/favicon.ico", faviconFilename, false)
+	//faviconFilename := "/static/generated/img/favicon.ico"
+	//genFavicon(faviconFilename)
+	//Publish("/favicon.ico", faviconFilename, false)
+	Publish("/favicon.ico", "static/img/favicon.ico", false)
 
 	// Tried previously:
 	// "rough.png", "longbg.png", "donutbg.png", "donutbg_light.jpg",
