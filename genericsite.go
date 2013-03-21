@@ -1,9 +1,9 @@
 package main
 
 import (
-	"github.com/drbawb/mustache"
 	. "github.com/xyproto/browserspeak"
 	"github.com/xyproto/web"
+	"github.com/drbawb/mustache"
 )
 
 type ContentPage struct {
@@ -159,7 +159,9 @@ func (cp *ContentPage) Pub(url, cssurl string, cs *ColorScheme, templateContent 
 func (cp *ContentPage) Surround(s string, tp map[string]string) (string, string) {
 	cp.contentHTML = s
 	archpage := genericbuilder(cp)
-	return mustache.Render(archpage.GetHTML(), tp), archpage.GetCSS()
+	// NOTE: Use GetXML(true) instead of .String() or .GetHTML() because some things are rendered
+	// differently with different text layout!
+	return mustache.Render(archpage.GetXML(true), tp), archpage.GetCSS()
 }
 
 // Uses a given SimpleWebHandle as the contents for the the ArchPage contents

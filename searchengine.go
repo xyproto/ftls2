@@ -124,7 +124,7 @@ func GenerateSearchHandle(pc PageCollection) WebHandle {
 							} else if foundType == FOUND_IN_TITLE {
 								font.AddContent(" - title contains \"" + searchedFor + "\"")
 							} else {
-								font.AddContent(" - text contains \"" + searchedFor + "\"")
+								font.AddContent(" - page contains \"" + searchedFor + "\"")
 							}
 							p.AddNewTag("br")
 						}

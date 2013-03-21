@@ -24,6 +24,7 @@ const (
 // This is just to be aware of which data one should be careful with, and to keep it clean.
 type UserInput string
 
+
 func Publish(url, filename string, cache bool) {
 	if cache {
 		web.Get(url, CacheWrapper(url, File(filename)))
@@ -114,7 +115,13 @@ func main() {
 	ServeIPs(connection)
 
 	// The login system, returns a *UserState
-	userState := ServeUserSystem(connection)
+	userState := CreateUserState(connection)
+
+	userEngine := NewUserEngine(userState)
+	userEngine.ServeSystem()
+
+	adminEngine := NewAdminEngine(userState)
+	adminEngine.ServeSystem()
 
 	// The archlinux.no webpage
 	ServeArchlinuxNo(userState)

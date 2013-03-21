@@ -11,6 +11,16 @@ import (
 	"github.com/xyproto/web"
 )
 
+// An Engine is a specific piece of a website
+// This part handles the login/logout/registration/confirmation pages
+
+type UserEngine Engine
+
+func NewUserEngine(state *UserState) *UserEngine {
+	return &UserEngine{state}
+}
+
+
 const (
 	ONLY_LOGIN      = "100"
 	ONLY_LOGOUT     = "010"
@@ -101,8 +111,10 @@ func AddUserUnchecked(state *UserState, username, password, email string) {
 	state.users.Set(username, "email", email)
 
 	// Addditional fields
-	state.users.Set(username, "loggedin", "false")
-	state.users.Set(username, "confirmed", "false")
+	additionalfields := []string{"loggedin", "confirmed", "admin"}
+	for _, fieldname := range additionalfields {
+		state.users.Set(username, fieldname, "false")
+	}
 }
 
 func IsConfirmed(state *UserState, username string) bool {
@@ -207,26 +219,6 @@ func GenerateConfirmUser(state *UserState) WebHandle {
 	}
 }
 
-// Create a user by adding the username to the list of usernames
-func GenerateRemoveUser(state *UserState) WebHandle {
-	return func(ctx *web.Context, val string) string {
-		if val == "" {
-			return "Can't remove blank user"
-		}
-		if !state.HasUser(val) {
-			return "user " + val + " doesn't exists, could not remove"
-		}
-
-		// Remove the user
-		state.usernames.Del(val)
-
-		// Remove additional data as well
-		state.users.Del(val, "loggedin")
-
-		return "OK, user " + val + " removed"
-	}
-}
-
 // Log in a user by changing the loggedin value
 func GenerateLoginUser(state *UserState) WebHandle {
 	return func(ctx *web.Context, val string) string {
@@ -318,11 +310,22 @@ func GenerateRegisterUser(state *UserState) WebHandle {
 		if username == password1 {
 			return MessageOKback("Register", "Username and password must be different, try another password.")
 		}
+		adminuser := false
+		if username == "admin" {
+			// The first user to register with the username "admin" becomes the administrator
+			adminuser = true
+		}
 
 		// Register the user
 		password := HashPassword(password1)
 		AddUserUnchecked(state, username, password, email)
-		state.users.Set(username, "confirmed", "false")
+
+		// Mark user as administrator if that is the case
+		if adminuser {
+			// This does not set the username to admin,
+			// but sets the admin field to true
+			state.users.Set(username, "admin", "true")
+		}
 
 		// The confirmation code must be a minimum of 8 letters long
 		length := MINIMUM_CONFIRMATION_CODE_LENGTH
@@ -378,56 +381,6 @@ func GenerateLogoutCurrentUser(state *UserState) SimpleContextHandle {
 	}
 }
 
-func GenerateGetAllUsernames(state *UserState) SimpleWebHandle {
-	return func(val string) string {
-		s := ""
-		usernames, err := state.usernames.GetAll()
-		if err == nil {
-			for _, val := range usernames {
-				s += val + "<br />"
-			}
-		}
-		return MessageOKback("Usernames", s)
-	}
-}
-
-func GenerateStatus(state *UserState) SimpleWebHandle {
-	return func(val string) string {
-		username := val
-		if username == "" {
-			return MessageOKback("Status", "No username given")
-		}
-		if !state.HasUser(username) {
-			return MessageOKback("Status", username + " does not exist")
-		}
-		loggedinStatus := "not logged in"
-		if IsLoggedIn(state, username) {
-			loggedinStatus = "logged in"
-		}
-		confirmStatus := "email has not been confirmed"
-		if IsConfirmed(state, username) {
-			confirmStatus = "email has been confirmed"
-		}
-		return MessageOKback("Status", username + " is " + loggedinStatus + " and " + confirmStatus)
-	}
-}
-
-func GenerateStatusCurrentUser(state *UserState) SimpleContextHandle {
-	return func(ctx *web.Context) string {
-		username := GetBrowserUsername(ctx)
-		if username == "" {
-			return MessageOKback("Current user status", "No user logged in")
-		}
-		if !state.HasUser(username) {
-			return MessageOKback("Current user status", username + " does not exist")
-		}
-		if !(state.LoggedIn(username)) {
-			return MessageOKback("Current user status", "User " + username + " is not logged in")
-		}
-		return MessageOKback("Current user status", "User " + username + " is logged in")
-	}
-}
-
 // Checks if the given username is logged in or not
 func (state *UserState) LoggedIn(username string) bool {
 	if !state.HasUser(username) {
@@ -438,14 +391,6 @@ func (state *UserState) LoggedIn(username string) bool {
 		return false
 	}
 	return TruthValue(status)
-}
-
-func GenerateGetCookie(state *UserState) SimpleContextHandle {
-	return func(ctx *web.Context) string {
-		username := GetBrowserUsername(ctx)
-		//username, _ := ctx.GetSecureCookie("user")
-		return "Cookie: username = " + username // + " err: " + fmt.Sprintf("%v", exists) + " val: " + val
-	}
 }
 
 // Gets the username that is stored in a cookie in the browser, if available
@@ -468,39 +413,22 @@ func (state *UserState) SetBrowserUsername(ctx *web.Context, username string) er
 	return nil
 }
 
-// NB! Set the cookie at / for it to work in the paths underneath!
-func GenerateSetCookie(state *UserState) WebHandle {
-	return func(ctx *web.Context, val string) string {
-		username := val
-		if username == "" {
-			return "Can't set cookie for empty username"
-		}
-		if !state.HasUser(username) {
-			return "Can't store cookie for non-existsing user"
-		}
-		// Create a cookie that lasts for one hour,
-		// this is the equivivalent of a session for a given username
-		ctx.SetSecureCookiePath("user", username, 3600, "/")
-		return "Cookie stored: user = " + username + "."
+func GenerateNoJavascript() SimpleContextHandle {
+	return func(ctx *web.Context) string {
+		return MessageOKback("JavaScript error", "Logging in without cookies and javascript enabled, in a modern browser, is not yet supported.<br />Elinks will be supported in the future.")
 	}
 }
 
-// TODO: RESTful services?
-func ServeUserSystem(connection redis.Conn) *UserState {
-	state := InitUserSystem(connection)
+func CreateUserState(connection redis.Conn) *UserState {
+	return InitUserSystem(connection)
+}
 
+// TODO: RESTful services?
+func (ue *UserEngine) ServeSystem() {
+	state := ue.state
 	web.Post("/register/(.*)", GenerateRegisterUser(state))
 	web.Post("/login/(.*)", GenerateLoginUser(state))
+	web.Post("/login", GenerateNoJavascript())
 	web.Get("/logout", GenerateLogoutCurrentUser(state))
 	web.Get("/confirm/(.*)", GenerateConfirmUser(state))
-
-	// TODO: debug pages, comment out
-	web.Get("/status", GenerateStatusCurrentUser(state))
-	web.Get("/status/(.*)", GenerateStatus(state))
-	web.Get("/remove/(.*)", GenerateRemoveUser(state))
-	web.Get("/users/(.*)", GenerateGetAllUsernames(state))
-	web.Get("/cookie/get", GenerateGetCookie(state))
-	web.Get("/cookie/set/(.*)", GenerateSetCookie(state))
-
-	return state
 }
