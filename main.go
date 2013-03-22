@@ -11,8 +11,8 @@ import (
 	"fmt"
 	"mime"
 
-	"github.com/xyproto/web"
 	. "github.com/xyproto/browserspeak"
+	"github.com/xyproto/web"
 )
 
 const (

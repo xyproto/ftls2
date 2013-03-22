@@ -2,10 +2,10 @@ package main
 
 import (
 	"errors"
+	"fmt"
 	"math/rand"
 	"strings"
 	"time"
-	"fmt"
 
 	"github.com/garyburd/redigo/redis"
 	. "github.com/xyproto/browserspeak"
@@ -39,7 +39,7 @@ type UserState struct {
 	users       *RedisHashMap // Hash map of users, with several different fields per user ("loggedin", "confirmed", "email" etc)
 	usernames   *RedisSet     // A list of all usernames, for easy enumeration
 	unconfirmed *RedisSet     // A list of unconfirmed usernames, for easy enumeration
-	pool  *redis.Pool // A connection pool for Redis
+	pool        *redis.Pool   // A connection pool for Redis
 }
 
 func InitUserSystem(pool *redis.Pool) *UserState {
@@ -245,7 +245,11 @@ func GenerateLoginUser(state *UserState) WebHandle {
 		// TODO: Use a welcoming messageOK where the user can see when he/she last logged in and from which host
 
 		// TODO: Then redirect to the page the user was at before logging in
-		ctx.SetHeader("Refresh", "0; url=/", true)
+		if username == "admin" {
+			ctx.SetHeader("Refresh", "0; url=/admin", true)
+		} else {
+			ctx.SetHeader("Refresh", "0; url=/", true)
+		}
 
 		return ""
 	}
@@ -316,7 +320,9 @@ func GenerateRegisterUser(state *UserState) WebHandle {
 		if username == password1 {
 			return MessageOKback("Register", "Username and password must be different, try another password.")
 		}
+
 		adminuser := false
+		// A special case
 		if username == "admin" {
 			// The first user to register with the username "admin" becomes the administrator
 			adminuser = true

@@ -7,7 +7,7 @@ import (
 )
 
 type IPState struct {
-	data       *RedisList
+	data *RedisList
 	pool *redis.Pool
 }
 

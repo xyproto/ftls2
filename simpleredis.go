@@ -9,8 +9,8 @@ import (
 // Functions for dealing with a short list of string values in Redis
 
 type RedisDatastructure struct {
-	pool  *redis.Pool // connection pool
-	id string
+	pool *redis.Pool // connection pool
+	id   string
 }
 
 type RedisList RedisDatastructure

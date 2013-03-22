@@ -33,5 +33,3 @@ func genFavicon(filename string) {
 
 	img.Write(filename)
 }
-
-

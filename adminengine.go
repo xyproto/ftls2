@@ -48,9 +48,6 @@ func GenerateAdminCSS(cs *ColorScheme) SimpleContextHandle {
 	background-color: #ff9090;
 	color: black;
 }
-.username {
-	color: green;
-}
 table {
 	border-collapse: collapse;
 	padding: 1em;
@@ -59,6 +56,17 @@ table, th, tr, td {
 	border: 1px solid black;
 	padding: 1em;
 }
+.username:link { color: green; }
+.username:visited { color: green; }
+.username:hover { color: green; }
+.username:active { color: green; }
+.whitebg {
+	background-color: white;
+}
+.darkgrey:link { color: #404040; }
+.darkgrey:visited { color: #404040; }
+.darkgrey:hover { color: #404040; }
+.darkgrey:active { color: #404040; }
 `
 		//
 	}
@@ -89,9 +97,9 @@ func GenerateAdminStatus(state *UserState) SimpleContextHandle {
 		s := "<h2>Welcome chief</h2>"
 
 		s += "<strong>User table</strong><br />"
-		s += "<table>"
+		s += "<table class=\"whitebg\">"
 		s += "<tr>"
-		s += "<th>Username</th><th>Confirmed</th><th>Logged in</th><th>Administrator</th>"
+		s += "<th>Username</th><th>Confirmed</th><th>Logged in</th><th>Administrator</th><th>Admin toggle</th><th>Remove user</th>"
 		s += "</tr>"
 		usernames, err := state.usernames.GetAll()
 		if err == nil {
@@ -101,7 +109,9 @@ func GenerateAdminStatus(state *UserState) SimpleContextHandle {
 				s += bool2td(state.IsConfirmed(username))
 				s += bool2td(state.IsLoggedIn(username))
 				s += bool2td(state.IsAdministrator(username))
-				// TODO: Add a page for removing users, but with a MessageOKurl("blabla", "blabla", "/actually/remove/stuff")
+				s += "<td>" + "<a class=\"darkgrey\" href=\"/admintoggle/" + username + "\">admin toggle</a></td>"
+				// TODO: Ask for confirmation first with a MessageOKurl("blabla", "blabla", "/actually/remove/stuff")
+				s += "<td>" + "<a class=\"darkgrey\" href=\"/remove/" + username + "\">remove</a></td>"
 				s += "</tr>"
 			}
 		}
@@ -110,7 +120,7 @@ func GenerateAdminStatus(state *UserState) SimpleContextHandle {
 		s += "<strong>Unconfirmed users</strong><br />"
 		s += "<table>"
 		s += "<tr>"
-		s += "<th>Username</th><th>Secret</th>"
+		s += "<th>Username</th><th>Confirmation link</th>"
 		s += "</tr>"
 		usernames, err = state.unconfirmed.GetAll()
 		if err == nil {
@@ -267,7 +277,7 @@ func GenerateGetCookie(state *UserState) SimpleContextHandle {
 			return MessageOKback("Get cookie", "Not administrator")
 		}
 		username := GetBrowserUsername(ctx)
-		return "Cookie: username = " + username
+		return MessageOKback("Get cookie", "Cookie: username = "+username)
 	}
 }
 
@@ -277,15 +287,40 @@ func GenerateSetCookie(state *UserState) WebHandle {
 			return MessageOKback("Set cookie", "Not administrator")
 		}
 		if username == "" {
-			return "Can't set cookie for empty username"
+			return MessageOKback("Set cookie", "Can't set cookie for empty username")
 		}
 		if !state.HasUser(username) {
-			return "Can't store cookie for non-existsing user"
+			return MessageOKback("Set cookie", "Can't store cookie for non-existsing user")
 		}
 		// Create a cookie that lasts for one hour,
 		// this is the equivivalent of a session for a given username
 		ctx.SetSecureCookiePath("user", username, 3600, "/")
-		return "Cookie stored: user = " + username + "."
+		return MessageOKback("Set cookie", "Cookie stored: user = "+username+".")
+	}
+}
+
+func GenerateToggleAdmin(state *UserState) WebHandle {
+	return func(ctx *web.Context, username string) string {
+		if !state.AdminNow(ctx) {
+			return MessageOKback("Admin toggle", "Not administrator")
+		}
+		if username == "" {
+			return MessageOKback("Admin toggle", "Can't set toggle empty username")
+		}
+		if !state.HasUser(username) {
+			return MessageOKback("Admin toggle", "Can't toggle non-existing user")
+		}
+		// A special case
+		if username == "admin" {
+			return MessageOKback("Admin toggle", "Can't remove admin rights from the admin user")
+		}
+		if !state.IsAdministrator(username) {
+			state.users.Set(username, "admin", "true")
+			return MessageOKurl("Admin toggle", "OK, "+username+" is now an admin", "/admin")
+		}
+		state.users.Set(username, "admin", "false")
+		return MessageOKurl("Admin toggle", "OK, "+username+" is now a regular user", "/admin")
+
 	}
 }
 
@@ -293,7 +328,7 @@ func GenerateSetCookie(state *UserState) WebHandle {
 func (ae *AdminEngine) ServeSystem() {
 	state := ae.state
 
-	// TODO: admin pages should only be accessible as administrator
+	// These are only available as administrator, all have checks
 	web.Get("/status", GenerateStatusCurrentUser(state))
 	web.Get("/status/(.*)", GenerateStatusUser(state))
 	web.Get("/remove/(.*)", GenerateRemoveUser(state))
@@ -301,4 +336,5 @@ func (ae *AdminEngine) ServeSystem() {
 	web.Get("/users/(.*)", GenerateAllUsernames(state))
 	web.Get("/cookie/get", GenerateGetCookie(state))
 	web.Get("/cookie/set/(.*)", GenerateSetCookie(state))
+	web.Get("/admintoggle/(.*)", GenerateToggleAdmin(state))
 }
