@@ -171,9 +171,6 @@ func GenerateStatusCurrentUser(state *UserState) SimpleContextHandle {
 
 func GenerateStatusUser(state *UserState) WebHandle {
 	return func(ctx *web.Context, username string) string {
-		if !state.AdminNow(ctx) {
-			return MessageOKback("Status", "Not administrator")
-		}
 		if username == "" {
 			return MessageOKback("Status", "No username given")
 		}
@@ -328,13 +325,15 @@ func GenerateToggleAdmin(state *UserState) WebHandle {
 func (ae *AdminEngine) ServeSystem() {
 	state := ae.state
 
+	// These are available for everyone
+	web.Get("/status/(.*)", GenerateStatusUser(state))
+
 	// These are only available as administrator, all have checks
 	web.Get("/status", GenerateStatusCurrentUser(state))
-	web.Get("/status/(.*)", GenerateStatusUser(state))
 	web.Get("/remove/(.*)", GenerateRemoveUser(state))
 	web.Get("/removeunconfirmed/(.*)", GenerateRemoveUnconfirmedUser(state))
 	web.Get("/users/(.*)", GenerateAllUsernames(state))
-	web.Get("/cookie/get", GenerateGetCookie(state))
-	web.Get("/cookie/set/(.*)", GenerateSetCookie(state))
 	web.Get("/admintoggle/(.*)", GenerateToggleAdmin(state))
+	//web.Get("/cookie/get", GenerateGetCookie(state))
+	//web.Get("/cookie/set/(.*)", GenerateSetCookie(state))
 }
