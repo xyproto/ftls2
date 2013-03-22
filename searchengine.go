@@ -14,13 +14,6 @@ const (
 	FOUND_IN_TEXT
 )
 
-func min(a, b int) int {
-	if a < b {
-		return a
-	}
-	return b
-}
-
 // Search a list of ContentPage for a given searchText
 // Returns a list of urls or an empty list, a list of page titles and the string that was actually searched for
 func searchResults(userSearchText UserInput, pc PageCollection) ([]string, []string, string, []int) {
@@ -137,4 +130,32 @@ func GenerateSearchHandle(pc PageCollection) WebHandle {
 		}
 		return "Invalid parameters"
 	}
+}
+
+func GenerateSearchCSS(cs *ColorScheme) SimpleContextHandle {
+	return func(ctx *web.Context) string {
+		ctx.ContentType("css")
+		// TODO: Rename niceblue to something non-color specific
+		return `
+#searchresult {
+	color: ` + cs.niceblue + `;
+	text-decoration: underline;
+}
+`
+		//
+	}
+}
+
+func ServeSearchPages(state *UserState, cps PageCollection, cs *ColorScheme, tp map[string]string) {
+	searchCP := BaseTitleCP("Search results", state)
+	searchCP.extraCSSurls = append(searchCP.extraCSSurls, "/css/search.css")
+
+	// Hide the Search menu if we're on the Search page
+	searchCP.contentJS = Hide("#menuSearch")
+
+	// Note, no slash between "search" and "(.*)". A typical search is "/search?q=blabla"
+	web.Get("/search(.*)", searchCP.WrapWebHandle(GenerateSearchHandle(cps), tp))
+	web.Get("/css/search.css", GenerateSearchCSS(cs))
+
+	web.Get("/showmenu/loginlogoutregister", GenerateShowLoginLogoutRegister(state))
 }

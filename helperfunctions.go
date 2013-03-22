@@ -118,3 +118,10 @@ func bool2td(b bool) string {
 	}
 	return "<td class=\"no\">no</td>"
 }
+
+func min(a, b int) int {
+	if a < b {
+		return a
+	}
+	return b
+}

@@ -1,6 +1,8 @@
 package main
 
 import (
+	"strings"
+
 	"github.com/drbawb/mustache"
 	. "github.com/xyproto/browserspeak"
 	"github.com/xyproto/web"
@@ -43,9 +45,13 @@ func LoginCP(userState *UserState, url string) *ContentPage {
 	cp.contentTitle = "Login"
 	// TODO: jquery get + ensure cookie is set
 	// TODO: a form using jquery to post
-	// TODO
 	cp.contentHTML = LoginForm()
 	cp.contentJS += OnClick("#loginButton", "$('#loginForm').get(0).setAttribute('action', '/login/' + $('#username').val());")
+
+	// Hide the Login menu if we're on the Login page
+	// TODO: Replace with the entire Javascript expression, not just menuNop?
+	cp.headerJS = strings.Replace(cp.headerJS, "menuLogin", "menuNop", 1)
+
 	cp.url = url
 	return cp
 }
@@ -57,6 +63,11 @@ func RegisterCP(userState *UserState, url string) *ContentPage {
 	cp.contentHTML = RegisterForm()
 	cp.contentJS += OnClick("#registerButton", "$('#registerForm').get(0).setAttribute('action', '/register/' + $('#username').val());")
 	cp.url = url
+
+	// Hide the Register menu if we're on the Register page
+	// TODO: Replace with the entire Javascript expression, not just menuNop?
+	cp.headerJS = strings.Replace(cp.headerJS, "menuRegister", "menuNop", 1)
+
 	return cp
 }
 
@@ -102,46 +113,6 @@ func PublishCPs(pc PageCollection, cs *ColorScheme, tp map[string]string, cssurl
 	}
 }
 
-func GenerateSearchCSS(cs *ColorScheme) SimpleContextHandle {
-	return func(ctx *web.Context) string {
-		ctx.ContentType("css")
-		// TODO: Rename niceblue to something non-color specific
-		return `
-#searchresult {
-	color: ` + cs.niceblue + `;
-	text-decoration: underline;
-}
-`
-	}
-}
-
-func GenerateAdminCSS(cs *ColorScheme) SimpleContextHandle {
-	return func(ctx *web.Context) string {
-		ctx.ContentType("css")
-		return `
-.yes {
-	background-color: #90ff90;
-	color: black;
-}
-.no {
-	background-color: #ff9090;
-	color: black;
-}
-.username {
-	color: green;
-}
-table {
-	border-collapse: collapse;
-	padding: 1em;
-}
-table, th, tr, td {
-	border: 1px solid black;
-	padding: 1em;
-}
-`
-	}
-}
-
 // Returns a BaseCP with the contentTitle set
 func BaseTitleCP(contentTitle string, userState *UserState) *ContentPage {
 	cp := BaseCP(userState)
@@ -154,34 +125,17 @@ func ServeSite(userState *UserState, cps PageCollection, tp map[string]string, c
 	cps = append(cps, *LoginCP(userState, "/login"))
 	cps = append(cps, *RegisterCP(userState, "/register"))
 
-	web.Get("/showmenu/loginlogoutregister", GenerateShowLoginLogoutRegister(userState))
-	web.Get("/showmenu/admin", GenerateShowAdmin(userState))
-
 	PublishCPs(cps, cs, tp, "/css/extra.css")
 
 	ServeSearchPages(userState, cps, cs, tp)
-
 	ServeAdminPages(userState, cps, cs, tp)
 
 	// TODO: Add fallback to this local version
 	Publish("/js/jquery-"+JQUERY_VERSION+".js", "static/js/jquery-"+JQUERY_VERSION+".js", true)
+
+	// TODO: Generate these
 	Publish("/robots.txt", "static/various/robots.txt", false)
 	Publish("/sitemap_index.xml", "static/various/sitemap_index.xml", false)
-}
-
-func ServeSearchPages(state *UserState, cps PageCollection, cs *ColorScheme, tp map[string]string) {
-	searchCP := BaseTitleCP("Search results", state)
-	searchCP.extraCSSurls = append(searchCP.extraCSSurls, "/css/search.css")
-	// Note, no slash between "search" and "(.*)". A typical search is "/search?q=blabla"
-	web.Get("/search(.*)", searchCP.WrapWebHandle(GenerateSearchHandle(cps), tp))
-	web.Get("/css/search.css", GenerateSearchCSS(cs))
-}
-
-func ServeAdminPages(state *UserState, cps PageCollection, cs *ColorScheme, tp map[string]string) {
-	adminCP := BaseTitleCP("Admin", state)
-	adminCP.extraCSSurls = append(adminCP.extraCSSurls, "/css/admin.css")
-	web.Get("/admin", adminCP.WrapSimpleContextHandle(GenerateAdminStatus(state), tp))
-	web.Get("/css/admin.css", GenerateAdminCSS(cs))
 }
 
 // Make an html and css page available

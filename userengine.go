@@ -95,7 +95,7 @@ func GenerateShowLoginLogoutRegister(state *UserState) SimpleContextHandle {
 func (state *UserState) HasUser(username string) bool {
 	val, err := state.usernames.Has(username)
 	if err != nil {
-		return false
+		panic("ERROR: Lost connection to redis")
 	}
 	return val
 }
@@ -117,7 +117,8 @@ func AddUserUnchecked(state *UserState, username, password, email string) {
 }
 
 func (state *UserState) IsConfirmed(username string) bool {
-	if !state.HasUser(username) {
+	hasUser := state.HasUser(username)
+	if !hasUser {
 		return false
 	}
 	confirmed, err := state.users.Get(username, "confirmed")
@@ -199,7 +200,8 @@ func GenerateConfirmUser(state *UserState) WebHandle {
 			// Say "no longer" because we don't care about people that just try random confirmation links
 			return MessageOKurl("Confirmation", "The confirmation link is no longer valid.", "/register")
 		}
-		if !state.HasUser(username) {
+		hasUser := state.HasUser(username)
+		if !hasUser {
 			return MessageOKurl("Confirmation", "The user you wish to confirm does not exist anymore.", "/register")
 		}
 

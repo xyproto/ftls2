@@ -36,8 +36,49 @@ func GenerateShowAdmin(state *UserState) SimpleContextHandle {
 	}
 }
 
+func GenerateAdminCSS(cs *ColorScheme) SimpleContextHandle {
+	return func(ctx *web.Context) string {
+		ctx.ContentType("css")
+		return `
+.yes {
+	background-color: #90ff90;
+	color: black;
+}
+.no {
+	background-color: #ff9090;
+	color: black;
+}
+.username {
+	color: green;
+}
+table {
+	border-collapse: collapse;
+	padding: 1em;
+}
+table, th, tr, td {
+	border: 1px solid black;
+	padding: 1em;
+}
+`
+		//
+	}
+}
+
+func ServeAdminPages(state *UserState, cps PageCollection, cs *ColorScheme, tp map[string]string) {
+	adminCP := BaseTitleCP("Admin", state)
+	adminCP.extraCSSurls = append(adminCP.extraCSSurls, "/css/admin.css")
+
+	// Hide the Admin menu if we're on the Admin page
+	adminCP.contentJS = Hide("#menuAdmin")
+
+	web.Get("/admin", adminCP.WrapSimpleContextHandle(GenerateAdminStatus(state), tp))
+	web.Get("/css/admin.css", GenerateAdminCSS(cs))
+
+	web.Get("/showmenu/admin", GenerateShowAdmin(state))
+}
+
 // TODO: Log and graph when people visit pages and when people contribute content
-// This one is wrapped by a context page
+// This one is wrapped by ServeAdminPages
 func GenerateAdminStatus(state *UserState) SimpleContextHandle {
 	return func(ctx *web.Context) string {
 		if !state.AdminNow(ctx) {
@@ -60,6 +101,7 @@ func GenerateAdminStatus(state *UserState) SimpleContextHandle {
 				s += bool2td(state.IsConfirmed(username))
 				s += bool2td(state.IsLoggedIn(username))
 				s += bool2td(state.IsAdministrator(username))
+				// TODO: Add a page for removing users, but with a MessageOKurl("blabla", "blabla", "/actually/remove/stuff")
 				s += "</tr>"
 			}
 		}
@@ -106,7 +148,8 @@ func GenerateStatusCurrentUser(state *UserState) SimpleContextHandle {
 		if username == "" {
 			return MessageOKback("Current user status", "No user logged in")
 		}
-		if !state.HasUser(username) {
+		hasUser := state.HasUser(username)
+		if !hasUser {
 			return MessageOKback("Current user status", username+" does not exist")
 		}
 		if !(state.IsLoggedIn(username)) {
@@ -171,7 +214,7 @@ func GenerateRemoveUnconfirmedUser(state *UserState) WebHandle {
 		// Remove additional data as well
 		state.users.Del(username, "secret")
 
-		return MessageOKback("Remove unconfirmed user", "OK, removed "+username+" from the list of unconfirmed users.")
+		return MessageOKurl("Remove unconfirmed user", "OK, removed "+username+" from the list of unconfirmed users.", "/admin")
 	}
 }
 
@@ -184,10 +227,10 @@ func GenerateRemoveUser(state *UserState) WebHandle {
 		}
 
 		if username == "" {
-			return "Can't remove blank user"
+			return MessageOKback("Remove user", "Can't remove blank user")
 		}
 		if !state.HasUser(username) {
-			return username + " doesn't exists, could not remove"
+			return MessageOKback("Remove user", username+" doesn't exists, could not remove")
 		}
 
 		// Remove the user
@@ -196,7 +239,7 @@ func GenerateRemoveUser(state *UserState) WebHandle {
 		// Remove additional data as well
 		state.users.Del(username, "loggedin")
 
-		return "OK, " + username + " removed"
+		return MessageOKurl("Remove user", "OK, removed "+username, "/admin")
 	}
 }
 
