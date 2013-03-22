@@ -24,7 +24,6 @@ const (
 // This is just to be aware of which data one should be careful with, and to keep it clean.
 type UserInput string
 
-
 func Publish(url, filename string, cache bool) {
 	if cache {
 		web.Get(url, CacheWrapper(url, File(filename)))
@@ -111,11 +110,11 @@ func main() {
 	}
 	defer connection.Close()
 
-	// The dynamic IP webpage (returns an *IPState)
-	ServeIPs(connection)
-
 	// The login system, returns a *UserState
 	userState := CreateUserState(connection)
+
+	// The dynamic IP webpage (returns an *IPState)
+	ServeIPs(connection)
 
 	userEngine := NewUserEngine(userState)
 	userEngine.ServeSystem()
@@ -125,6 +124,8 @@ func main() {
 
 	// The archlinux.no webpage
 	ServeArchlinuxNo(userState)
+
+	web.Get("/reconnect", GenerateReconnect(&connection))
 
 	// Compilation errors
 	web.Get("/error", Errorlog)

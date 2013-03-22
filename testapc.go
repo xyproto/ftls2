@@ -20,7 +20,7 @@ func BobCP(userState *UserState, url string) *ContentPage {
 	} else {
 		apc.contentHTML = "no bob, l "
 	}
-	if userState.LoggedIn("bob") {
+	if userState.IsLoggedIn("bob") {
 		apc.contentHTML += "yes"
 	} else {
 		apc.contentHTML += "no"

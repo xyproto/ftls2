@@ -90,6 +90,11 @@ func HideIfNot(booleanURL, tagname string) string {
 	return "$.get(" + quote(booleanURL) + ", function(data) { if (data != \"1\") {" + Hide(tagname) + "}; });"
 }
 
+// Show a tag if booleanURL returns "1" (true)
+func ShowAnimatedIf(booleanURL, tagname string) string {
+	return "$.get(" + quote(booleanURL) + ", function(data) { if (data == \"1\") {" + ShowAnimated(tagname) + "}; });"
+}
+
 // Optimized function for login, logout and register
 func HideIfNotLoginLogoutRegister(threeBooleanURL, logintag, logouttag, registertag string) string {
 	src := "$.get(" + quote(threeBooleanURL) + ", function(data) {"

@@ -3,8 +3,8 @@ package main
 import (
 	"errors"
 	"math/rand"
-	"time"
 	"strings"
+	"time"
 
 	"github.com/garyburd/redigo/redis"
 	. "github.com/xyproto/browserspeak"
@@ -20,7 +20,6 @@ func NewUserEngine(state *UserState) *UserEngine {
 	return &UserEngine{state}
 }
 
-
 const (
 	ONLY_LOGIN      = "100"
 	ONLY_LOGOUT     = "010"
@@ -31,15 +30,15 @@ const (
 	NOTHING         = "000"
 
 	MINIMUM_CONFIRMATION_CODE_LENGTH = 20
-	USERNAME_ALLOWED_LETTERS = "abcdefghijklmnopqrstuvwxyzæøåABCDEFGHIJKLMNOPQRSTUVWXYZÆØÅ_0123456789"
+	USERNAME_ALLOWED_LETTERS         = "abcdefghijklmnopqrstuvwxyzæøåABCDEFGHIJKLMNOPQRSTUVWXYZÆØÅ_0123456789"
 )
 
 type UserState struct {
 	// see: http://redis.io/topics/data-types
-	users      *RedisHashMap    // Hash map of users, with several different fields per user ("loggedin", "confirmed", "email" etc)
-	usernames  *RedisSet        // A list of all usernames, for easy enumeration
-	unconfirmed *RedisSet       // A list of unconfirmed usernames, for easy enumeration
-	connection redis.Conn
+	users       *RedisHashMap // Hash map of users, with several different fields per user ("loggedin", "confirmed", "email" etc)
+	usernames   *RedisSet     // A list of all usernames, for easy enumeration
+	unconfirmed *RedisSet     // A list of unconfirmed usernames, for easy enumeration
+	connection  redis.Conn
 }
 
 func InitUserSystem(connection redis.Conn) *UserState {
@@ -69,7 +68,7 @@ func GenerateShowLoginLogoutRegister(state *UserState) SimpleContextHandle {
 		if username := GetBrowserUsername(ctx); username != "" {
 			//print("USERNAME", username)
 			// Has a username stored in the browser
-			if state.LoggedIn(username) {
+			if state.IsLoggedIn(username) {
 				// Ok, logged in to the system + login cookie in the browser
 				// Only present the "Logout" menu
 				return ONLY_LOGOUT
@@ -117,7 +116,7 @@ func AddUserUnchecked(state *UserState, username, password, email string) {
 	}
 }
 
-func IsConfirmed(state *UserState, username string) bool {
+func (state *UserState) IsConfirmed(username string) bool {
 	if !state.HasUser(username) {
 		return false
 	}
@@ -126,17 +125,6 @@ func IsConfirmed(state *UserState, username string) bool {
 		return false
 	}
 	return TruthValue(confirmed)
-}
-
-func IsLoggedIn(state *UserState, username string) bool {
-	if !state.HasUser(username) {
-		return false
-	}
-	loggedin, err := state.users.Get(username, "loggedin")
-	if err != nil {
-		return false
-	}
-	return TruthValue(loggedin)
 }
 
 func CorrectPassword(state *UserState, username, password string) bool {
@@ -150,10 +138,18 @@ func CorrectPassword(state *UserState, username, password string) bool {
 	return false
 }
 
+func (state *UserState) GetConfirmationSecret(username string) string {
+	secret, err := state.users.Get(username, "secret")
+	if err != nil {
+		return ""
+	}
+	return secret
+}
+
 // Goes through all the secrets of all the unconfirmed users
 // and checks if this secret already is in use
 func AlreadyHasSecret(state *UserState, secret string) bool {
-	unconfirmedUsernames, err := state.usernames.GetAll()
+	unconfirmedUsernames, err := state.unconfirmed.GetAll()
 	if err != nil {
 		return false
 	}
@@ -176,7 +172,7 @@ func GenerateConfirmUser(state *UserState) WebHandle {
 	return func(ctx *web.Context, val string) string {
 		secret := val
 
-		unconfirmedUsernames, err := state.usernames.GetAll()
+		unconfirmedUsernames, err := state.unconfirmed.GetAll()
 		if err != nil {
 			return MessageOKurl("Confirmation", "All users are confirmed already.", "/register")
 		}
@@ -215,7 +211,7 @@ func GenerateConfirmUser(state *UserState) WebHandle {
 		// Mark user as confirmed
 		state.users.Set(username, "confirmed", "true")
 
-		return MessageOKurl("Confirmation", "Thank you " + username + ", you can now log in.", "/login")
+		return MessageOKurl("Confirmation", "Thank you "+username+", you can now log in.", "/login")
 	}
 }
 
@@ -232,11 +228,10 @@ func GenerateLoginUser(state *UserState) WebHandle {
 			return MessageOKback("Login", "Can't log in with a blank username.")
 		}
 		if !state.HasUser(username) {
-			return MessageOKback("Login", "User " + username + " does not exist, could not log in.")
+			return MessageOKback("Login", "User "+username+" does not exist, could not log in.")
 		}
-
-		if !IsConfirmed(state, username) {
-			return MessageOKback("Login", "The email for " + username + " has not been confirmed, check your email and follow the link.")
+		if !state.IsConfirmed(username) {
+			return MessageOKback("Login", "The email for "+username+" has not been confirmed, check your email and follow the link.")
 		}
 
 		// TODO: Hash password, check with hash from database
@@ -262,6 +257,18 @@ func HashPassword(password string) string {
 	// TODO: Implement actual hashing, with salt
 	return "abc123" + password + "abc123"
 }
+
+// TODO: Forgot username? Enter email, send username.
+// TODO: Lost confirmation link? Enter mail, Receive confirmation link.
+// TODO: Forgot password? Enter mail, receive reset-password link.
+// TODO: Make sure not two usernames can register at once before confirming
+// TODO: Only one username per email address? (meh? can use more than one address?=
+// TODO: Maximum 1 confirmation email per email adress
+// TODO: Maximum 1 forgot username per email adress per day
+// TODO: Maximum 1 forgot password per email adress per day
+// TODO: Maximum 1 lost confirmation link per email adress per day
+// TODO: Link for "Did you not request this email? Click here" i alle eposter som sendes.
+// TODO: Rate limiting, maximum rate per minute or day
 
 // Register a new user
 func GenerateRegisterUser(state *UserState) WebHandle {
@@ -299,7 +306,8 @@ func GenerateRegisterUser(state *UserState) WebHandle {
 			return MessageOKback("Register", "That user already exists, try another username.")
 		}
 		// Only some letters are allowed
-		NEXT: for _, letter := range username {
+	NEXT:
+		for _, letter := range username {
 			for _, allowedLetter := range USERNAME_ALLOWED_LETTERS {
 				if letter == allowedLetter {
 					continue NEXT
@@ -341,7 +349,7 @@ func GenerateRegisterUser(state *UserState) WebHandle {
 		}
 
 		// Send confirmation email
-		ConfirmationEmail("archlinux.no", "https://archlinux.no/confirm/" + secretConfirmationCode, username, email)
+		ConfirmationEmail("archlinux.no", "https://archlinux.no/confirm/"+secretConfirmationCode, username, email)
 
 		// Register the need to be confirmed
 		state.unconfirmed.Add(username)
@@ -362,7 +370,7 @@ func GenerateLogoutCurrentUser(state *UserState) SimpleContextHandle {
 			return MessageOKback("Logout", "No user to log out")
 		}
 		if !state.HasUser(username) {
-			return MessageOKback("Logout", "user " + username + " does not exist, could not log out")
+			return MessageOKback("Logout", "user "+username+" does not exist, could not log out")
 		}
 
 		// TODO: Check if the user is logged in already
@@ -377,12 +385,12 @@ func GenerateLogoutCurrentUser(state *UserState) SimpleContextHandle {
 
 		//return ""
 
-		return MessageOKurl("Logout", username + " is now logged out. Hope to see you soon!", "/login")
+		return MessageOKurl("Logout", username+" is now logged out. Hope to see you soon!", "/login")
 	}
 }
 
 // Checks if the given username is logged in or not
-func (state *UserState) LoggedIn(username string) bool {
+func (state *UserState) IsLoggedIn(username string) bool {
 	if !state.HasUser(username) {
 		return false
 	}

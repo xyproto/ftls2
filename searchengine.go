@@ -4,8 +4,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/xyproto/web"
 	. "github.com/xyproto/browserspeak"
+	"github.com/xyproto/web"
 )
 
 const (
@@ -138,5 +138,3 @@ func GenerateSearchHandle(pc PageCollection) WebHandle {
 		return "Invalid parameters"
 	}
 }
-
-

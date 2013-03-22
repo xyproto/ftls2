@@ -103,7 +103,7 @@ func AddContent(page *Page, contentTitle, contentHTML string) (*Tag, error) {
 	div.AddStyle("padding-right", "5em")
 	div.AddStyle("padding-top", "1em")
 	div.AddStyle("padding-bottom", "2em")
-	div.AddStyle("background-color", "rgba(255,255,255,0.92)") // light gray. Transparency with rgba() doesn't work in IE
+	div.AddStyle("background-color", "rgba(255,255,255,0.92)")                                                                               // light gray. Transparency with rgba() doesn't work in IE
 	div.AddStyle("filter", "progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#dcffffff', endColorstr='#dcffffff');") // for transparency in IE
 
 	div.AddStyle("text-align", "justify")

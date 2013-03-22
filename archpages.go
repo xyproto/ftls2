@@ -6,7 +6,7 @@ package main
  * There is also login/logout/register, searching and dynamic pages, in other source files
  */
 
- import (
+import (
 	"strconv"
 	"time"
 )
@@ -30,7 +30,7 @@ func BaseCP(userState *UserState) *ContentPage {
 	//cp.links = []string{"Overview:/", "Text:/text", "Bob:/bob", "JQuery:/jquery", "Register:/register", "Hello:/hello/world", "Count:/counting", "Feedback:/feedback"}
 	//News, Norwegian AUR
 
-	cp.links = []string{"Overview:/", "Login:/login", "Logout:/logout", "Register:/register"}
+	cp.links = []string{"Overview:/", "Login:/login", "Logout:/logout", "Register:/register", "Admin:/admin"}
 	cp.contentTitle = "NOP"
 	cp.contentHTML = "NOP NOP NOP"
 	cp.contentJS = ""
@@ -59,6 +59,12 @@ func BaseCP(userState *UserState) *ContentPage {
 
 	// This only works at first page load in Internet Explorer 8. Fun times. Oh well, why bother.
 	cp.headerJS += ShowIfLoginLogoutRegister("/showmenu/loginlogoutregister", "#menuLogin", "#menuLogout", "#menuRegister")
+
+	// This in combination with hiding the link in genericsite.go is cool, but the layout becomes weird :/
+	//cp.headerJS += ShowAnimatedIf("/showmenu/admin", "#menuAdmin")
+
+	// This keeps the layout but is less cool
+	cp.headerJS += HideIfNot("/showmenu/admin", "#menuAdmin")
 
 	cp.url = "/" // To be filled in when published
 
@@ -98,4 +104,3 @@ func PublishArchImages() {
 		Publish("/img/"+img, "static/img/"+img, true)
 	}
 }
-

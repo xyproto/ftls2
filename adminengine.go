@@ -14,18 +14,79 @@ func NewAdminEngine(state *UserState) *AdminEngine {
 	return &AdminEngine{state}
 }
 
-// The "/admin/x" page
-func GenerateHi(state *UserState) WebHandle {
-	return func(ctx *web.Context, val string) string {
-		if val != "" {
-			return "Hi " + val + "!"
+const (
+	ADMIN = "1"
+	USER  = "0"
+)
+
+// Checks if the current user is logged in as administrator right now
+func (state *UserState) AdminNow(ctx *web.Context) bool {
+	if username := GetBrowserUsername(ctx); username != "" {
+		return state.IsLoggedIn(username) && state.IsAdministrator(username)
+	}
+	return false
+}
+
+func GenerateShowAdmin(state *UserState) SimpleContextHandle {
+	return func(ctx *web.Context) string {
+		if state.AdminNow(ctx) {
+			return ADMIN
 		}
-		return "HI"
+		return USER
+	}
+}
+
+// TODO: Log and graph when people visit pages and when people contribute content
+// This one is wrapped by a context page
+func GenerateAdminStatus(state *UserState) SimpleContextHandle {
+	return func(ctx *web.Context) string {
+		if !state.AdminNow(ctx) {
+			return "<div class=\"no\">Not administrator</div>"
+		}
+
+		// TODO: List all sorts of info, edit users, etc
+		s := "<h2>Welcome chief</h2>"
+
+		s += "<strong>User table</strong><br />"
+		s += "<table>"
+		s += "<tr>"
+		s += "<th>Username</th><th>Confirmed</th><th>Logged in</th><th>Administrator</th>"
+		s += "</tr>"
+		usernames, err := state.usernames.GetAll()
+		if err == nil {
+			for _, username := range usernames {
+				s += "<tr>"
+				s += "<td>" + "<a class=\"username\" href=\"/status/" + username + "\">" + username + "</a></td>"
+				s += bool2td(state.IsConfirmed(username))
+				s += bool2td(state.IsLoggedIn(username))
+				s += bool2td(state.IsAdministrator(username))
+				s += "</tr>"
+			}
+		}
+		s += "</table>"
+		s += "<br />"
+		s += "<strong>Unconfirmed users</strong><br />"
+		s += "<table>"
+		s += "<tr>"
+		s += "<th>Username</th><th>Secret</th>"
+		s += "</tr>"
+		usernames, err = state.unconfirmed.GetAll()
+		if err == nil {
+			for _, username := range usernames {
+				s += "<tr>"
+				s += "<td>" + "<a class=\"username\" href=\"/status/" + username + "\">" + username + "</a></td>"
+				s += "<td>" + state.GetConfirmationSecret(username) + "</td>"
+				s += "<td>" + "<a class=\"username\" href=\"/removeunconfirmed/" + username + "\">remove</a></td>"
+				s += "</tr>"
+			}
+		}
+		s += "</table>"
+		return s
 	}
 }
 
 // Checks if the given username is an administrator
-func (state *UserState) Administrator(username string) bool {
+func (state *UserState) IsAdministrator(username string) bool {
 	if !state.HasUser(username) {
 		return false
 	}
@@ -38,43 +99,90 @@ func (state *UserState) Administrator(username string) bool {
 
 func GenerateStatusCurrentUser(state *UserState) SimpleContextHandle {
 	return func(ctx *web.Context) string {
+		if !state.AdminNow(ctx) {
+			return MessageOKback("Status", "Not administrator")
+		}
 		username := GetBrowserUsername(ctx)
 		if username == "" {
 			return MessageOKback("Current user status", "No user logged in")
 		}
 		if !state.HasUser(username) {
-			return MessageOKback("Current user status", username + " does not exist")
+			return MessageOKback("Current user status", username+" does not exist")
 		}
-		if !(state.LoggedIn(username)) {
-			return MessageOKback("Current user status", "User " + username + " is not logged in")
+		if !(state.IsLoggedIn(username)) {
+			return MessageOKback("Current user status", "User "+username+" is not logged in")
 		}
-		return MessageOKback("Current user status", "User " + username + " is logged in")
+		return MessageOKback("Current user status", "User "+username+" is logged in")
 	}
 }
 
-func GenerateStatusUser(state *UserState) SimpleWebHandle {
-	return func(username string) string {
+func GenerateStatusUser(state *UserState) WebHandle {
+	return func(ctx *web.Context, username string) string {
+		if !state.AdminNow(ctx) {
+			return MessageOKback("Status", "Not administrator")
+		}
 		if username == "" {
 			return MessageOKback("Status", "No username given")
 		}
 		if !state.HasUser(username) {
-			return MessageOKback("Status", username + " does not exist")
+			return MessageOKback("Status", username+" does not exist")
 		}
 		loggedinStatus := "not logged in"
-		if IsLoggedIn(state, username) {
+		if state.IsLoggedIn(username) {
 			loggedinStatus = "logged in"
 		}
 		confirmStatus := "email has not been confirmed"
-		if IsConfirmed(state, username) {
+		if state.IsConfirmed(username) {
 			confirmStatus = "email has been confirmed"
 		}
-		return MessageOKback("Status", username + " is " + loggedinStatus + " and " + confirmStatus)
+		return MessageOKback("Status", username+" is "+loggedinStatus+" and "+confirmStatus)
 	}
 }
 
-// Create a user by adding the username to the list of usernames
+// Remove an unconfirmed user
+func GenerateRemoveUnconfirmedUser(state *UserState) WebHandle {
+	return func(ctx *web.Context, username string) string {
+		if !state.AdminNow(ctx) {
+			return MessageOKback("Remove unconfirmed user", "Not administrator")
+		}
+
+		if username == "" {
+			return MessageOKback("Remove unconfirmed user", "Can't remove blank user.")
+		}
+
+		found := false
+		usernames, err := state.unconfirmed.GetAll()
+		if err == nil {
+			for _, unconfirmedUsername := range usernames {
+				if username == unconfirmedUsername {
+					found = true
+					break
+				}
+			}
+		}
+
+		if !found {
+			return MessageOKback("Remove unconfirmed user", "Can't find "+username+" in the list of unconfirmed users.")
+		}
+
+		// Remove the user
+		state.unconfirmed.Del(username)
+
+		// Remove additional data as well
+		state.users.Del(username, "secret")
+
+		return MessageOKback("Remove unconfirmed user", "OK, removed "+username+" from the list of unconfirmed users.")
+	}
+}
+
+// TODO: Undo for removing users
+// Remove a user
 func GenerateRemoveUser(state *UserState) WebHandle {
 	return func(ctx *web.Context, username string) string {
+		if !state.AdminNow(ctx) {
+			return MessageOKback("Remove user", "Not administrator")
+		}
+
 		if username == "" {
 			return "Can't remove blank user"
 		}
@@ -92,8 +200,11 @@ func GenerateRemoveUser(state *UserState) WebHandle {
 	}
 }
 
-func GenerateAllUsernames(state *UserState) SimpleWebHandle {
-	return func(_ string) string {
+func GenerateAllUsernames(state *UserState) SimpleContextHandle {
+	return func(ctx *web.Context) string {
+		if !state.AdminNow(ctx) {
+			return MessageOKback("List usernames", "Not administrator")
+		}
 		s := ""
 		usernames, err := state.usernames.GetAll()
 		if err == nil {
@@ -107,6 +218,9 @@ func GenerateAllUsernames(state *UserState) SimpleWebHandle {
 
 func GenerateGetCookie(state *UserState) SimpleContextHandle {
 	return func(ctx *web.Context) string {
+		if !state.AdminNow(ctx) {
+			return MessageOKback("Get cookie", "Not administrator")
+		}
 		username := GetBrowserUsername(ctx)
 		return "Cookie: username = " + username
 	}
@@ -114,6 +228,9 @@ func GenerateGetCookie(state *UserState) SimpleContextHandle {
 
 func GenerateSetCookie(state *UserState) WebHandle {
 	return func(ctx *web.Context, username string) string {
+		if !state.AdminNow(ctx) {
+			return MessageOKback("Set cookie", "Not administrator")
+		}
 		if username == "" {
 			return "Can't set cookie for empty username"
 		}
@@ -131,15 +248,12 @@ func GenerateSetCookie(state *UserState) WebHandle {
 func (ae *AdminEngine) ServeSystem() {
 	state := ae.state
 
-	web.Get("/admin/(.*)", GenerateHi(state))
-
 	// TODO: admin pages should only be accessible as administrator
-
 	web.Get("/status", GenerateStatusCurrentUser(state))
 	web.Get("/status/(.*)", GenerateStatusUser(state))
 	web.Get("/remove/(.*)", GenerateRemoveUser(state))
+	web.Get("/removeunconfirmed/(.*)", GenerateRemoveUnconfirmedUser(state))
 	web.Get("/users/(.*)", GenerateAllUsernames(state))
 	web.Get("/cookie/get", GenerateGetCookie(state))
 	web.Get("/cookie/set/(.*)", GenerateSetCookie(state))
 }
-

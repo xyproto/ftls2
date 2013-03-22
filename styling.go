@@ -8,25 +8,25 @@ import (
 )
 
 const (
-	NICEGRAY  = "#202020"
-	NICEBLUE  = "#5080D0"
+	NICEGRAY = "#202020"
+	NICEBLUE = "#5080D0"
 )
 
 type ColorScheme struct {
-	darkgray string
-	niceblue string
-	menu_link string
-	menu_hover string
-	menu_active string
+	darkgray           string
+	niceblue           string
+	menu_link          string
+	menu_hover         string
+	menu_active        string
 	default_background string
 }
 
 func NewArchColorScheme() *ColorScheme {
 	var cs ColorScheme
-	cs.darkgray  = "#202020"
-	cs.niceblue  = "#5080D0"
-	cs.menu_link = "#c0c0c0" // light gray
-	cs.menu_hover = "#efefe0" // light gray, somewhat yellow
+	cs.darkgray = "#202020"
+	cs.niceblue = "#5080D0"
+	cs.menu_link = "#c0c0c0"   // light gray
+	cs.menu_hover = "#efefe0"  // light gray, somewhat yellow
 	cs.menu_active = "#ffffff" // white
 	cs.default_background = "#000030"
 	return &cs

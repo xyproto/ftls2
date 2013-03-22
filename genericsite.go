@@ -1,9 +1,9 @@
 package main
 
 import (
+	"github.com/drbawb/mustache"
 	. "github.com/xyproto/browserspeak"
 	"github.com/xyproto/web"
-	"github.com/drbawb/mustache"
 )
 
 type ContentPage struct {
@@ -84,7 +84,7 @@ func genericbuilder(cp *ContentPage) *Page {
 
 	// TODO: Do this with templates instead
 	// Hide login/logout/register by default
-	hidelist := []string{"/login", "/logout", "/register"}
+	hidelist := []string{"/login", "/logout", "/register"} //, "/admin"}
 	AddMenuBox(page, cp.links, hidelist, cp.darkBackgroundTextureURL)
 
 	AddContent(page, cp.contentTitle, cp.contentHTML+BodyJS(cp.contentJS))
@@ -115,6 +115,33 @@ func GenerateSearchCSS(cs *ColorScheme) SimpleContextHandle {
 	}
 }
 
+func GenerateAdminCSS(cs *ColorScheme) SimpleContextHandle {
+	return func(ctx *web.Context) string {
+		ctx.ContentType("css")
+		return `
+.yes {
+	background-color: #90ff90;
+	color: black;
+}
+.no {
+	background-color: #ff9090;
+	color: black;
+}
+.username {
+	color: green;
+}
+table {
+	border-collapse: collapse;
+	padding: 1em;
+}
+table, th, tr, td {
+	border: 1px solid black;
+	padding: 1em;
+}
+`
+	}
+}
+
 // Returns a BaseCP with the contentTitle set
 func BaseTitleCP(contentTitle string, userState *UserState) *ContentPage {
 	cp := BaseCP(userState)
@@ -128,10 +155,13 @@ func ServeSite(userState *UserState, cps PageCollection, tp map[string]string, c
 	cps = append(cps, *RegisterCP(userState, "/register"))
 
 	web.Get("/showmenu/loginlogoutregister", GenerateShowLoginLogoutRegister(userState))
+	web.Get("/showmenu/admin", GenerateShowAdmin(userState))
 
 	PublishCPs(cps, cs, tp, "/css/extra.css")
 
 	ServeSearchPages(userState, cps, cs, tp)
+
+	ServeAdminPages(userState, cps, cs, tp)
 
 	// TODO: Add fallback to this local version
 	Publish("/js/jquery-"+JQUERY_VERSION+".js", "static/js/jquery-"+JQUERY_VERSION+".js", true)
@@ -139,12 +169,19 @@ func ServeSite(userState *UserState, cps PageCollection, tp map[string]string, c
 	Publish("/sitemap_index.xml", "static/various/sitemap_index.xml", false)
 }
 
-func ServeSearchPages(userState *UserState, cps PageCollection, cs *ColorScheme, tp map[string]string) {
-	searchCP := BaseTitleCP("Search results", userState)
+func ServeSearchPages(state *UserState, cps PageCollection, cs *ColorScheme, tp map[string]string) {
+	searchCP := BaseTitleCP("Search results", state)
 	searchCP.extraCSSurls = append(searchCP.extraCSSurls, "/css/search.css")
 	// Note, no slash between "search" and "(.*)". A typical search is "/search?q=blabla"
 	web.Get("/search(.*)", searchCP.WrapWebHandle(GenerateSearchHandle(cps), tp))
 	web.Get("/css/search.css", GenerateSearchCSS(cs))
+}
+
+func ServeAdminPages(state *UserState, cps PageCollection, cs *ColorScheme, tp map[string]string) {
+	adminCP := BaseTitleCP("Admin", state)
+	adminCP.extraCSSurls = append(adminCP.extraCSSurls, "/css/admin.css")
+	web.Get("/admin", adminCP.WrapSimpleContextHandle(GenerateAdminStatus(state), tp))
+	web.Get("/css/admin.css", GenerateAdminCSS(cs))
 }
 
 // Make an html and css page available
@@ -164,19 +201,28 @@ func (cp *ContentPage) Surround(s string, tp map[string]string) (string, string)
 	return mustache.Render(archpage.GetXML(true), tp), archpage.GetCSS()
 }
 
-// Uses a given SimpleWebHandle as the contents for the the ArchPage contents
-func (cp *ContentPage) WrapSimpleWebHandle(swh SimpleWebHandle, tp map[string]string) WebHandle {
-	return func(ctx *web.Context, val string) string {
+// Uses a given SimpleWebHandle as the contents for the the ContentPage contents
+func (cp *ContentPage) WrapSimpleWebHandle(swh SimpleWebHandle, tp map[string]string) SimpleWebHandle {
+	return func(val string) string {
 		html, css := cp.Surround(swh(val), tp)
 		web.Get(cp.generatedCSSurl, css)
 		return html
 	}
 }
 
-// Uses a given SimpleWebHandle as the contents for the the ArchPage contents
+// Uses a given WebHandle as the contents for the the ContentPage contents
 func (cp *ContentPage) WrapWebHandle(wh WebHandle, tp map[string]string) WebHandle {
 	return func(ctx *web.Context, val string) string {
 		html, css := cp.Surround(wh(ctx, val), tp)
+		web.Get(cp.generatedCSSurl, css)
+		return html
+	}
+}
+
+// Uses a given SimpleContextHandle as the contents for the the ContentPage contents
+func (cp *ContentPage) WrapSimpleContextHandle(sch SimpleContextHandle, tp map[string]string) SimpleContextHandle {
+	return func(ctx *web.Context) string {
+		html, css := cp.Surround(sch(ctx), tp)
 		web.Get(cp.generatedCSSurl, css)
 		return html
 	}

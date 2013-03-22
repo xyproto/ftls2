@@ -20,11 +20,10 @@ func ConfirmationEmail(domain, link, username, email string) error {
 	msgString += "Thank you.\n"
 	msgString += "\n"
 	msgString += "Best regards,\n"
-	msgString +="    The " + domain + " registration system\n"
+	msgString += "    The " + domain + " registration system\n"
 	msg := []byte(msgString)
 	from := "noreply@" + domain
 	to := []string{email}
 	host := "localhost:25"
 	return smtp.SendMail(host, auth, from, to, msg)
 }
-

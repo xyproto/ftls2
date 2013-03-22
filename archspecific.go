@@ -30,7 +30,7 @@ func ServeArchlinuxNo(userState *UserState) {
 	cs := NewArchColorScheme()
 
 	ServeSite(userState, cps, tp, cs)
-    ServeDynamicPages(userState)
+	ServeDynamicPages(userState)
 
 	PublishArchImages()
 }

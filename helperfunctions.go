@@ -1,8 +1,8 @@
 package main
 
 import (
-	"strconv"
 	"math/rand"
+	"strconv"
 
 	"github.com/xyproto/browserspeak"
 )
@@ -74,7 +74,7 @@ func MessageOKback(title, msg string) string {
 
 // Displays a title, a message and an OK button that goes to the given url
 func MessageOKurl(title, msg, url string) string {
-	return messageComposer(title, msg, "location.href='" + url + "';")
+	return messageComposer(title, msg, "location.href='"+url+"';")
 }
 
 func RandomString(length int) string {
@@ -89,12 +89,12 @@ func RandomString(length int) string {
 
 func RandomHumanFriendlyString(length int) string {
 	const (
-		vowels = "aeiouy" // email+browsers didn't like "æøå" too much
+		vowels     = "aeiouy" // email+browsers didn't like "æøå" too much
 		consonants = "bcdfghjklmnpqrstvwxz"
 	)
 	b := make([]byte, length)
 	for i := 0; i < length; i++ {
-		if i % 2 == 0 {
+		if i%2 == 0 {
 			b[i] = vowels[rand.Intn(len(vowels))]
 		} else {
 			b[i] = consonants[rand.Intn(len(consonants))]
@@ -112,3 +112,9 @@ func RandomCookieFriendlyString(length int) string {
 	return string(b)
 }
 
+func bool2td(b bool) string {
+	if b {
+		return "<td class=\"yes\">yes</td>"
+	}
+	return "<td class=\"no\">no</td>"
+}
