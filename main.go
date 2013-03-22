@@ -11,9 +11,8 @@ import (
 	"fmt"
 	"mime"
 
-	"github.com/gosexy/canvas"          // For generating images
-	. "github.com/xyproto/browserspeak" // For generating html/xml/css
-	"github.com/xyproto/web"            // For serving webpages and handling requests
+	"github.com/xyproto/web"
+	. "github.com/xyproto/browserspeak"
 )
 
 const (
@@ -63,34 +62,6 @@ func ParamExample(ctx *web.Context) string {
 	return fmt.Sprintf("%v\n", ctx.Params)
 }
 
-// TODO: Don't write to a file, but return the image data
-func genFavicon(filename string) {
-	img := canvas.New()
-	img.Blank(16, 16)
-	img.SetStrokeColor("#005090")
-
-	// All the lines and translations use relative coordinates
-
-	// "\"
-	img.SetStrokeWidth(2)
-	img.Translate(8, 2)
-	img.Line(3, 11)
-	img.Translate(-8, -2)
-
-	// "/"
-	img.SetStrokeWidth(2)
-	img.Translate(8, 2)
-	img.Line(-6, 12)
-	img.Translate(-8, -2)
-
-	// "-"
-	img.SetStrokeWidth(2)
-	img.Translate(2, 10)
-	img.Line(12, -2)
-
-	img.Write(filename)
-}
-
 func notFound2(ctx *web.Context, val string) {
 	ctx.ResponseWriter.WriteHeader(404)
 	ctx.ResponseWriter.Write([]byte(NotFound(ctx, val)))
@@ -103,18 +74,18 @@ func main() {
 	mime.AddExtensionType(".txt", "text/plain; charset=utf-8")
 	mime.AddExtensionType(".ico", "image/x-icon")
 
-	// Connect to Redis
-	connection, err := NewRedisConnection()
-	if err != nil {
-		panic("ERROR: Can't connect to redis")
-	}
-	defer connection.Close()
+	// Create a Redis connection pool
+	pool := NewRedisConnectionPool()
+	//if err != nil {
+	//	panic("ERROR: Can't connect to redis")
+	//}
+	defer pool.Close()
 
 	// The login system, returns a *UserState
-	userState := CreateUserState(connection)
+	userState := InitUserSystem(pool)
 
 	// The dynamic IP webpage (returns an *IPState)
-	ServeIPs(connection)
+	ServeIPs(pool)
 
 	userEngine := NewUserEngine(userState)
 	userEngine.ServeSystem()
@@ -124,8 +95,6 @@ func main() {
 
 	// The archlinux.no webpage
 	ServeArchlinuxNo(userState)
-
-	web.Get("/reconnect", GenerateReconnect(&connection))
 
 	// Compilation errors
 	web.Get("/error", Errorlog)

@@ -5,6 +5,7 @@ import (
 	"math/rand"
 	"strings"
 	"time"
+	"fmt"
 
 	"github.com/garyburd/redigo/redis"
 	. "github.com/xyproto/browserspeak"
@@ -38,10 +39,10 @@ type UserState struct {
 	users       *RedisHashMap // Hash map of users, with several different fields per user ("loggedin", "confirmed", "email" etc)
 	usernames   *RedisSet     // A list of all usernames, for easy enumeration
 	unconfirmed *RedisSet     // A list of unconfirmed usernames, for easy enumeration
-	connection  redis.Conn
+	pool  *redis.Pool // A connection pool for Redis
 }
 
-func InitUserSystem(connection redis.Conn) *UserState {
+func InitUserSystem(pool *redis.Pool) *UserState {
 
 	// For the secure cookies
 	// This must happen before the random seeding, or 
@@ -50,14 +51,7 @@ func InitUserSystem(connection redis.Conn) *UserState {
 
 	rand.Seed(time.Now().UnixNano())
 
-	// For the database
-	state := new(UserState)
-	state.users = NewRedisHashMap(connection, "users")
-	state.usernames = NewRedisSet(connection, "usernames")
-	state.unconfirmed = NewRedisSet(connection, "unconfirmed")
-	state.connection = connection
-
-	return state
+	return createUserState(pool)
 }
 
 // TODO: Rethink this. Use templates for Login/Logout button?
@@ -95,7 +89,9 @@ func GenerateShowLoginLogoutRegister(state *UserState) SimpleContextHandle {
 func (state *UserState) HasUser(username string) bool {
 	val, err := state.usernames.Has(username)
 	if err != nil {
-		panic("ERROR: Lost connection to redis")
+		// TODO: Figure out why this happens
+		fmt.Println(err)
+		panic("ERROR: Lost connection to redis?")
 	}
 	return val
 }
@@ -429,8 +425,14 @@ func GenerateNoJavascript() SimpleContextHandle {
 	}
 }
 
-func CreateUserState(connection redis.Conn) *UserState {
-	return InitUserSystem(connection)
+func createUserState(pool *redis.Pool) *UserState {
+	// For the database
+	state := new(UserState)
+	state.users = NewRedisHashMap(pool, "users")
+	state.usernames = NewRedisSet(pool, "usernames")
+	state.unconfirmed = NewRedisSet(pool, "unconfirmed")
+	state.pool = pool
+	return state
 }
 
 // TODO: RESTful services?

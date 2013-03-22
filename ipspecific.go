@@ -8,17 +8,17 @@ import (
 
 type IPState struct {
 	data       *RedisList
-	connection redis.Conn
+	pool *redis.Pool
 }
 
-func InitIPs(connection redis.Conn) *IPState {
+func InitIPs(pool *redis.Pool) *IPState {
 
 	// Create a RedisList for storing IP adresses
-	ips := NewRedisList(connection, "IPs")
+	ips := NewRedisList(pool, "IPs")
 
 	state := new(IPState)
 	state.data = ips
-	state.connection = connection
+	state.pool = pool
 
 	return state
 }
@@ -61,8 +61,8 @@ func GenerateGetLastIP(state *IPState) SimpleWebHandle {
 }
 
 // TODO: RESTful services
-func ServeIPs(connection redis.Conn) *IPState {
-	state := InitIPs(connection)
+func ServeIPs(pool *redis.Pool) *IPState {
+	state := InitIPs(pool)
 
 	web.Get("/setip/(.*)", GenerateSetIP(state))
 	web.Get("/getip/(.*)", GenerateGetLastIP(state))

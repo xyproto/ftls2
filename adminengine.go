@@ -218,6 +218,8 @@ func GenerateRemoveUnconfirmedUser(state *UserState) WebHandle {
 	}
 }
 
+// TODO: Add possibility for Admin to restart the webserver
+
 // TODO: Undo for removing users
 // Remove a user
 func GenerateRemoveUser(state *UserState) WebHandle {
