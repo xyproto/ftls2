@@ -6,6 +6,8 @@ import (
 	"math/rand"
 	"strings"
 	"time"
+	"io"
+	"crypto/sha256"
 
 	"github.com/garyburd/redigo/redis"
 	. "github.com/xyproto/browserspeak"
@@ -129,7 +131,11 @@ func CorrectPassword(state *UserState, username, password string) bool {
 	if err != nil {
 		return false
 	}
-	if hashedPassword == HashPassword(password) {
+	if hashedPassword == HashPasswordVersion2(password) {
+		return true
+	}
+	// TODO: Remove the old password hashing eventually
+	if hashedPassword == HashPasswordVersion1(password) {
 		return true
 	}
 	return false
@@ -255,10 +261,19 @@ func GenerateLoginUser(state *UserState) WebHandle {
 	}
 }
 
-func HashPassword(password string) string {
-	// TODO: Implement actual hashing, with salt
+// TODO: Remove this version completely by writing a function that makes
+//       the transition from Version1 to Version2
+func HashPasswordVersion1(password string) string {
 	return "abc123" + password + "abc123"
 }
+
+func HashPasswordVersion2(password string) string {
+	hasher := sha256.New()
+	// TODO: Read up on password hashing
+	io.WriteString(hasher, password + "some salt is better than none")
+	return string(hasher.Sum(nil))
+}
+
 
 // TODO: Forgot username? Enter email, send username.
 // TODO: Lost confirmation link? Enter mail, Receive confirmation link.
@@ -329,7 +344,7 @@ func GenerateRegisterUser(state *UserState) WebHandle {
 		}
 
 		// Register the user
-		password := HashPassword(password1)
+		password := HashPasswordVersion2(password1)
 		AddUserUnchecked(state, username, password, email)
 
 		// Mark user as administrator if that is the case

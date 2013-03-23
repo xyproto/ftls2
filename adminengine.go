@@ -1,6 +1,9 @@
 package main
 
 import (
+	"strings"
+	"strconv"
+
 	. "github.com/xyproto/browserspeak"
 	"github.com/xyproto/web"
 )
@@ -51,22 +54,37 @@ func GenerateAdminCSS(cs *ColorScheme) SimpleContextHandle {
 table {
 	border-collapse: collapse;
 	padding: 1em;
+	margin-top: 1.5em;
 }
 table, th, tr, td {
 	border: 1px solid black;
 	padding: 1em;
 }
+
 .username:link { color: green; }
 .username:visited { color: green; }
 .username:hover { color: green; }
 .username:active { color: green; }
+
 .whitebg {
 	background-color: white;
 }
+
 .darkgrey:link { color: #404040; }
 .darkgrey:visited { color: #404040; }
 .darkgrey:hover { color: #404040; }
 .darkgrey:active { color: #404040; }
+
+.somewhatcareful:link { color: #e09000; }
+.somewhatcareful:visited { color: #e09000; }
+.somewhatcareful:hover { color: #e09000; }
+.somewhatcareful:active { color: #e09000; }
+
+.careful:link { color: #e00000; }
+.careful:visited { color: #e00000; }
+.careful:hover { color: #e00000; }
+.careful:active { color: #e00000; }
+
 `
 		//
 	}
@@ -99,19 +117,31 @@ func GenerateAdminStatus(state *UserState) SimpleContextHandle {
 		s += "<strong>User table</strong><br />"
 		s += "<table class=\"whitebg\">"
 		s += "<tr>"
-		s += "<th>Username</th><th>Confirmed</th><th>Logged in</th><th>Administrator</th><th>Admin toggle</th><th>Remove user</th>"
+		s += "<th>Username</th><th>Confirmed</th><th>Logged in</th><th>Administrator</th><th>Admin toggle</th><th>Remove user</th><th>Email</th><th>Password hash</th>"
 		s += "</tr>"
 		usernames, err := state.usernames.GetAll()
 		if err == nil {
 			for _, username := range usernames {
 				s += "<tr>"
-				s += "<td>" + "<a class=\"username\" href=\"/status/" + username + "\">" + username + "</a></td>"
+				s += "<td><a class=\"username\" href=\"/status/" + username + "\">" + username + "</a></td>"
 				s += bool2td(state.IsConfirmed(username))
 				s += bool2td(state.IsLoggedIn(username))
 				s += bool2td(state.IsAdministrator(username))
-				s += "<td>" + "<a class=\"darkgrey\" href=\"/admintoggle/" + username + "\">admin toggle</a></td>"
+				s += "<td><a class=\"darkgrey\" href=\"/admintoggle/" + username + "\">admin toggle</a></td>"
 				// TODO: Ask for confirmation first with a MessageOKurl("blabla", "blabla", "/actually/remove/stuff")
-				s += "<td>" + "<a class=\"darkgrey\" href=\"/remove/" + username + "\">remove</a></td>"
+				s += "<td><a class=\"careful\" href=\"/remove/" + username + "\">remove</a></td>"
+				email, err := state.users.Get(username, "email")
+				if err == nil {
+					s += "<td>" + email + "</td>"
+				}
+				passwordHash, err := state.users.Get(username, "password")
+				if err == nil {
+					if strings.HasPrefix(passwordHash, "abc123") {
+						s += "<td>" + passwordHash + " (<a href=\"/fixpassword/" + username + "\">fix</a>)</td>"
+					} else {
+						s += "<td>length " + strconv.Itoa(len(passwordHash)) + "</td>"
+					}
+				}
 				s += "</tr>"
 			}
 		}
@@ -120,15 +150,16 @@ func GenerateAdminStatus(state *UserState) SimpleContextHandle {
 		s += "<strong>Unconfirmed users</strong><br />"
 		s += "<table>"
 		s += "<tr>"
-		s += "<th>Username</th><th>Confirmation link</th>"
+		s += "<th>Username</th><th>Confirmation link</th><th>Remove</th>"
 		s += "</tr>"
 		usernames, err = state.unconfirmed.GetAll()
 		if err == nil {
 			for _, username := range usernames {
 				s += "<tr>"
-				s += "<td>" + "<a class=\"username\" href=\"/status/" + username + "\">" + username + "</a></td>"
-				s += "<td>" + state.GetConfirmationSecret(username) + "</td>"
-				s += "<td>" + "<a class=\"username\" href=\"/removeunconfirmed/" + username + "\">remove</a></td>"
+				s += "<td><a class=\"username\" href=\"/status/" + username + "\">" + username + "</a></td>"
+				secret := state.GetConfirmationSecret(username)
+				s += "<td><a class=\"somewhatcareful\" href=\"/confirm/" + secret + "\">" + secret + "</a></td>"
+				s += "<td><a class=\"careful\" href=\"/removeunconfirmed/" + username + "\">remove</a></td>"
 				s += "</tr>"
 			}
 		}
@@ -317,9 +348,37 @@ func GenerateToggleAdmin(state *UserState) WebHandle {
 		}
 		state.users.Set(username, "admin", "false")
 		return MessageOKurl("Admin toggle", "OK, "+username+" is now a regular user", "/admin")
-
 	}
 }
+
+func GenerateFixPassword(state *UserState) WebHandle {
+	return func(ctx *web.Context, username string) string {
+		if !state.AdminNow(ctx) {
+			return MessageOKback("Fix password", "Not administrator")
+		}
+		if username == "" {
+			return MessageOKback("Fix password", "Can't fix empty username")
+		}
+		if !state.HasUser(username) {
+			return MessageOKback("Fix password", "Can't fix non-existing user")
+		}
+		password := ""
+		passwordHash, err := state.users.Get(username, "password")
+		if err != nil {
+			return MessageOKback("Fix password", "Could not retrieve password hash")
+		}
+		if strings.HasPrefix(passwordHash, "abc123") {
+			if strings.HasSuffix(passwordHash, "abc123") {
+				password = passwordHash[6:len(passwordHash)-6]
+			}
+		}
+		newPasswordHash := HashPasswordVersion2(password)
+		state.users.Set(username, "password", newPasswordHash)
+		return MessageOKurl("Fix password", "Ok, upgraded the password hash for " + username + " to version 2.", "/admin")
+	}
+}
+
+
 
 // Needed to fullfill the Engine interface, serves the pages
 func (ae *AdminEngine) ServeSystem() {
@@ -336,4 +395,5 @@ func (ae *AdminEngine) ServeSystem() {
 	web.Get("/admintoggle/(.*)", GenerateToggleAdmin(state))
 	//web.Get("/cookie/get", GenerateGetCookie(state))
 	//web.Get("/cookie/set/(.*)", GenerateSetCookie(state))
+	web.Get("/fixpassword/(.*)", GenerateFixPassword(state))
 }
