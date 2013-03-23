@@ -8,9 +8,9 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/xyproto/web"
-	. "github.com/xyproto/genericsite"
 	. "github.com/xyproto/browserspeak"
+	. "github.com/xyproto/genericsite"
+	"github.com/xyproto/web"
 )
 
 // The default settings for Arch Linux content pages

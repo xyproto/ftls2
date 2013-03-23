@@ -5,12 +5,13 @@ package main
 import (
 	"fmt"
 
-	. "github.com/xyproto/browserspeak"
+	"github.com/xyproto/browserspeak"
+	"github.com/xyproto/genericsite"
 	"github.com/xyproto/web"
 )
 
 func hello(val string) string {
-	return Message("root page", "hello: "+val)
+	return browserspeak.Message("root page", "hello: "+val)
 }
 
 func helloSF(name string) string {
@@ -19,7 +20,7 @@ func helloSF(name string) string {
 
 func Hello() string {
 	msg := "Hi"
-	return Message("Hello", msg)
+	return browserspeak.Message("Hello", msg)
 }
 
 func ParamExample(ctx *web.Context) string {
@@ -28,29 +29,29 @@ func ParamExample(ctx *web.Context) string {
 
 func notFound2(ctx *web.Context, val string) {
 	ctx.ResponseWriter.WriteHeader(404)
-	ctx.ResponseWriter.Write([]byte(NotFound(ctx, val)))
+	ctx.ResponseWriter.Write([]byte(browserspeak.NotFound(ctx, val)))
 }
 
 // TODO: Caching, login
 func main() {
 
-	userState := InitSystem()
+	userState := genericsite.InitSystem()
 
 	// The dynamic IP webpage (returns an *IPState)
 	ServeIPs(userState)
 
-	userEngine := NewUserEngine(userState)
+	userEngine := genericsite.NewUserEngine(userState)
 	userEngine.ServeSystem()
 
-	adminEngine := NewAdminEngine(userState)
+	adminEngine := genericsite.NewAdminEngine(userState)
 	adminEngine.ServeSystem()
 
 	// The archlinux.no webpage
 	ServeArchlinuxNo(userState)
 
 	// Compilation errors
-	web.Get("/error", Errorlog)
-	web.Get("/errors", Errorlog)
+	web.Get("/error", browserspeak.Errorlog)
+	web.Get("/errors", browserspeak.Errorlog)
 
 	// Various .php and .asp urls that showed up in the log
 	ServeForFun()

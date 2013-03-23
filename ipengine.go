@@ -6,8 +6,8 @@ package main
 
 import (
 	. "github.com/xyproto/browserspeak"
-	"github.com/xyproto/web"
 	. "github.com/xyproto/genericsite"
+	"github.com/xyproto/web"
 )
 
 type IPState struct {
@@ -65,7 +65,7 @@ func GenerateGetLastIP(state *IPState) SimpleWebHandle {
 }
 
 func ServeIPs(userState *UserState) {
-	ipState := InitIPs(userState.pool)
+	ipState := InitIPs(userState.GetPool())
 
 	web.Get("/setip/(.*)", GenerateSetIP(ipState))
 	web.Get("/getip/(.*)", GenerateGetLastIP(ipState))
