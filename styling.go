@@ -1,5 +1,7 @@
 package main
 
+// Move to "browserspeak"
+
 // Various functions that can be used to style a webpage
 
 import (
@@ -13,14 +15,6 @@ type ColorScheme struct {
 	menu_hover         string
 	menu_active        string
 	default_background string
-}
-
-// TODO: get style values from a file instead?
-func AddHeader(page *Page, js string) {
-	AddGoogleFonts(page, []string{"Armata"}) //, "Junge"})
-	// TODO: Move to browserspeak
-	page.MetaCharset("UTF-8")
-	AddScriptToHeader(page, js)
 }
 
 func AddGoogleFonts(page *Page, googleFonts []string) {
