@@ -10,3 +10,10 @@ TODO
     - Global state in db
     - Per visitor state in memory
     - Per visitor state in db
+
+License
+=======
+
+MIT licensed
+
+Alexander Rødseth, 2013
