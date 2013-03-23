@@ -15,28 +15,28 @@ import (
 // The default settings for Arch Linux content pages
 func ArchBaseCP(state *UserState) *ContentPage {
 	cp := DefaultCP(state)
-	cp.bgImageURL = "/img/norway4.jpg"
-	cp.stretchBackground = true
-	cp.title = "Arch Linux"
-	cp.subtitle = "no"
+	cp.BgImageURL = "/img/norway4.jpg"
+	cp.StretchBackground = true
+	cp.Title = "Arch Linux"
+	cp.Subtitle = "no"
 
 	//cp.links = []string{"Overview:/", "Mirrors:/mirrors", "Login:/login", "Register:/register", "Hello:/hello/world", "Count:/counting", "Feedback:/feedback"}
 	//cp.links = []string{"Overview:/", "Text:/text", "Bob:/bob", "JQuery:/jquery", "Register:/register", "Hello:/hello/world", "Count:/counting", "Feedback:/feedback"}
 	// IDEAS: News, Norwegian AUR
-	cp.links = append(cp.links, "Sample text:/text")
+	cp.Links = append(cp.links, "Sample text:/text")
 
 	y := time.Now().Year()
 
 	//cp.footerText = "Alexander Rødseth &lt;rodseth@gmail.com&gt;, " + strconv.Itoa(y)
-	cp.footerText = "Alexander Rødseth, " + strconv.Itoa(y)
+	cp.FooterText = "Alexander Rødseth, " + strconv.Itoa(y)
 
 	// Hide and show the correct menus
-	cp.headerJS += UserMenuJS()
-	cp.headerJS += AdminMenuJS()
+	cp.HeaderJS += UserMenuJS()
+	cp.HeaderJS += AdminMenuJS()
 
-	cp.url = "/" // Is replaced when the contentpage is published
+	cp.Url = "/" // Is replaced when the contentpage is published
 
-	cp.colorScheme = NewArchColorScheme()
+	cp.ColorScheme = NewArchColorScheme()
 
 	return cp
 }
