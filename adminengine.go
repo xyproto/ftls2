@@ -16,14 +16,14 @@ import (
 
 type AdminEngine Engine
 
-func NewAdminEngine(state *UserState) *AdminEngine {
-	return &AdminEngine{state}
-}
-
 const (
 	ADMIN = "1"
 	USER  = "0"
 )
+
+func NewAdminEngine(state *UserState) *AdminEngine {
+	return &AdminEngine{state}
+}
 
 // Checks if the current user is logged in as administrator right now
 func (state *UserState) AdminNow(ctx *web.Context) bool {

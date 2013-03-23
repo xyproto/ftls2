@@ -135,10 +135,9 @@ func GenerateSearchHandle(pc PageCollection) WebHandle {
 func GenerateSearchCSS(cs *ColorScheme) SimpleContextHandle {
 	return func(ctx *web.Context) string {
 		ctx.ContentType("css")
-		// TODO: Rename niceblue to something non-color specific
 		return `
 #searchresult {
-	color: ` + cs.niceblue + `;
+	color: ` + cs.nicecolor + `;
 	text-decoration: underline;
 }
 `

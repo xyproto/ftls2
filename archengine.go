@@ -10,6 +10,7 @@ import (
 	"strconv"
 	"time"
 
+	. "github.com/xyproto/browserspeak"
 	"github.com/xyproto/web"
 )
 
@@ -40,7 +41,7 @@ func ArchBaseCP(state *UserState) *ContentPage {
 	//cp.contentJS += ShowIfLoginLogoutRegister("/showmenu/loginlogoutregister", "#menuLogin", "#menuLogout", "#menuRegister")
 
 	// This only works at first page load in Internet Explorer 8. Fun times. Oh well, why bother.
-	cp.headerJS += ShowIfLoginLogoutRegister("/showmenu/loginlogoutregister", "#menuLogin", "#menuLogout", "#menuRegister")
+	cp.headerJS += UserMenuJS()
 
 	// This in combination with hiding the link in genericsite.go is cool, but the layout becomes weird :/
 	//cp.headerJS += ShowAnimatedIf("/showmenu/admin", "#menuAdmin")
@@ -49,6 +50,8 @@ func ArchBaseCP(state *UserState) *ContentPage {
 	cp.headerJS += HideIfNot("/showmenu/admin", "#menuAdmin")
 
 	cp.url = "/" // To be filled in when published
+
+	cp.colorScheme = NewArchColorScheme()
 
 	return cp
 }
@@ -175,10 +178,7 @@ func ServeArchlinuxNo(userState *UserState) {
 	// template content
 	tp := Kake()
 
-	// color scheme
-	cs := NewArchColorScheme()
-
-	ServeSite(ArchBaseCP, userState, cps, tp, cs)
+	ServeSite(ArchBaseCP, userState, cps, tp)
 
 	// "dynamic" pages
 	// Makes helloSF handle the content for /hello/(.*) urls, but wrapped in a BaseCP with the title "Hello"
@@ -188,4 +188,40 @@ func ServeArchlinuxNo(userState *UserState) {
 	PublishArchImages()
 }
 
+func GenerateArchMenuCSS(stretchBackground bool, cs *ColorScheme) SimpleContextHandle {
+	return func(ctx *web.Context) string {
+		ctx.ContentType("css")
+		// one of the extra css files that are loaded after the main style
+		retval := `
+a {
+  text-decoration: none;
+  color: #303030;
+  font-weight: regular;
+}
+a:link {color:` + cs.menu_link + `;}
+a:visited {color:` + cs.menu_link + `;}
+a:hover {color:` + cs.menu_hover + `;}
+a:active {color:` + cs.menu_active + `;}
+`
+		// The load order of background-color, background-size and background-image
+		// is actually significant in Chrome! Do not reorder lightly!
+		if stretchBackground {
+			retval = "body {\nbackground-color: " + cs.default_background + ";\nbackground-size: cover;\n}\n" + retval
+		} else {
+			retval = "body {\nbackground-color: " + cs.default_background + ";\n}\n" + retval
+		}
+		return retval
+	}
+}
+
+func NewArchColorScheme() *ColorScheme {
+	var cs ColorScheme
+	cs.darkgray = "#202020"
+	cs.nicecolor = "#5080D0"   // nice blue
+	cs.menu_link = "#c0c0c0"   // light gray
+	cs.menu_hover = "#efefe0"  // light gray, somewhat yellow
+	cs.menu_active = "#ffffff" // white
+	cs.default_background = "#000030"
+	return &cs
+}
 

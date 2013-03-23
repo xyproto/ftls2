@@ -13,7 +13,7 @@ type Engine struct {
 	state *UserState
 }
 
-func AddTopBox(page *Page, title, subtitle, searchURL, searchButtonText, backgroundTextureURL string, roundedLook bool) (*Tag, error) {
+func AddTopBox(page *Page, title, subtitle, searchURL, searchButtonText, backgroundTextureURL string, roundedLook bool, cs *ColorScheme) (*Tag, error) {
 	body, err := page.GetTag("body")
 	if err != nil {
 		return nil, err
@@ -27,11 +27,11 @@ func AddTopBox(page *Page, title, subtitle, searchURL, searchButtonText, backgro
 	div.AddStyle("padding", "0 0 1em 0")
 	div.AddStyle("top", "0")
 	div.AddStyle("left", "0")
-	div.AddStyle("background-color", NICEGRAY)
+	div.AddStyle("background-color", cs.darkgray)
 	div.AddStyle("position", "fixed")
 	div.AddStyle("display", "block")
 
-	titlebox := AddTitleBox(div, title, subtitle)
+	titlebox := AddTitleBox(div, title, subtitle, cs)
 	titlebox.AddAttr("id", "titlebox")
 	titlebox.AddStyle("margin", "0 0 0 0")
 	// Padding-top + height should be 5em, padding decides the position
@@ -39,7 +39,7 @@ func AddTopBox(page *Page, title, subtitle, searchURL, searchButtonText, backgro
 	titlebox.AddStyle("height", "3.2em")
 	titlebox.AddStyle("width", "100%")
 	titlebox.AddStyle("position", "fixed")
-	titlebox.AddStyle("background-color", NICEGRAY) // gray, could be a gradient
+	titlebox.AddStyle("background-color", cs.darkgray) // gray, could be a gradient
 	titlebox.AddStyle("background", "url('"+backgroundTextureURL+"')")
 	//titlebox.AddStyle("z-index", "2") // 2 is above the search box which is 1
 
@@ -183,7 +183,7 @@ func AddSearchBox(tag *Tag, actionURL, buttonText string, roundedLook bool) *Tag
 	return div
 }
 
-func AddTitleBox(tag *Tag, title, subtitle string) *Tag {
+func AddTitleBox(tag *Tag, title, subtitle string, cs *ColorScheme) *Tag {
 
 	div := tag.AddNewTag("div")
 	div.AddAttr("id", "titlebox")
@@ -213,7 +213,7 @@ func AddTitleBox(tag *Tag, title, subtitle string) *Tag {
 
 	font1 := a.AddNewTag("div")
 	font1.AddAttr("id", "bluetitle")
-	font1.AddStyle("color", NICEBLUE)
+	font1.AddStyle("color", cs.nicecolor)
 	//font1.CustomSansSerif("Armata")
 	font1.SansSerif()
 	font1.AddStyle("font-size", "2.0em")
@@ -273,6 +273,8 @@ func AddMenuBox(page *Page, links, hiddenlinks []string, darkBackgroundTexture s
 		}
 
 		li = ul.AddNewTag("li")
+
+		// TODO: Make sure not duplicate ids are added for two menu entries named "Hi there" and "Hi you"
 		li.AddAttr("id", "menu"+firstword)
 		li.AddStyle("display", "inline")
 		li.SansSerif()

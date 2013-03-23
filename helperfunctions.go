@@ -1,5 +1,7 @@
 package main
 
+// MOVE to browserspeak
+
 import (
 	"math/rand"
 	"strconv"
@@ -48,11 +50,6 @@ func HTMLPageRedirect(url string) string {
 	return "<html><head><script type=\"text/javascript\">window.location.href = \"" + url + "\";</script></head></html>"
 }
 
-// Converts "true" or "false" to a bool
-func TruthValue(val string) bool {
-	return "true" == val
-}
-
 func LoginForm() string {
 	// TODO: Use a CowboyTag instead and create a more general form generator
 	return "<form id=\"loginForm\" action=\"/login\" method=\"POST\"><div style=\"margin: 1em;\"><label for=\"username\" style=\"display: inline-block; float: left; clear: left; width: 150px; text-align: right; margin-right: 2em;\">Username:</label><input style=\"display:inline-block; float:left;\" id=\"username\"><br /><label for=\"password\" style=\"display: inline-block; float: left; clear: left; width: 150px; text-align: right; margin-right: 2em;\">Password:</label><input style=\"display:inline-block; float:left;\" id=\"password\" type=\"password\" name=\"password\"></div><p><button style=\"margin-left: 300px; margin-top: 1em;\" id=\"loginButton\">Login</button></p></form>"
@@ -78,13 +75,42 @@ func MessageOKurl(title, msg, url string) string {
 	return messageComposer(title, msg, "location.href='"+url+"';")
 }
 
+// -------- Keep these here ----------
+
+// Converts "true" or "false" to a bool
+func TruthValue(val string) bool {
+	return "true" == val
+}
+
+// Split a string at the colon into two strings
+// If there's no colon, return the string and an empty string
+func ColonSplit(s string) (string, string) {
+	if strings.Contains(s, ":") {
+		sl := strings.SplitN(s, ":", 2)
+		return sl[0], sl[1]
+	}
+	return s, ""
+}
+
+func Min(a, b int) int {
+	if a < b {
+		return a
+	}
+	return b
+}
+
+func TableCell(b bool) string {
+	if b {
+		return "<td class=\"yes\">yes</td>"
+	}
+	return "<td class=\"no\">no</td>"
+}
+
 func RandomString(length int) string {
 	b := make([]byte, length)
 	for i := 0; i < length; i++ {
 		b[i] = byte(rand.Int63() & 0xff)
 	}
-	//buf := bytes.NewBuffer(b)
-	//return buf.String()
 	return string(b)
 }
 
@@ -111,30 +137,6 @@ func RandomCookieFriendlyString(length int) string {
 		b[i] = ALLOWED[rand.Intn(len(ALLOWED))]
 	}
 	return string(b)
-}
-
-func TableCell(b bool) string {
-	if b {
-		return "<td class=\"yes\">yes</td>"
-	}
-	return "<td class=\"no\">no</td>"
-}
-
-func Min(a, b int) int {
-	if a < b {
-		return a
-	}
-	return b
-}
-
-// Split a string at the colon into two strings
-// If there's no colon, return the string and an empty string
-func ColonSplit(s string) (string, string) {
-	if strings.Contains(s, ":") {
-		sl := strings.SplitN(s, ":", 2)
-		return sl[0], sl[1]
-	}
-	return s, ""
 }
 
 

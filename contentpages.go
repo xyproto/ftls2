@@ -32,6 +32,7 @@ type ContentPage struct {
 	userState                *UserState
 	roundedLook              bool
 	url                      string
+	colorScheme              *ColorScheme
 }
 
 type CPgen (func(userState *UserState) *ContentPage)
@@ -88,6 +89,16 @@ func DefaultCP(userState *UserState) *ContentPage {
 
 	cp.url = "/" // To be filled in when published
 
+	// The default color scheme
+	var cs ColorScheme
+	cs.darkgray = "#202020"
+	cs.nicecolor = "#5080D0"   // nice blue
+	cs.menu_link = "#c0c0c0"   // light gray
+	cs.menu_hover = "#efefe0"  // light gray, somewhat yellow
+	cs.menu_active = "#ffffff" // white
+	cs.default_background = "#000030"
+	cp.colorScheme = &cs
+
 	return &cp
 }
 
@@ -108,7 +119,7 @@ func genericPageBuilder(cp *ContentPage) *Page {
 
 	AddHeader(page, cp.headerJS)
 	AddBodyStyle(page, cp.bgImageURL, cp.stretchBackground)
-	AddTopBox(page, cp.title, cp.subtitle, cp.searchURL, cp.searchButtonText, cp.backgroundTextureURL, cp.roundedLook)
+	AddTopBox(page, cp.title, cp.subtitle, cp.searchURL, cp.searchButtonText, cp.backgroundTextureURL, cp.roundedLook, cp.colorScheme)
 
 	// TODO:
 	// Use something dynamic to add or remove /login and /register depending on the login status
@@ -147,11 +158,12 @@ func PublishCPs(pc PageCollection, cs *ColorScheme, tp map[string]string, cssurl
 
 type BaseCP func(state *UserState) *ContentPage
 
-func ServeSite(basecp BaseCP, userState *UserState, cps PageCollection, tp map[string]string, cs *ColorScheme) {
+func ServeSite(basecp BaseCP, userState *UserState, cps PageCollection, tp map[string]string) {
 	// Add pages for login, logout and register
 	cps = append(cps, *LoginCP(basecp, userState, "/login"))
 	cps = append(cps, *RegisterCP(basecp, userState, "/register"))
 
+	cs := basecp(userState).colorScheme
 	PublishCPs(cps, cs, tp, "/css/extra.css")
 
 	ServeSearchPages(basecp, userState, cps, cs, tp)

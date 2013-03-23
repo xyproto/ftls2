@@ -12,14 +12,18 @@ import (
 	"github.com/xyproto/web"
 )
 
+type UserState struct {
+	// see: http://redis.io/topics/data-types
+	users       *RedisHashMap // Hash map of users, with several different fields per user ("loggedin", "confirmed", "email" etc)
+	usernames   *RedisSet     // A list of all usernames, for easy enumeration
+	unconfirmed *RedisSet     // A list of unconfirmed usernames, for easy enumeration
+	pool        *ConnectionPool   // A connection pool for Redis
+}
+
 // An Engine is a specific piece of a website
 // This part handles the login/logout/registration/confirmation pages
 
 type UserEngine Engine
-
-func NewUserEngine(state *UserState) *UserEngine {
-	return &UserEngine{state}
-}
 
 const (
 	ONLY_LOGIN      = "100"
@@ -34,12 +38,8 @@ const (
 	USERNAME_ALLOWED_LETTERS         = "abcdefghijklmnopqrstuvwxyzæøåABCDEFGHIJKLMNOPQRSTUVWXYZÆØÅ_0123456789"
 )
 
-type UserState struct {
-	// see: http://redis.io/topics/data-types
-	users       *RedisHashMap // Hash map of users, with several different fields per user ("loggedin", "confirmed", "email" etc)
-	usernames   *RedisSet     // A list of all usernames, for easy enumeration
-	unconfirmed *RedisSet     // A list of unconfirmed usernames, for easy enumeration
-	pool        *ConnectionPool   // A connection pool for Redis
+func NewUserEngine(state *UserState) *UserEngine {
+	return &UserEngine{state}
 }
 
 func InitUserSystem(pool *ConnectionPool) *UserState {
@@ -93,6 +93,11 @@ func (state *UserState) HasUser(username string) bool {
 		panic("ERROR: Lost connection to Redis?")
 	}
 	return val
+}
+
+func UserMenuJS() string {
+	// Make sure these corresponds with the menu names from AddMenuBox()
+	return ShowIfLoginLogoutRegister("/showmenu/loginlogoutregister", "#menuLogin", "#menuLogout", "#menuRegister")
 }
 
 // Creates a user without doing ANY checks
