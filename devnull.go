@@ -1,4 +1,4 @@
-package genericsite
+package main
 
 // Dismisses various attempts at accessing this site
 
