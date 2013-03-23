@@ -1,5 +1,7 @@
 package main
 
+// OK, move to "genericsite"
+
 import (
 	"github.com/garyburd/redigo/redis"
 )

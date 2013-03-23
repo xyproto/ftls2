@@ -1,6 +1,10 @@
 package main
 
+// MOVE to "genericsite"
+// Move some of these to "browserspeak"
+
 import (
+	"mime"
 	"time"
 
 	"github.com/drbawb/mustache"
@@ -35,10 +39,44 @@ type ContentPage struct {
 	colorScheme              *ColorScheme
 }
 
+// Content page generator
 type CPgen (func(userState *UserState) *ContentPage)
 
 // A collection of ContentPages
 type PageCollection []ContentPage
+
+// Every input from the user must be intitially stored in a UserInput variable, not in a string!
+// This is just to be aware of which data one should be careful with, and to keep it clean.
+type UserInput string
+
+const (
+	JQUERY_VERSION = "1.9.1"
+)
+
+// browserspeak
+var globalStringCache map[string]string
+
+// browserspeak
+// Wrap a SimpleContextHandle so that the output is cached (with an id)
+// Do not cache functions with side-effects! (that sets the mimetype for instance)
+// The safest thing for now is to only cache images.
+func CacheWrapper(id string, f SimpleContextHandle) SimpleContextHandle {
+	return func(ctx *web.Context) string {
+		if _, ok := globalStringCache[id]; !ok {
+			globalStringCache[id] = f(ctx)
+		}
+		return globalStringCache[id]
+	}
+}
+
+// browserspeak
+func Publish(url, filename string, cache bool) {
+	if cache {
+		web.Get(url, CacheWrapper(url, File(filename)))
+	} else {
+		web.Get(url, File(filename))
+	}
+}
 
 // The default settings
 // Do not publish this page directly, but use it as a basis for the other pages
@@ -246,4 +284,20 @@ func (cp *ContentPage) WrapSimpleContextHandle(sch SimpleContextHandle, tp map[s
 		web.Get(cp.generatedCSSurl, css)
 		return html
 	}
+}
+
+func InitSystem() *UserState {
+	// These common ones are missing!
+	mime.AddExtensionType(".txt", "text/plain; charset=utf-8")
+	mime.AddExtensionType(".ico", "image/x-icon")
+
+	// Create a Redis connection pool
+	pool := NewRedisConnectionPool()
+	//if err != nil {
+	//	panic("ERROR: Can't connect to redis")
+	//}
+	defer pool.Close()
+
+	// The login system, returns a *UserState
+	return InitUserSystem(pool)
 }

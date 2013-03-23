@@ -1,6 +1,8 @@
 package main
 
-// Handle various request that just appeared in the log
+// MOVE to "genericsite"
+
+// Dismiss various attempts at accessing this site.
 
 import (
 	"github.com/xyproto/web"

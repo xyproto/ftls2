@@ -1,5 +1,7 @@
 package main
 
+// OK, move to "browserspeak"
+
 // Creates an anonymous function
 func fn(source string) string {
 	return "function() { " + source + " }"

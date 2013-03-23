@@ -2,8 +2,7 @@ package main
 
 // OK, only IP-specific stuff, 23-03-13
 
-// TODO: Split out as it's own application, with a DNS server too
-//       (or configure a DNS server)
+// TODO: Split out as it's own application, then add DNS functionality
 
 import (
 	. "github.com/xyproto/browserspeak"
@@ -65,12 +64,10 @@ func GenerateGetLastIP(state *IPState) SimpleWebHandle {
 	}
 }
 
-func ServeIPs(pool *ConnectionPool) *IPState {
-	state := InitIPs(pool)
+func ServeIPs(userState *UserState) {
+	ipState := InitIPs(userState.pool)
 
-	web.Get("/setip/(.*)", GenerateSetIP(state))
-	web.Get("/getip/(.*)", GenerateGetLastIP(state))
-	web.Get("/getallips/(.*)", GenerateGetAllIPs(state))
-
-	return state
+	web.Get("/setip/(.*)", GenerateSetIP(ipState))
+	web.Get("/getip/(.*)", GenerateGetLastIP(ipState))
+	web.Get("/getallips/(.*)", GenerateGetAllIPs(ipState))
 }

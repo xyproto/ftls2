@@ -1,5 +1,7 @@
 package main
 
+// Ok, "archlinuxno"
+
 // functions that generates content that can be used in templates
 
 func Kake() map[string]string {

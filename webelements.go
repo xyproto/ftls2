@@ -1,5 +1,7 @@
 package main
 
+// MOVE to "genericsite"
+
 // Various elements of a webpage
 
 import (

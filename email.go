@@ -1,5 +1,9 @@
 package main
 
+// OK, only e-mail related stuff, 23-03-13
+
+// Move to "genericsite" once it has settled
+
 import (
 	"net/smtp"
 )

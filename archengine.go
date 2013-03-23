@@ -2,11 +2,12 @@ package main
 
 // OK, only archlinux.no stuff, 23-03-13
 
+// Move to "archlinuxno" once it has settled
+
 import (
 	"strconv"
 	"time"
 
-	. "github.com/xyproto/browserspeak"
 	"github.com/xyproto/web"
 )
 

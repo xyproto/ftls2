@@ -1,49 +1,13 @@
 package main
 
-//
-// TODO:
-//
-//     Make the title text <a href>
-//     Refactor out getip/setip part to a separate project which is an alternative to dyndns
-//
+// OK, "archlinuxno", 23-03-13
 
 import (
 	"fmt"
-	"mime"
 
 	. "github.com/xyproto/browserspeak"
 	"github.com/xyproto/web"
 )
-
-const (
-	JQUERY_VERSION = "1.9.1"
-)
-
-// Every input from the user must be intitially stored in a UserInput variable, not in a string!
-// This is just to be aware of which data one should be careful with, and to keep it clean.
-type UserInput string
-
-func Publish(url, filename string, cache bool) {
-	if cache {
-		web.Get(url, CacheWrapper(url, File(filename)))
-	} else {
-		web.Get(url, File(filename))
-	}
-}
-
-var globalStringCache map[string]string
-
-// Wrap a SimpleContextHandle so that the output is cached (with an id)
-// Do not cache functions with side-effects! (that sets the mimetype for instance)
-// The safest thing for now is to only cache images.
-func CacheWrapper(id string, f SimpleContextHandle) SimpleContextHandle {
-	return func(ctx *web.Context) string {
-		if _, ok := globalStringCache[id]; !ok {
-			globalStringCache[id] = f(ctx)
-		}
-		return globalStringCache[id]
-	}
-}
 
 func hello(val string) string {
 	return Message("root page", "hello: "+val)
@@ -70,22 +34,10 @@ func notFound2(ctx *web.Context, val string) {
 // TODO: Caching, login
 func main() {
 
-	// These common ones are missing!
-	mime.AddExtensionType(".txt", "text/plain; charset=utf-8")
-	mime.AddExtensionType(".ico", "image/x-icon")
-
-	// Create a Redis connection pool
-	pool := NewRedisConnectionPool()
-	//if err != nil {
-	//	panic("ERROR: Can't connect to redis")
-	//}
-	defer pool.Close()
-
-	// The login system, returns a *UserState
-	userState := InitUserSystem(pool)
+	userState := InitSystem()
 
 	// The dynamic IP webpage (returns an *IPState)
-	ServeIPs(pool)
+	ServeIPs(userState)
 
 	userEngine := NewUserEngine(userState)
 	userEngine.ServeSystem()
@@ -107,9 +59,6 @@ func main() {
 	// stuff in the header when the HEAD method is requested:
 	// if ctx.Request.Method == "HEAD" { return }
 	// See also: curl -I
-
-	// Not found
-	//web.Get("/(.*)", notFound2)
 
 	// Serve on port 3000 for the Nginx instance to use
 	web.Run("0.0.0.0:3000")

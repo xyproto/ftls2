@@ -1,6 +1,8 @@
 package main
 
-// MOVE to browserspeak
+// MOVE most of these functions to "browserspeak"
+
+// Move the rest to "genericsite" once the admin and user systems have settled
 
 import (
 	"math/rand"

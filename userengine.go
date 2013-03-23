@@ -2,6 +2,8 @@ package main
 
 // OK, only user-related stuff, 23-03-13
 
+// Move to "genericsite" once it has settled
+
 import (
 	"crypto/sha256"
 	"errors"
@@ -12,6 +14,7 @@ import (
 
 	. "github.com/xyproto/browserspeak"
 	"github.com/xyproto/web"
+	// "github.com/xyproto/simpleredis"
 )
 
 type UserState struct {

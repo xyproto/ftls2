@@ -1,5 +1,7 @@
 package main
 
+// OK, belongs to "archlinuxno"
+
 // Functions for generating images
 
 import (

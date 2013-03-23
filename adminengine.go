@@ -2,6 +2,8 @@ package main
 
 // OK, only admin stuff, 23-03-13
 
+// Move to "genericsite" once it has settled
+
 import (
 	"strconv"
 	"strings"
