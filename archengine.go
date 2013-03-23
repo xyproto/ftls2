@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/xyproto/web"
+	. "github.com/xyproto/genericsite"
 )
 
 // The default settings for Arch Linux content pages

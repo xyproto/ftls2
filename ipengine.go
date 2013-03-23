@@ -7,7 +7,7 @@ package main
 import (
 	. "github.com/xyproto/browserspeak"
 	"github.com/xyproto/web"
-	// "github.com/xyproto/simpleredis"
+	. "github.com/xyproto/genericsite"
 )
 
 type IPState struct {
