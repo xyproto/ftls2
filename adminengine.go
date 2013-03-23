@@ -25,6 +25,14 @@ func NewAdminEngine(state *UserState) *AdminEngine {
 	return &AdminEngine{state}
 }
 
+func AdminMenuJS() string {
+	// This in combination with hiding the link in genericsite.go is cool, but the layout becomes weird :/
+	// ShowAnimatedIf("/showmenu/admin", "#menuAdmin")
+
+	// This keeps the layout but is less cool
+	return HideIfNot("/showmenu/admin", "#menuAdmin")
+}
+
 // Checks if the current user is logged in as administrator right now
 func (state *UserState) AdminNow(ctx *web.Context) bool {
 	if username := GetBrowserUsername(ctx); username != "" {
@@ -355,6 +363,7 @@ func GenerateToggleAdmin(state *UserState) WebHandle {
 	}
 }
 
+// This is now deprecated. Keep it around only as a nice example of fixing user values that worked.
 func GenerateFixPassword(state *UserState) WebHandle {
 	return func(ctx *web.Context, username string) string {
 		if !state.AdminNow(ctx) {

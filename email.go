@@ -30,4 +30,3 @@ func ConfirmationEmail(domain, link, username, email string) error {
 	hostPort := host + ":25"
 	return smtp.SendMail(hostPort, auth, from, to, msg)
 }
-

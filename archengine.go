@@ -1,10 +1,6 @@
 package main
 
-/*
- * This is the actual static content for the Arch Linux website.
- *
- * There is also login/logout/register, searching and dynamic pages, in other source files
- */
+// OK, only archlinux.no stuff, 23-03-13
 
 import (
 	"strconv"
@@ -24,7 +20,7 @@ func ArchBaseCP(state *UserState) *ContentPage {
 
 	//cp.links = []string{"Overview:/", "Mirrors:/mirrors", "Login:/login", "Register:/register", "Hello:/hello/world", "Count:/counting", "Feedback:/feedback"}
 	//cp.links = []string{"Overview:/", "Text:/text", "Bob:/bob", "JQuery:/jquery", "Register:/register", "Hello:/hello/world", "Count:/counting", "Feedback:/feedback"}
-	//News, Norwegian AUR
+	// IDEAS: News, Norwegian AUR
 	cp.links = append(cp.links, "Sample text:/text")
 
 	y := time.Now().Year()
@@ -32,24 +28,11 @@ func ArchBaseCP(state *UserState) *ContentPage {
 	//cp.footerText = "Alexander Rødseth &lt;rodseth@gmail.com&gt;, " + strconv.Itoa(y)
 	cp.footerText = "Alexander Rødseth, " + strconv.Itoa(y)
 
-
-	// Javascript that applies everywhere
-	//cp.contentJS += HideIfNot("/showmenu/login", "#menuLogin")
-	//cp.contentJS += HideIfNot("/showmenu/logout", "#menuLogout")
-	//cp.contentJS += HideIfNot("/showmenu/register", "#menuRegister")
-	//cp.contentJS += HideIfNotLoginLogoutRegister("/showmenu/loginlogoutregister", "#menuLogin", "#menuLogout", "#menuRegister")
-	//cp.contentJS += ShowIfLoginLogoutRegister("/showmenu/loginlogoutregister", "#menuLogin", "#menuLogout", "#menuRegister")
-
-	// This only works at first page load in Internet Explorer 8. Fun times. Oh well, why bother.
+	// Hide and show the correct menus
 	cp.headerJS += UserMenuJS()
+	cp.headerJS += AdminMenuJS()
 
-	// This in combination with hiding the link in genericsite.go is cool, but the layout becomes weird :/
-	//cp.headerJS += ShowAnimatedIf("/showmenu/admin", "#menuAdmin")
-
-	// This keeps the layout but is less cool
-	cp.headerJS += HideIfNot("/showmenu/admin", "#menuAdmin")
-
-	cp.url = "/" // To be filled in when published
+	cp.url = "/" // Is replaced when the contentpage is published
 
 	cp.colorScheme = NewArchColorScheme()
 
@@ -83,7 +66,7 @@ func PublishArchImages() {
 	//faviconFilename := "/static/generated/img/favicon.ico"
 	//genFavicon(faviconFilename)
 	//Publish("/favicon.ico", faviconFilename, false)
-	Publish("/favicon.ico", "static/img/favicon.ico", false)
+	//Publish("/favicon.ico", "static/img/favicon.ico", false)
 
 	// Tried previously:
 	// "rough.png", "longbg.png", "donutbg.png", "donutbg_light.jpg",
@@ -184,34 +167,8 @@ func ServeArchlinuxNo(userState *UserState) {
 	// Makes helloSF handle the content for /hello/(.*) urls, but wrapped in a BaseCP with the title "Hello"
 	web.Get("/hello/(.*)", ArchBaseTitleCP("Hello", userState).WrapSimpleWebHandle(helloSF, Kake()))
 
-   // static images
+	// static images
 	PublishArchImages()
-}
-
-func GenerateArchMenuCSS(stretchBackground bool, cs *ColorScheme) SimpleContextHandle {
-	return func(ctx *web.Context) string {
-		ctx.ContentType("css")
-		// one of the extra css files that are loaded after the main style
-		retval := `
-a {
-  text-decoration: none;
-  color: #303030;
-  font-weight: regular;
-}
-a:link {color:` + cs.menu_link + `;}
-a:visited {color:` + cs.menu_link + `;}
-a:hover {color:` + cs.menu_hover + `;}
-a:active {color:` + cs.menu_active + `;}
-`
-		// The load order of background-color, background-size and background-image
-		// is actually significant in Chrome! Do not reorder lightly!
-		if stretchBackground {
-			retval = "body {\nbackground-color: " + cs.default_background + ";\nbackground-size: cover;\n}\n" + retval
-		} else {
-			retval = "body {\nbackground-color: " + cs.default_background + ";\n}\n" + retval
-		}
-		return retval
-	}
 }
 
 func NewArchColorScheme() *ColorScheme {
@@ -224,4 +181,3 @@ func NewArchColorScheme() *ColorScheme {
 	cs.default_background = "#000030"
 	return &cs
 }
-

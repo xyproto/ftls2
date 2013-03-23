@@ -8,7 +8,7 @@ import (
 
 type ColorScheme struct {
 	darkgray           string
-	nicecolor           string
+	nicecolor          string
 	menu_link          string
 	menu_hover         string
 	menu_active        string
@@ -54,5 +54,3 @@ func AddBodyStyle(page *Page, bgimageurl string, stretchBackground bool) {
 		body.AddStyle("background", "url('"+bgimageurl+"')")
 	}
 }
-
-

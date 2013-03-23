@@ -175,6 +175,33 @@ func ServeSite(basecp BaseCP, userState *UserState, cps PageCollection, tp map[s
 	// TODO: Generate these
 	Publish("/robots.txt", "static/various/robots.txt", false)
 	Publish("/sitemap_index.xml", "static/various/sitemap_index.xml", false)
+	Publish("/favicon.ico", "static/img/favicon.ico", false)
+}
+
+func GenerateMenuCSS(stretchBackground bool, cs *ColorScheme) SimpleContextHandle {
+	return func(ctx *web.Context) string {
+		ctx.ContentType("css")
+		// one of the extra css files that are loaded after the main style
+		retval := `
+a {
+  text-decoration: none;
+  color: #303030;
+  font-weight: regular;
+}
+a:link {color:` + cs.menu_link + `;}
+a:visited {color:` + cs.menu_link + `;}
+a:hover {color:` + cs.menu_hover + `;}
+a:active {color:` + cs.menu_active + `;}
+`
+		// The load order of background-color, background-size and background-image
+		// is actually significant in Chrome! Do not reorder lightly!
+		if stretchBackground {
+			retval = "body {\nbackground-color: " + cs.default_background + ";\nbackground-size: cover;\n}\n" + retval
+		} else {
+			retval = "body {\nbackground-color: " + cs.default_background + ";\n}\n" + retval
+		}
+		return retval
+	}
 }
 
 // Make an html and css page available
@@ -182,7 +209,7 @@ func (cp *ContentPage) Pub(url, cssurl string, cs *ColorScheme, templateContent 
 	genericpage := genericPageBuilder(cp)
 	web.Get(url, GenerateHTMLwithTemplate(genericpage, templateContent))
 	web.Get(cp.generatedCSSurl, GenerateCSS(genericpage))
-	web.Get(cssurl, GenerateArchMenuCSS(cp.stretchBackground, cs))
+	web.Get(cssurl, GenerateMenuCSS(cp.stretchBackground, cs))
 }
 
 // Wrap a lonely string in an entire webpage

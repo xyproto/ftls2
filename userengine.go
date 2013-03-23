@@ -1,5 +1,7 @@
 package main
 
+// OK, only user-related stuff, 23-03-13
+
 import (
 	"crypto/sha256"
 	"errors"
@@ -14,10 +16,10 @@ import (
 
 type UserState struct {
 	// see: http://redis.io/topics/data-types
-	users       *RedisHashMap // Hash map of users, with several different fields per user ("loggedin", "confirmed", "email" etc)
-	usernames   *RedisSet     // A list of all usernames, for easy enumeration
-	unconfirmed *RedisSet     // A list of unconfirmed usernames, for easy enumeration
-	pool        *ConnectionPool   // A connection pool for Redis
+	users       *RedisHashMap   // Hash map of users, with several different fields per user ("loggedin", "confirmed", "email" etc)
+	usernames   *RedisSet       // A list of all usernames, for easy enumeration
+	unconfirmed *RedisSet       // A list of unconfirmed usernames, for easy enumeration
+	pool        *ConnectionPool // A connection pool for Redis
 }
 
 // An Engine is a specific piece of a website
@@ -97,6 +99,7 @@ func (state *UserState) HasUser(username string) bool {
 
 func UserMenuJS() string {
 	// Make sure these corresponds with the menu names from AddMenuBox()
+	// This only works at first page load in Internet Explorer 8. Fun times. Oh well, why bother.
 	return ShowIfLoginLogoutRegister("/showmenu/loginlogoutregister", "#menuLogin", "#menuLogout", "#menuRegister")
 }
 
@@ -136,10 +139,9 @@ func CorrectPassword(state *UserState, username, password string) bool {
 	if hashedPassword == HashPasswordVersion2(password) {
 		return true
 	}
-	// TODO: Remove the old password hashing eventually
-	if hashedPassword == HashPasswordVersion1(password) {
-		return true
-	}
+	//if hashedPassword == HashPasswordVersion1(password) {
+	//	return true
+	//}
 	return false
 }
 
@@ -261,12 +263,6 @@ func GenerateLoginUser(state *UserState) WebHandle {
 
 		return ""
 	}
-}
-
-// TODO: Remove this version completely by writing a function that makes
-//       the transition from Version1 to Version2
-func HashPasswordVersion1(password string) string {
-	return "abc123" + password + "abc123"
 }
 
 func HashPasswordVersion2(password string) string {
