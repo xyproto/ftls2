@@ -10,6 +10,7 @@ import (
 
 	"github.com/xyproto/web"
 	. "github.com/xyproto/genericsite"
+	. "github.com/xyproto/browserspeak"
 )
 
 // The default settings for Arch Linux content pages
@@ -23,7 +24,7 @@ func ArchBaseCP(state *UserState) *ContentPage {
 	//cp.links = []string{"Overview:/", "Mirrors:/mirrors", "Login:/login", "Register:/register", "Hello:/hello/world", "Count:/counting", "Feedback:/feedback"}
 	//cp.links = []string{"Overview:/", "Text:/text", "Bob:/bob", "JQuery:/jquery", "Register:/register", "Hello:/hello/world", "Count:/counting", "Feedback:/feedback"}
 	// IDEAS: News, Norwegian AUR
-	cp.Links = append(cp.links, "Sample text:/text")
+	cp.Links = append(cp.Links, "Sample text:/text")
 
 	y := time.Now().Year()
 
@@ -175,11 +176,11 @@ func ServeArchlinuxNo(userState *UserState) {
 
 func NewArchColorScheme() *ColorScheme {
 	var cs ColorScheme
-	cs.darkgray = "#202020"
-	cs.nicecolor = "#5080D0"   // nice blue
-	cs.menu_link = "#c0c0c0"   // light gray
-	cs.menu_hover = "#efefe0"  // light gray, somewhat yellow
-	cs.menu_active = "#ffffff" // white
-	cs.default_background = "#000030"
+	cs.Darkgray = "#202020"
+	cs.Nicecolor = "#5080D0"   // nice blue
+	cs.Menu_link = "#c0c0c0"   // light gray
+	cs.Menu_hover = "#efefe0"  // light gray, somewhat yellow
+	cs.Menu_active = "#ffffff" // white
+	cs.Default_background = "#000030"
 	return &cs
 }

@@ -40,6 +40,11 @@ while true; do
       echo ok
     fi
     echo
+    echo 'Backing up executable'
+    if [ -e "/tmp/$BIN" ]; then
+      rm "/tmp/$BIN"
+    fi
+    cp "./$BIN" "/tmp/$BIN"
     echo 'Starting server'
     ./$BIN &
     echo 'Writing pid'
