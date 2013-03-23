@@ -138,22 +138,24 @@ func PublishCPs(pc PageCollection, cs *ColorScheme, tp map[string]string, cssurl
 	}
 }
 
-// Returns a BaseCP with the contentTitle set
-func BaseTitleCP(contentTitle string, userState *UserState) *ContentPage {
-	cp := BaseCP(userState)
-	cp.contentTitle = contentTitle
-	return cp
-}
+//// Returns a DefaultCP with the contentTitle set
+//func DefaultTitleCP(contentTitle string, userState *UserState) *ContentPage {
+//	cp := DefaultCP(userState)
+//	cp.contentTitle = contentTitle
+//	return cp
+//}
 
-func ServeSite(userState *UserState, cps PageCollection, tp map[string]string, cs *ColorScheme) {
+type BaseCP func(state *UserState) *ContentPage
+
+func ServeSite(basecp BaseCP, userState *UserState, cps PageCollection, tp map[string]string, cs *ColorScheme) {
 	// Add pages for login, logout and register
-	cps = append(cps, *LoginCP(userState, "/login"))
-	cps = append(cps, *RegisterCP(userState, "/register"))
+	cps = append(cps, *LoginCP(basecp, userState, "/login"))
+	cps = append(cps, *RegisterCP(basecp, userState, "/register"))
 
 	PublishCPs(cps, cs, tp, "/css/extra.css")
 
-	ServeSearchPages(userState, cps, cs, tp)
-	ServeAdminPages(userState, cps, cs, tp)
+	ServeSearchPages(basecp, userState, cps, cs, tp)
+	ServeAdminPages(basecp, userState, cs, tp)
 
 	// TODO: Add fallback to this local version
 	Publish("/js/jquery-"+JQUERY_VERSION+".js", "static/js/jquery-"+JQUERY_VERSION+".js", true)

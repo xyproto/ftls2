@@ -93,8 +93,9 @@ table, th, tr, td {
 	}
 }
 
-func ServeAdminPages(state *UserState, cps PageCollection, cs *ColorScheme, tp map[string]string) {
-	adminCP := BaseTitleCP("Admin", state)
+func ServeAdminPages(basecp BaseCP, state *UserState, cs *ColorScheme, tp map[string]string) {
+	adminCP := basecp(state)
+	adminCP.contentTitle = "Admin"
 	adminCP.extraCSSurls = append(adminCP.extraCSSurls, "/css/admin.css")
 
 	// Hide the Admin menu if we're on the Admin page
@@ -127,9 +128,9 @@ func GenerateAdminStatus(state *UserState) SimpleContextHandle {
 			for _, username := range usernames {
 				s += "<tr>"
 				s += "<td><a class=\"username\" href=\"/status/" + username + "\">" + username + "</a></td>"
-				s += bool2td(state.IsConfirmed(username))
-				s += bool2td(state.IsLoggedIn(username))
-				s += bool2td(state.IsAdministrator(username))
+				s += TableCell(state.IsConfirmed(username))
+				s += TableCell(state.IsLoggedIn(username))
+				s += TableCell(state.IsAdministrator(username))
 				s += "<td><a class=\"darkgrey\" href=\"/admintoggle/" + username + "\">admin toggle</a></td>"
 				// TODO: Ask for confirmation first with a MessageOKurl("blabla", "blabla", "/actually/remove/stuff")
 				s += "<td><a class=\"careful\" href=\"/remove/" + username + "\">remove</a></td>"
@@ -381,7 +382,6 @@ func GenerateFixPassword(state *UserState) WebHandle {
 	}
 }
 
-// Needed to fullfill the Engine interface, serves the pages
 func (ae *AdminEngine) ServeSystem() {
 	state := ae.state
 

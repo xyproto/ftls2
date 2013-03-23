@@ -261,13 +261,19 @@ func AddMenuBox(page *Page, links, hiddenlinks []string, darkBackgroundTexture s
 	ul.AddStyle("margin", "0")
 
 	var a, li, sep *Tag
-	var text, url string
+	var text, url, firstword string
 
 	for i, text_url := range links {
-		text, url = colonsplit(text_url)
+		text, url = ColonSplit(text_url)
+
+		firstword = text
+		if strings.Contains(text, " ") {
+			// Get the first word of the menu text
+			firstword = strings.SplitN(text, " ", 2)[0]
+		}
 
 		li = ul.AddNewTag("li")
-		li.AddAttr("id", "menu"+text)
+		li.AddAttr("id", "menu"+firstword)
 		li.AddStyle("display", "inline")
 		li.SansSerif()
 		//li.CustomSansSerif("Armata")
@@ -288,7 +294,7 @@ func AddMenuBox(page *Page, links, hiddenlinks []string, darkBackgroundTexture s
 		}
 
 		a = li.AddNewTag("a")
-		a.AddAttr("id", "menulink")
+		a.AddAttr("class", "menulink")
 		a.AddAttr("href", url)
 		a.AddContent(text)
 	}

@@ -452,8 +452,8 @@ func createUserState(pool *ConnectionPool) *UserState {
 	return state
 }
 
-func LoginCP(userState *UserState, url string) *ContentPage {
-	cp := BaseCP(userState)
+func LoginCP(basecp BaseCP, state *UserState, url string) *ContentPage {
+	cp := basecp(state)
 	cp.contentTitle = "Login"
 	cp.contentHTML = LoginForm()
 	cp.contentJS += OnClick("#loginButton", "$('#loginForm').get(0).setAttribute('action', '/login/' + $('#username').val());")
@@ -466,8 +466,8 @@ func LoginCP(userState *UserState, url string) *ContentPage {
 	return cp
 }
 
-func RegisterCP(userState *UserState, url string) *ContentPage {
-	cp := BaseCP(userState)
+func RegisterCP(basecp BaseCP, state *UserState, url string) *ContentPage {
+	cp := basecp(state)
 	cp.contentTitle = "Register"
 	cp.contentHTML = RegisterForm()
 	cp.contentJS += OnClick("#registerButton", "$('#registerForm').get(0).setAttribute('action', '/register/' + $('#username').val());")
@@ -480,7 +480,6 @@ func RegisterCP(userState *UserState, url string) *ContentPage {
 	return cp
 }
 
-// TODO: RESTful services?
 func (ue *UserEngine) ServeSystem() {
 	state := ue.state
 	web.Post("/register/(.*)", GenerateRegisterUser(state))

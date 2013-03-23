@@ -18,7 +18,7 @@ const (
 // Returns a list of urls or an empty list, a list of page titles and the string that was actually searched for
 func searchResults(userSearchText UserInput, pc PageCollection) ([]string, []string, string, []int) {
 	// Search for maximum 100 letters, lowercase and trimmed
-	searchText := strings.ToLower(strings.TrimSpace(string(userSearchText)[:min(100, len(string(userSearchText)))]))
+	searchText := strings.ToLower(strings.TrimSpace(string(userSearchText)[:Min(100, len(string(userSearchText)))]))
 
 	if searchText == "" {
 		// No search results for the empty string
@@ -146,8 +146,9 @@ func GenerateSearchCSS(cs *ColorScheme) SimpleContextHandle {
 	}
 }
 
-func ServeSearchPages(state *UserState, cps PageCollection, cs *ColorScheme, tp map[string]string) {
-	searchCP := BaseTitleCP("Search results", state)
+func ServeSearchPages(basecp BaseCP, state *UserState, cps PageCollection, cs *ColorScheme, tp map[string]string) {
+	searchCP := basecp(state)
+	searchCP.contentTitle = "Search results"
 	searchCP.extraCSSurls = append(searchCP.extraCSSurls, "/css/search.css")
 
 	// Hide the Search menu if we're on the Search page

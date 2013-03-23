@@ -113,14 +113,14 @@ func RandomCookieFriendlyString(length int) string {
 	return string(b)
 }
 
-func bool2td(b bool) string {
+func TableCell(b bool) string {
 	if b {
 		return "<td class=\"yes\">yes</td>"
 	}
 	return "<td class=\"no\">no</td>"
 }
 
-func min(a, b int) int {
+func Min(a, b int) int {
 	if a < b {
 		return a
 	}
@@ -129,7 +129,7 @@ func min(a, b int) int {
 
 // Split a string at the colon into two strings
 // If there's no colon, return the string and an empty string
-func colonsplit(s string) (string, string) {
+func ColonSplit(s string) (string, string) {
 	if strings.Contains(s, ":") {
 		sl := strings.SplitN(s, ":", 2)
 		return sl[0], sl[1]
