@@ -39,6 +39,58 @@ type CPgen (func(userState *UserState) *ContentPage)
 // A collection of ContentPages
 type PageCollection []ContentPage
 
+// The default settings
+// Do not publish this page directly, but use it as a basis for the other pages
+func DefaultCP(userState *UserState) *ContentPage {
+	var cp ContentPage
+	cp.generatedCSSurl = "/css/style.css"
+	cp.extraCSSurls = []string{"/css/extra.css"}
+	// TODO: fallback to local jquery.min.js, google how
+	cp.jqueryJSurl = "//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js" // "/js/jquery-1.9.1.js"
+	cp.faviconurl = "/favicon.ico"
+	cp.links = []string{"Overview:/", "Login:/login", "Logout:/logout", "Register:/register", "Admin:/admin"}
+	cp.contentTitle = "NOP"
+	cp.contentHTML = "NOP NOP NOP"
+	cp.contentJS = ""
+	cp.headerJS = ""
+	cp.searchButtonText = "Search"
+	cp.searchURL = "/search"
+
+	// http://wptheming.wpengine.netdna-cdn.com/wp-content/uploads/2010/04/gray-texture.jpg
+	// TODO: Draw these two backgroundimages with a canvas instead
+	cp.backgroundTextureURL = "/img/gray.jpg"
+	// http://turbo.designwoop.com/uploads/2012/03/16_free_subtle_textures_subtle_dark_vertical.jpg
+	cp.darkBackgroundTextureURL = "/img/darkgray.jpg"
+
+	cp.footerColor = "black"
+	cp.footerTextColor = "#303040"
+
+	cp.footerText = "NOP"
+
+	cp.userState = userState
+	cp.roundedLook = false
+
+	// Javascript that applies everywhere
+	//cp.contentJS += HideIfNot("/showmenu/login", "#menuLogin")
+	//cp.contentJS += HideIfNot("/showmenu/logout", "#menuLogout")
+	//cp.contentJS += HideIfNot("/showmenu/register", "#menuRegister")
+	//cp.contentJS += HideIfNotLoginLogoutRegister("/showmenu/loginlogoutregister", "#menuLogin", "#menuLogout", "#menuRegister")
+	//cp.contentJS += ShowIfLoginLogoutRegister("/showmenu/loginlogoutregister", "#menuLogin", "#menuLogout", "#menuRegister")
+
+	// This only works at first page load in Internet Explorer 8. Fun times. Oh well, why bother.
+	cp.headerJS += ShowIfLoginLogoutRegister("/showmenu/loginlogoutregister", "#menuLogin", "#menuLogout", "#menuRegister")
+
+	// This in combination with hiding the link in genericsite.go is cool, but the layout becomes weird :/
+	//cp.headerJS += ShowAnimatedIf("/showmenu/admin", "#menuAdmin")
+
+	// This keeps the layout but is less cool
+	cp.headerJS += HideIfNot("/showmenu/admin", "#menuAdmin")
+
+	cp.url = "/" // To be filled in when published
+
+	return &cp
+}
+
 // TODO: Consider using Mustache for replacing elements after the page has been generated
 // (for showing/hiding "login", "logout" or "register"
 func genericPageBuilder(cp *ContentPage) *Page {

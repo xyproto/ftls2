@@ -13,44 +13,24 @@ import (
 	"github.com/xyproto/web"
 )
 
-// The default settings
-// Do not publish this page directly, but use it as a basis for the other pages
-// TODO: Remove anything Arch-specific, rename the default background images
-// TODO: Make it easy to replace logo and footer text
-func BaseCP(userState *UserState) *ContentPage {
-	var cp ContentPage
-	cp.generatedCSSurl = "/css/style.css"
-	cp.extraCSSurls = []string{"/css/extra.css"}
-	// TODO: fallback to local jquery.min.js, google how
-	cp.jqueryJSurl = "//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js" // "/js/jquery-1.9.1.js"
-	cp.faviconurl = "/favicon.ico"
+// The default settings for Arch Linux content pages
+func ArchBaseCP(state *UserState) *ContentPage {
+	cp := DefaultCP(state)
 	cp.bgImageURL = "/img/norway4.jpg"
 	cp.stretchBackground = true
 	cp.title = "Arch Linux"
 	cp.subtitle = "no"
+
 	//cp.links = []string{"Overview:/", "Mirrors:/mirrors", "Login:/login", "Register:/register", "Hello:/hello/world", "Count:/counting", "Feedback:/feedback"}
 	//cp.links = []string{"Overview:/", "Text:/text", "Bob:/bob", "JQuery:/jquery", "Register:/register", "Hello:/hello/world", "Count:/counting", "Feedback:/feedback"}
 	//News, Norwegian AUR
+	cp.links = append(cp.links, "JQuery:/jquery"}
 
-	cp.links = []string{"Overview:/", "Login:/login", "Logout:/logout", "Register:/register", "Admin:/admin"}
-	cp.contentTitle = "NOP"
-	cp.contentHTML = "NOP NOP NOP"
-	cp.contentJS = ""
-	cp.headerJS = ""
-	cp.searchButtonText = "Search"
-	cp.searchURL = "/search"
-	// http://wptheming.wpengine.netdna-cdn.com/wp-content/uploads/2010/04/gray-texture.jpg
-	// TODO: Draw these two backgroundimages with a canvas instead
-	cp.backgroundTextureURL = "/img/gray.jpg"
-	// http://turbo.designwoop.com/uploads/2012/03/16_free_subtle_textures_subtle_dark_vertical.jpg
-	cp.darkBackgroundTextureURL = "/img/darkgray.jpg"
-	cp.footerColor = "black"
-	cp.footerTextColor = "#303040"
 	y := time.Now().Year()
+
 	//cp.footerText = "Alexander Rødseth &lt;rodseth@gmail.com&gt;, " + strconv.Itoa(y)
 	cp.footerText = "Alexander Rødseth, " + strconv.Itoa(y)
-	cp.userState = userState
-	cp.roundedLook = false
+
 
 	// Javascript that applies everywhere
 	//cp.contentJS += HideIfNot("/showmenu/login", "#menuLogin")
@@ -107,13 +87,8 @@ func PublishArchImages() {
 	}
 }
 
-func ServeDynamicPages(userState *UserState) {
-	// Makes helloSF handle the content for /hello/(.*) urls,
-	// but wrapped in a BaseCP with the title "Hello"
-	web.Get("/hello/(.*)", BaseTitleCP("Hello", userState).WrapSimpleWebHandle(helloSF, Kake()))
-}
-
 // Routing for the archlinux.no webpage
+// Admin, search and user management is already provided
 func ServeArchlinuxNo(userState *UserState) {
 	// Pages that only depends on the user state
 	cps := []ContentPage{
@@ -133,7 +108,11 @@ func ServeArchlinuxNo(userState *UserState) {
 	cs := NewArchColorScheme()
 
 	ServeSite(userState, cps, tp, cs)
-	ServeDynamicPages(userState)
 
+	// "dynamic" pages
+	// Makes helloSF handle the content for /hello/(.*) urls, but wrapped in a BaseCP with the title "Hello"
+	web.Get("/hello/(.*)", BaseTitleCP("Hello", userState).WrapSimpleWebHandle(helloSF, Kake()))
+
+   // static images
 	PublishArchImages()
 }
