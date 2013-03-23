@@ -3,6 +3,7 @@ package main
 import (
 	"math/rand"
 	"strconv"
+	"strings"
 
 	"github.com/xyproto/browserspeak"
 )
@@ -125,3 +126,15 @@ func min(a, b int) int {
 	}
 	return b
 }
+
+// Split a string at the colon into two strings
+// If there's no colon, return the string and an empty string
+func colonsplit(s string) (string, string) {
+	if strings.Contains(s, ":") {
+		sl := strings.SplitN(s, ":", 2)
+		return sl[0], sl[1]
+	}
+	return s, ""
+}
+
+

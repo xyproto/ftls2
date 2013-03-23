@@ -1,11 +1,14 @@
 package main
 
+// OK, only admin stuff, 23-03-13
+
 import (
-	"strings"
 	"strconv"
+	"strings"
 
 	. "github.com/xyproto/browserspeak"
 	"github.com/xyproto/web"
+	// "github.com/xyproto/contentpage"
 )
 
 // An Engine is a specific piece of a website
@@ -369,16 +372,14 @@ func GenerateFixPassword(state *UserState) WebHandle {
 		}
 		if strings.HasPrefix(passwordHash, "abc123") {
 			if strings.HasSuffix(passwordHash, "abc123") {
-				password = passwordHash[6:len(passwordHash)-6]
+				password = passwordHash[6 : len(passwordHash)-6]
 			}
 		}
 		newPasswordHash := HashPasswordVersion2(password)
 		state.users.Set(username, "password", newPasswordHash)
-		return MessageOKurl("Fix password", "Ok, upgraded the password hash for " + username + " to version 2.", "/admin")
+		return MessageOKurl("Fix password", "Ok, upgraded the password hash for "+username+" to version 2.", "/admin")
 	}
 }
-
-
 
 // Needed to fullfill the Engine interface, serves the pages
 func (ae *AdminEngine) ServeSystem() {

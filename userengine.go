@@ -1,15 +1,13 @@
 package main
 
 import (
+	"crypto/sha256"
 	"errors"
-	"fmt"
+	"io"
 	"math/rand"
 	"strings"
 	"time"
-	"io"
-	"crypto/sha256"
 
-	"github.com/garyburd/redigo/redis"
 	. "github.com/xyproto/browserspeak"
 	"github.com/xyproto/web"
 )
@@ -41,10 +39,10 @@ type UserState struct {
 	users       *RedisHashMap // Hash map of users, with several different fields per user ("loggedin", "confirmed", "email" etc)
 	usernames   *RedisSet     // A list of all usernames, for easy enumeration
 	unconfirmed *RedisSet     // A list of unconfirmed usernames, for easy enumeration
-	pool        *redis.Pool   // A connection pool for Redis
+	pool        *ConnectionPool   // A connection pool for Redis
 }
 
-func InitUserSystem(pool *redis.Pool) *UserState {
+func InitUserSystem(pool *ConnectionPool) *UserState {
 
 	// For the secure cookies
 	// This must happen before the random seeding, or 
@@ -91,9 +89,8 @@ func GenerateShowLoginLogoutRegister(state *UserState) SimpleContextHandle {
 func (state *UserState) HasUser(username string) bool {
 	val, err := state.usernames.Has(username)
 	if err != nil {
-		// TODO: Figure out why this happens
-		fmt.Println(err)
-		panic("ERROR: Lost connection to redis?")
+		// This happened at concurrent connections before introducing the connection pool
+		panic("ERROR: Lost connection to Redis?")
 	}
 	return val
 }
@@ -270,10 +267,9 @@ func HashPasswordVersion1(password string) string {
 func HashPasswordVersion2(password string) string {
 	hasher := sha256.New()
 	// TODO: Read up on password hashing
-	io.WriteString(hasher, password + "some salt is better than none")
+	io.WriteString(hasher, password+"some salt is better than none")
 	return string(hasher.Sum(nil))
 }
-
 
 // TODO: Forgot username? Enter email, send username.
 // TODO: Lost confirmation link? Enter mail, Receive confirmation link.
@@ -446,7 +442,7 @@ func GenerateNoJavascript() SimpleContextHandle {
 	}
 }
 
-func createUserState(pool *redis.Pool) *UserState {
+func createUserState(pool *ConnectionPool) *UserState {
 	// For the database
 	state := new(UserState)
 	state.users = NewRedisHashMap(pool, "users")
@@ -454,6 +450,34 @@ func createUserState(pool *redis.Pool) *UserState {
 	state.unconfirmed = NewRedisSet(pool, "unconfirmed")
 	state.pool = pool
 	return state
+}
+
+func LoginCP(userState *UserState, url string) *ContentPage {
+	cp := BaseCP(userState)
+	cp.contentTitle = "Login"
+	cp.contentHTML = LoginForm()
+	cp.contentJS += OnClick("#loginButton", "$('#loginForm').get(0).setAttribute('action', '/login/' + $('#username').val());")
+
+	// Hide the Login menu if we're on the Login page
+	// TODO: Replace with the entire Javascript expression, not just menuNop?
+	cp.headerJS = strings.Replace(cp.headerJS, "menuLogin", "menuNop", 1)
+
+	cp.url = url
+	return cp
+}
+
+func RegisterCP(userState *UserState, url string) *ContentPage {
+	cp := BaseCP(userState)
+	cp.contentTitle = "Register"
+	cp.contentHTML = RegisterForm()
+	cp.contentJS += OnClick("#registerButton", "$('#registerForm').get(0).setAttribute('action', '/register/' + $('#username').val());")
+	cp.url = url
+
+	// Hide the Register menu if we're on the Register page
+	// TODO: Replace with the entire Javascript expression, not just menuNop?
+	cp.headerJS = strings.Replace(cp.headerJS, "menuRegister", "menuNop", 1)
+
+	return cp
 }
 
 // TODO: RESTful services?

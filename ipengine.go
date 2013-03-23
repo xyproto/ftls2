@@ -1,17 +1,22 @@
 package main
 
+// OK, only IP-specific stuff, 23-03-13
+
+// TODO: Split out as it's own application, with a DNS server too
+//       (or configure a DNS server)
+
 import (
-	"github.com/garyburd/redigo/redis"
 	. "github.com/xyproto/browserspeak"
 	"github.com/xyproto/web"
+	// "github.com/xyproto/simpleredis"
 )
 
 type IPState struct {
 	data *RedisList
-	pool *redis.Pool
+	pool *ConnectionPool
 }
 
-func InitIPs(pool *redis.Pool) *IPState {
+func InitIPs(pool *ConnectionPool) *IPState {
 
 	// Create a RedisList for storing IP adresses
 	ips := NewRedisList(pool, "IPs")
@@ -60,8 +65,7 @@ func GenerateGetLastIP(state *IPState) SimpleWebHandle {
 	}
 }
 
-// TODO: RESTful services
-func ServeIPs(pool *redis.Pool) *IPState {
+func ServeIPs(pool *ConnectionPool) *IPState {
 	state := InitIPs(pool)
 
 	web.Get("/setip/(.*)", GenerateSetIP(state))

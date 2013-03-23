@@ -1,15 +1,15 @@
 package main
 
 import (
-	//"fmt"
-
 	"github.com/garyburd/redigo/redis"
 )
 
-// Functions for dealing with a short list of string values in Redis
+// Functions for dealing with a just a few string values in Redis
+
+type ConnectionPool redis.Pool
 
 type RedisDatastructure struct {
-	pool *redis.Pool // connection pool
+	pool *ConnectionPool
 	id   string
 }
 
@@ -18,19 +18,29 @@ type RedisKeyValue RedisDatastructure
 type RedisHashMap RedisDatastructure
 type RedisSet RedisDatastructure
 
-func NewRedisList(pool *redis.Pool, id string) *RedisList {
+func (pool *ConnectionPool) Close() {
+	redisPool := redis.Pool(*pool)
+	redisPool.Close()
+}
+
+func (pool *ConnectionPool) Get() redis.Conn {
+	redisPool := redis.Pool(*pool)
+	return redisPool.Get()
+}
+
+func NewRedisList(pool *ConnectionPool, id string) *RedisList {
 	return &RedisList{pool, id}
 }
 
-func NewRedisKeyValue(pool *redis.Pool, id string) *RedisKeyValue {
+func NewRedisKeyValue(pool *ConnectionPool, id string) *RedisKeyValue {
 	return &RedisKeyValue{pool, id}
 }
 
-func NewRedisHashMap(pool *redis.Pool, id string) *RedisHashMap {
+func NewRedisHashMap(pool *ConnectionPool, id string) *RedisHashMap {
 	return &RedisHashMap{pool, id}
 }
 
-func NewRedisSet(pool *redis.Pool, id string) *RedisSet {
+func NewRedisSet(pool *ConnectionPool, id string) *RedisSet {
 	return &RedisSet{pool, id}
 }
 
@@ -39,9 +49,11 @@ func newRedisConnection() (redis.Conn, error) {
 	return redis.Dial("tcp", ":6379")
 }
 
-func NewRedisConnectionPool() *redis.Pool {
+func NewRedisConnectionPool() *ConnectionPool {
 	// The second argument is the maximum number of idle connections
-	return redis.NewPool(newRedisConnection, 3)
+	redisPool := redis.NewPool(newRedisConnection, 3)
+	pool := ConnectionPool(*redisPool)
+	return &pool
 }
 
 func (rs *RedisSet) Add(value string) error {
