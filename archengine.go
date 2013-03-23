@@ -44,23 +44,23 @@ func ArchBaseCP(state *UserState) *ContentPage {
 //// Returns a ArchBaseCP with the contentTitle set
 func ArchBaseTitleCP(contentTitle string, userState *UserState) *ContentPage {
 	cp := ArchBaseCP(userState)
-	cp.contentTitle = contentTitle
+	cp.ContentTitle = contentTitle
 	return cp
 }
 
 func OverviewCP(userState *UserState, url string) *ContentPage {
 	cp := ArchBaseCP(userState)
-	cp.contentTitle = "Overview"
-	cp.contentHTML = `This site is currently under construction.<br />Visit the <a href="https://bbs.archlinux.org/viewtopic.php?id=4998">Arch Linux Forum</a> in the meantime.<br /><br /><i>- Alexander Rødseth &lt;rodseth / gmail&gt;</i>`
-	cp.url = url
+	cp.ContentTitle = "Overview"
+	cp.ContentHTML = `This site is currently under construction.<br />Visit the <a href="https://bbs.archlinux.org/viewtopic.php?id=4998">Arch Linux Forum</a> in the meantime.<br /><br /><i>- Alexander Rødseth &lt;rodseth / gmail&gt;</i>`
+	cp.Url = url
 	return cp
 }
 
 func MirrorsCP(userState *UserState, url string) *ContentPage {
 	cp := ArchBaseCP(userState)
-	cp.contentTitle = "Mirrors"
-	cp.contentHTML = "List over Norwegian Arch Linux mirrors:"
-	cp.url = url
+	cp.ContentTitle = "Mirrors"
+	cp.ContentHTML = "List over Norwegian Arch Linux mirrors:"
+	cp.Url = url
 	return cp
 }
 
@@ -84,9 +84,9 @@ func PublishArchImages() {
 
 func CountCP(userState *UserState, url string) *ContentPage {
 	apc := ArchBaseCP(userState)
-	apc.contentTitle = "Counting"
-	apc.contentHTML = "1 2 3"
-	apc.url = url
+	apc.ContentTitle = "Counting"
+	apc.ContentHTML = "1 2 3"
+	apc.Url = url
 	return apc
 }
 
@@ -96,54 +96,54 @@ func CountCP(userState *UserState, url string) *ContentPage {
 // That works fairly well.
 func BobCP(userState *UserState, url string) *ContentPage {
 	apc := ArchBaseCP(userState)
-	apc.contentTitle = "Bob"
+	apc.ContentTitle = "Bob"
 	if userState.HasUser("bob") {
-		apc.contentHTML = "has bob, l "
+		apc.ContentHTML = "has bob, l "
 	} else {
-		apc.contentHTML = "no bob, l "
+		apc.ContentHTML = "no bob, l "
 	}
 	if userState.IsLoggedIn("bob") {
-		apc.contentHTML += "yes"
+		apc.ContentHTML += "yes"
 	} else {
-		apc.contentHTML += "no"
+		apc.ContentHTML += "no"
 	}
-	apc.url = url
+	apc.Url = url
 	return apc
 }
 
 func JQueryCP(userState *UserState, url string) *ContentPage {
 	apc := ArchBaseCP(userState)
-	apc.contentTitle = "JQuery"
+	apc.ContentTitle = "JQuery"
 
-	apc.contentHTML = "<button id=clickme>bob</button><br />"
-	apc.contentHTML += "<div id=status>status</div>"
+	apc.ContentHTML = "<button id=clickme>bob</button><br />"
+	apc.ContentHTML += "<div id=status>status</div>"
 
 	//apc.contentJS = OnClick("#clickme", GetTest())
 	//apc.contentJS += OnClick("#clickme", SetText("#clickme", "ost"))
 	//apc.contentJS += OnClick("#clickme", SetTextFromURL("#clickme", "http://archlinux.no/status/bob"))
 	//apc.contentJS += OnClick("#clickme", GetTest())
 
-	apc.contentJS += Load("#status", "/status/elg")
-	apc.contentJS += OnClick("#clickme", Load("#status", "/status/bob"))
-	apc.contentJS += SetText("#menuJQuery", "Heppa")
+	apc.ContentJS += Load("#status", "/status/elg")
+	apc.ContentJS += OnClick("#clickme", Load("#status", "/status/bob"))
+	apc.ContentJS += SetText("#menuJQuery", "Heppa")
 
-	apc.url = url
+	apc.Url = url
 
 	return apc
 }
 
 func TextCP(userState *UserState, url string) *ContentPage {
 	apc := ArchBaseCP(userState)
-	apc.contentTitle = "YOLO narwhal"
-	apc.contentHTML = `<p>Locavore Austin fanny pack pickled.  Marfa hoodie pitchfork american apparel, flexitarian YOLO pickled keytar twee cred craft beer seitan authentic raw denim kogi.  Selvage mixtape blog, pickled cosby sweater williamsburg skateboard brooklyn lo-fi twee.  Blue bottle echo park kale chips, selvage fap skateboard swag chambray tousled.  Street art etsy four loko fap, iphone carles cliche banh mi fashion axe PBR authentic leggings.  Narwhal mumblecore street art tumblr.  Messenger bag vice art party, next level aesthetic church-key tumblr direct trade  typewriter street art.</p><p>Messenger bag blue bottle VHS before they sold out.  Artisan pickled swag, VHS meggings jean shorts blog tonx salvia cosby sweater mumblecore aesthetic literally narwhal.  Brunch tofu gluten-free disrupt blog occupy.  Austin bicycle rights sartorial narwhal, butcher trust fund cred.  Neutra kale chips letterpress literally, williamsburg kogi brunch bicycle rights.  Williamsburg craft beer brunch quinoa, forage YOLO swag put a bird on it four loko mixtape banksy.  Tumblr semiotics yr fixie.</p><p>Iphone banksy wolf squid wayfarers, VHS photo booth banh mi fap.  Tonx flexitarian vinyl scenester terry richardson squid synth deep v.  VHS tousled godard, cardigan american apparel lo-fi flannel.  Vice church-key cliche, hashtag banh mi direct trade  skateboard.  Sriracha meh pitchfork, wayfarers helvetica leggings try-hard viral YOLO lo-fi fingerstache synth ennui next level ugh.  Wayfarers organic american apparel fingerstache craft beer bicycle rights, beard keffiyeh banksy four loko butcher hashtag mumblecore banjo wes anderson.  Williamsburg next level deep v pickled typewriter kogi.</p><p>Meggings gastropub flexitarian, before they sold out DIY wes anderson cred authentic artisan dreamcatcher aesthetic ennui food truck.  Fanny pack selvage synth vegan pug.  YOLO shoreditch pitchfork, letterpress whatever put a bird on it truffaut mumblecore flannel terry richardson irony cray master cleanse ethnic gluten-free.  Fap banksy blog pickled meh ethnic food truck +1, vice leggings retro quinoa.  Small batch vice pop-up mustache.  +1 ethnic echo park semiotics letterpress raw denim.  Keytar photo booth wes anderson, freegan before they sold out skateboard seitan brooklyn.</p><p>Wes anderson high life banksy messenger bag art party plaid disrupt tattooed, next level swag viral raw denim.  Cliche meggings terry richardson cray.  Next level 3 wolf moon retro marfa.  Pork belly authentic banjo, iphone lomo williamsburg letterpress cosby sweater Austin typewriter quinoa skateboard hoodie.  Plaid kale chips godard farm-to-table.  Fashion axe mixtape freegan, pop-up chambray ugh etsy YOLO jean shorts dreamcatcher meggings.  Banh mi letterpress tousled, skateboard stumptown high life vegan fap typewriter shoreditch 8-bit lo-fi master cleanse selfies bespoke.</p>`
-	apc.url = url
+	apc.ContentTitle = "YOLO narwhal"
+	apc.ContentHTML = `<p>Locavore Austin fanny pack pickled.  Marfa hoodie pitchfork american apparel, flexitarian YOLO pickled keytar twee cred craft beer seitan authentic raw denim kogi.  Selvage mixtape blog, pickled cosby sweater williamsburg skateboard brooklyn lo-fi twee.  Blue bottle echo park kale chips, selvage fap skateboard swag chambray tousled.  Street art etsy four loko fap, iphone carles cliche banh mi fashion axe PBR authentic leggings.  Narwhal mumblecore street art tumblr.  Messenger bag vice art party, next level aesthetic church-key tumblr direct trade  typewriter street art.</p><p>Messenger bag blue bottle VHS before they sold out.  Artisan pickled swag, VHS meggings jean shorts blog tonx salvia cosby sweater mumblecore aesthetic literally narwhal.  Brunch tofu gluten-free disrupt blog occupy.  Austin bicycle rights sartorial narwhal, butcher trust fund cred.  Neutra kale chips letterpress literally, williamsburg kogi brunch bicycle rights.  Williamsburg craft beer brunch quinoa, forage YOLO swag put a bird on it four loko mixtape banksy.  Tumblr semiotics yr fixie.</p><p>Iphone banksy wolf squid wayfarers, VHS photo booth banh mi fap.  Tonx flexitarian vinyl scenester terry richardson squid synth deep v.  VHS tousled godard, cardigan american apparel lo-fi flannel.  Vice church-key cliche, hashtag banh mi direct trade  skateboard.  Sriracha meh pitchfork, wayfarers helvetica leggings try-hard viral YOLO lo-fi fingerstache synth ennui next level ugh.  Wayfarers organic american apparel fingerstache craft beer bicycle rights, beard keffiyeh banksy four loko butcher hashtag mumblecore banjo wes anderson.  Williamsburg next level deep v pickled typewriter kogi.</p><p>Meggings gastropub flexitarian, before they sold out DIY wes anderson cred authentic artisan dreamcatcher aesthetic ennui food truck.  Fanny pack selvage synth vegan pug.  YOLO shoreditch pitchfork, letterpress whatever put a bird on it truffaut mumblecore flannel terry richardson irony cray master cleanse ethnic gluten-free.  Fap banksy blog pickled meh ethnic food truck +1, vice leggings retro quinoa.  Small batch vice pop-up mustache.  +1 ethnic echo park semiotics letterpress raw denim.  Keytar photo booth wes anderson, freegan before they sold out skateboard seitan brooklyn.</p><p>Wes anderson high life banksy messenger bag art party plaid disrupt tattooed, next level swag viral raw denim.  Cliche meggings terry richardson cray.  Next level 3 wolf moon retro marfa.  Pork belly authentic banjo, iphone lomo williamsburg letterpress cosby sweater Austin typewriter quinoa skateboard hoodie.  Plaid kale chips godard farm-to-table.  Fashion axe mixtape freegan, pop-up chambray ugh etsy YOLO jean shorts dreamcatcher meggings.  Banh mi letterpress tousled, skateboard stumptown high life vegan fap typewriter shoreditch 8-bit lo-fi master cleanse selfies bespoke.</p>`
+	apc.Url = url
 	return apc
 }
 
 func HelloCP(userState *UserState, url string) *ContentPage {
 	apc := ArchBaseCP(userState)
-	apc.contentTitle = "This is it"
-	apc.url = url
+	apc.ContentTitle = "This is it"
+	apc.Url = url
 	return apc
 }
 
