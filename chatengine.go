@@ -9,46 +9,42 @@ import (
 // An Engine is a specific piece of a website
 // This part handles the "chat" pages
 
-type ChatEngine Engine
-
-func NewChatEngine(state *UserState) *ChatEngine {
-	var engine Engine
-	engine.SetState(state)
-	chatengine := ChatEngine(engine)
-	return &chatengine
+type ChatEngine struct {
+	state *UserState
+	url string
 }
 
-func ChatMenuJS() string {
-	// This in combination with hiding the link in genericsite.go is cool, but the layout becomes weird :/
-	return ShowInlineAnimatedIf("/showmenu/chat", "#menuChat")
-
-	// This keeps the layout but is less cool
-	//return HideIfNot("/showmenu/chat", "#menuChat")
+func NewChatEngine(state *UserState, url string) *ChatEngine {
+	return &ChatEngine{state, url}
 }
 
-func GenerateShowChat(state *UserState) SimpleContextHandle {
-	return func(ctx *web.Context) string {
-		if state.UserRights(ctx) {
-			return "1"
-		}
-		return "0"
+func (ce *ChatEngine) ShowMenu(url string, ctx *web.Context) bool {
+	if url == ce.url {
+		return false
 	}
+	if ce.state.UserRights(ctx) {
+		return true
+	}
+	return false
+}
+
+// For other webpages, used internally
+func (ce *ChatEngine) ServeSystem() {
 }
 
 func (ce *ChatEngine) ServePages(basecp BaseCP) {
-	engine := Engine(*ce)
-	state := engine.GetState()
+	state := ce.state
+
 	chatCP := basecp(state)
 	chatCP.ContentTitle = "Chat"
 	chatCP.ExtraCSSurls = append(chatCP.ExtraCSSurls, "/css/chat.css")
 
 	// Hide the Chat menu if we're on the Chat page
-	chatCP.ContentJS = Hide("#menuChat")
+	chatCP.HiddenMenuIDs = append(chatCP.HiddenMenuIDs, "menuChat")
 
 	tp := Kake()
 	web.Get("/chat", chatCP.WrapSimpleContextHandle(GenerateChatCurrentUser(state), tp))
 	web.Get("/css/chat.css", GenerateChatCSS(chatCP.ColorScheme))
-	web.Get("/showmenu/chat", GenerateShowChat(state))
 }
 
 func GenerateChatCurrentUser(state *UserState) SimpleContextHandle {

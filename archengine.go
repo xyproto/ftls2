@@ -34,12 +34,13 @@ func ArchBaseCP(state *UserState) *ContentPage {
 	cp.FooterText = "Alexander Rødseth, " + strconv.Itoa(y)
 
 	// Hide and show the correct menus depending on the /showmenu/ pages for the various parts
-	cp.HeaderJS += UserMenuJS()
-	cp.HeaderJS += AdminMenuJS()
-	cp.HeaderJS += ChatMenuJS()
+	//cp.HeaderJS += UserMenuJS()
+	//cp.HeaderJS += AdminMenuJS()
+	//cp.HeaderJS += ChatMenuJS()
 
 	// Additional hidden menus (by default)
 	cp.HiddenMenuIDs = append(cp.HiddenMenuIDs, "menuChat")
+	cp.HiddenMenuIDs = append(cp.HiddenMenuIDs, "menuAdmin")
 
 	cp.Url = "/" // Is replaced when the contentpage is published
 

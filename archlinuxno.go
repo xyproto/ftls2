@@ -35,22 +35,28 @@ func notFound2(ctx *web.Context, val string) {
 // TODO: Caching, login
 func main() {
 
-	userState := genericsite.InitSystem()
+	// Redis Connection Pool
+	pool := genericsite.InitSystem()
+	defer pool.Close()
+
+	userEngine := genericsite.NewUserEngine(pool)
+	userEngine.ServeSystem()
+	userState := userEngine.GetState()
 
 	// The dynamic IP webpage (returns an *IPState)
 	ServeIPs(userState)
 
-	userEngine := genericsite.NewUserEngine(userState)
-	userEngine.ServeSystem()
-
-	adminEngine := genericsite.NewAdminEngine(userState)
+	adminEngine := genericsite.NewAdminEngine(userState, "/admin")
 	adminEngine.ServeSystem()
+	tp := Kake()
+	adminEngine.ServePages(ArchBaseCP, tp)
 
 	// The archlinux.no webpage
 	ServeArchlinuxNo(userState)
 
 	// The chat system (see also the menu entry in ArchBaseCP)
-	chatEngine := NewChatEngine(userState)
+	chatEngine := NewChatEngine(userState, "/chat")
+	chatEngine.ServeSystem()
 	chatEngine.ServePages(ArchBaseCP)
 
 	// Compilation errors
