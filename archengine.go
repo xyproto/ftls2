@@ -23,17 +23,23 @@ func ArchBaseCP(state *UserState) *ContentPage {
 
 	//cp.links = []string{"Overview:/", "Mirrors:/mirrors", "Login:/login", "Register:/register", "Hello:/hello/world", "Count:/counting", "Feedback:/feedback"}
 	//cp.links = []string{"Overview:/", "Text:/text", "Bob:/bob", "JQuery:/jquery", "Register:/register", "Hello:/hello/world", "Count:/counting", "Feedback:/feedback"}
-	// IDEAS: News, Norwegian AUR
-	cp.Links = append(cp.Links, "Sample text:/text")
+	//cp.Links = append(cp.Links, "Sample text:/text", "Chat:/chat")
+
+	// The default links contains things like Login and Logout
+	cp.Links = append(cp.Links, "Chat:/chat")
 
 	y := time.Now().Year()
 
 	//cp.footerText = "Alexander Rødseth &lt;rodseth@gmail.com&gt;, " + strconv.Itoa(y)
 	cp.FooterText = "Alexander Rødseth, " + strconv.Itoa(y)
 
-	// Hide and show the correct menus
+	// Hide and show the correct menus depending on the /showmenu/ pages for the various parts
 	cp.HeaderJS += UserMenuJS()
 	cp.HeaderJS += AdminMenuJS()
+	cp.HeaderJS += ChatMenuJS()
+
+	// Additional hidden menus (by default)
+	cp.HiddenMenuIDs = append(cp.HiddenMenuIDs, "menuChat")
 
 	cp.Url = "/" // Is replaced when the contentpage is published
 

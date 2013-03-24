@@ -49,6 +49,10 @@ func main() {
 	// The archlinux.no webpage
 	ServeArchlinuxNo(userState)
 
+	// The chat system (see also the menu entry in ArchBaseCP)
+	chatEngine := NewChatEngine(userState)
+	chatEngine.ServePages(ArchBaseCP)
+
 	// Compilation errors
 	web.Get("/error", browserspeak.Errorlog)
 	web.Get("/errors", browserspeak.Errorlog)
