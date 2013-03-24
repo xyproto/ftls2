@@ -1,9 +1,9 @@
 package main
 
 import (
-	"github.com/xyproto/web"
 	. "github.com/xyproto/browserspeak"
 	. "github.com/xyproto/genericsite"
+	"github.com/xyproto/web"
 )
 
 // An Engine is a specific piece of a website
@@ -95,5 +95,3 @@ func GenerateChatCSS(cs *ColorScheme) SimpleContextHandle {
 		//
 	}
 }
-
-
