@@ -46,7 +46,7 @@ func main() {
 	// The dynamic IP webpage (returns an *IPState)
 	ServeIPs(userState)
 
-	adminEngine := genericsite.NewAdminEngine(userState, "/admin")
+	adminEngine := genericsite.NewAdminEngine(userState)
 	adminEngine.ServeSystem()
 	tp := Kake()
 	adminEngine.ServePages(ArchBaseCP, tp)
@@ -55,7 +55,7 @@ func main() {
 	ServeArchlinuxNo(userState)
 
 	// The chat system (see also the menu entry in ArchBaseCP)
-	chatEngine := NewChatEngine(userState, "/chat")
+	chatEngine := NewChatEngine(userState)
 	chatEngine.ServeSystem()
 	chatEngine.ServePages(ArchBaseCP)
 

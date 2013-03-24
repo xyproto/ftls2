@@ -39,8 +39,8 @@ func ArchBaseCP(state *UserState) *ContentPage {
 	//cp.HeaderJS += ChatMenuJS()
 
 	// Additional hidden menus (by default)
-	cp.HiddenMenuIDs = append(cp.HiddenMenuIDs, "menuChat")
-	cp.HiddenMenuIDs = append(cp.HiddenMenuIDs, "menuAdmin")
+	//cp.HiddenMenuIDs = append(cp.HiddenMenuIDs, "menuChat")
+	//cp.HiddenMenuIDs = append(cp.HiddenMenuIDs, "menuAdmin")
 
 	cp.Url = "/" // Is replaced when the contentpage is published
 
@@ -61,6 +61,11 @@ func OverviewCP(userState *UserState, url string) *ContentPage {
 	cp.ContentTitle = "Overview"
 	cp.ContentHTML = `This site is currently under construction.<br />Visit the <a href="https://bbs.archlinux.org/viewtopic.php?id=4998">Arch Linux Forum</a> in the meantime.<br /><br /><i>- Alexander Rødseth &lt;rodseth / gmail&gt;</i>`
 	cp.Url = url
+
+	// TODO: !!!!!!!!!!!!!!!!!!!!!
+	// TODO: Add CSS to hide Logout, see userengine
+	// TODO: !!!!!!!!!!!!!!!!!!!!!
+
 	return cp
 }
 

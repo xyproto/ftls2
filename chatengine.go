@@ -11,21 +11,10 @@ import (
 
 type ChatEngine struct {
 	state *UserState
-	url string
 }
 
-func NewChatEngine(state *UserState, url string) *ChatEngine {
-	return &ChatEngine{state, url}
-}
-
-func (ce *ChatEngine) ShowMenu(url string, ctx *web.Context) bool {
-	if url == ce.url {
-		return false
-	}
-	if ce.state.UserRights(ctx) {
-		return true
-	}
-	return false
+func NewChatEngine(state *UserState) *ChatEngine {
+	return &ChatEngine{state}
 }
 
 // For other webpages, used internally
@@ -39,31 +28,32 @@ func (ce *ChatEngine) ServePages(basecp BaseCP) {
 	chatCP.ContentTitle = "Chat"
 	chatCP.ExtraCSSurls = append(chatCP.ExtraCSSurls, "/css/chat.css")
 
-	// Hide the Chat menu if we're on the Chat page
-	chatCP.HiddenMenuIDs = append(chatCP.HiddenMenuIDs, "menuChat")
-
 	tp := Kake()
 	web.Get("/chat", chatCP.WrapSimpleContextHandle(GenerateChatCurrentUser(state), tp))
-	web.Get("/css/chat.css", GenerateChatCSS(chatCP.ColorScheme))
+	web.Get("/css/chat.css", ce.GenerateCSS(chatCP.ColorScheme))
 }
 
 func GenerateChatCurrentUser(state *UserState) SimpleContextHandle {
 	return func(ctx *web.Context) string {
 		username := GetBrowserUsername(ctx)
 		if username == "" {
-			return MessageOKback("Chat", "No user logged in")
+			return "No user logged in"
 		}
 		if !state.IsLoggedIn(username) {
-			return MessageOKback("Chat", "Not logged in")
+			return "Not logged in"
 		}
 		return username + " is ready for chatting"
 	}
 }
 
-func GenerateChatCSS(cs *ColorScheme) SimpleContextHandle {
+func (ce *ChatEngine) GenerateCSS(cs *ColorScheme) SimpleContextHandle {
 	return func(ctx *web.Context) string {
 		ctx.ContentType("css")
 		return `
+#menuChat {
+	display: none;
+}
+
 .yes {
 	background-color: #90ff90;
 	color: black;
@@ -88,6 +78,6 @@ func GenerateChatCSS(cs *ColorScheme) SimpleContextHandle {
 .darkgrey:active { color: #404040; }
 
 `
-		//
-	}
+    //
+    }
 }
