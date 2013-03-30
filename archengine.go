@@ -173,14 +173,14 @@ func ServeArchlinuxNo(userState *UserState) {
 		*HelloCP(userState, "/feedback"),
 	}
 
-	// template content
-	tp := Kake()
+	// template content generator
+	tpvf := DynamicMenuFactory
 
-	ServeSite(ArchBaseCP, userState, cps, tp)
+	ServeSite(ArchBaseCP, userState, cps, tpvf)
 
 	// "dynamic" pages
 	// Makes helloSF handle the content for /hello/(.*) urls, but wrapped in a BaseCP with the title "Hello"
-	web.Get("/hello/(.*)", ArchBaseTitleCP("Hello", userState).WrapSimpleWebHandle(helloSF, Kake()))
+	web.Get("/hello/(.*)", ArchBaseTitleCP("Hello", userState).WrapWebHandle(helloHandle, tpvf(userState)))
 
 	// static images
 	PublishArchImages()

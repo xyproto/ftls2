@@ -5,7 +5,7 @@ for f in *.go ../browserspeak/*.go ../genericsite/*.go ../web/*.go; do
 done
 BIN=archweb
 PIDFILE=/tmp/$BIN.pid
-LOG=error.log
+LOG=errors.err
 M5=nop
 SUMFILE=/tmp/sumfile.txt
 echo 'Starting compilation loop'

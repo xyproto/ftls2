@@ -14,7 +14,7 @@ func hello(val string) string {
 	return browserspeak.Message("root page", "hello: "+val)
 }
 
-func helloSF(name string) string {
+func helloHandle(ctx *web.Context, name string) string {
 	return "Hello, " + name
 }
 
@@ -48,8 +48,8 @@ func main() {
 
 	adminEngine := genericsite.NewAdminEngine(userState)
 	adminEngine.ServeSystem()
-	tp := Kake()
-	adminEngine.ServePages(ArchBaseCP, tp)
+
+	adminEngine.ServePages(ArchBaseCP, DynamicMenuFactory(userState))
 
 	// The archlinux.no webpage
 	ServeArchlinuxNo(userState)
@@ -59,9 +59,9 @@ func main() {
 	chatEngine.ServeSystem()
 	chatEngine.ServePages(ArchBaseCP)
 
-	// Compilation errors
-	web.Get("/error", browserspeak.Errorlog)
-	web.Get("/errors", browserspeak.Errorlog)
+	// Compilation errors, vim-compatible filename
+	web.Get("/error", browserspeak.GenerateErrorHandle("errors.err"))
+	web.Get("/errors", browserspeak.GenerateErrorHandle("errors.err"))
 
 	// Various .php and .asp urls that showed up in the log
 	ServeForFun()
