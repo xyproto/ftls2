@@ -61,11 +61,6 @@ func OverviewCP(userState *UserState, url string) *ContentPage {
 	cp.ContentTitle = "Overview"
 	cp.ContentHTML = `This site is currently under construction.<br />Visit the <a href="https://bbs.archlinux.org/viewtopic.php?id=4998">Arch Linux Forum</a> in the meantime.<br /><br /><i>- Alexander Rødseth &lt;rodseth / gmail&gt;</i>`
 	cp.Url = url
-
-	// TODO: !!!!!!!!!!!!!!!!!!!!!
-	// TODO: Add CSS to hide Logout, see userengine
-	// TODO: !!!!!!!!!!!!!!!!!!!!!
-
 	return cp
 }
 
@@ -78,10 +73,6 @@ func MirrorsCP(userState *UserState, url string) *ContentPage {
 }
 
 func PublishArchImages() {
-	//faviconFilename := "/static/generated/img/favicon.ico"
-	//genFavicon(faviconFilename)
-	//Publish("/favicon.ico", faviconFilename, false)
-	//Publish("/favicon.ico", "static/img/favicon.ico", false)
 
 	// Tried previously:
 	// "rough.png", "longbg.png", "donutbg.png", "donutbg_light.jpg",
@@ -103,10 +94,6 @@ func CountCP(userState *UserState, url string) *ContentPage {
 	return apc
 }
 
-// TODO: Find out why this only happens once the server starts
-// and not every time the page reloads. Probably have to use
-// more functions in functions. Try to use the model from sitespecific and ipspecific!
-// That works fairly well.
 func BobCP(userState *UserState, url string) *ContentPage {
 	apc := ArchBaseCP(userState)
 	apc.ContentTitle = "Bob"
