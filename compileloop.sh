@@ -1,5 +1,8 @@
 #!/bin/sh
-SOURCE=*.go
+SOURCE=
+for f in *.go ../browserspeak/*.go ../genericsite/*.go ../web/*.go; do
+  SOURCE+="$f "
+done
 BIN=archweb
 PIDFILE=/tmp/$BIN.pid
 LOG=error.log

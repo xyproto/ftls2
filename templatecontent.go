@@ -7,5 +7,5 @@ package main
 func Kake() map[string]string {
 	//// Just a center dot, for now
 	//return map[string]string{"yihaa":"<li>·</li>"} /// {{{elements}} allow html, but not {{elements}}
-	return map[string]string{"yihaa": ""}
+	return map[string]string{"menu": "<div><a href='/login'>Login</a> | <a href='/register'>Register</a></div>"}
 }
