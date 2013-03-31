@@ -58,7 +58,6 @@ func main() {
 
 	// The chat system (see also the menu entry in ArchBaseCP)
 	chatEngine := NewChatEngine(userState)
-	chatEngine.ServeSystem()
 	chatEngine.ServePages(ArchBaseCP)
 
 	// Compilation errors, vim-compatible filename

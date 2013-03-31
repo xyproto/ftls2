@@ -163,7 +163,7 @@ func ServeArchlinuxNo(userState *UserState) {
 	// template content generator
 	tpvf := DynamicMenuFactoryGenerator("", []string{})
 
-	ServeSite(ArchBaseCP, userState, cps, tpvf)
+	ServeSite(ArchBaseCP, userState, cps, tpvf, "1.9.1")
 
 	// "dynamic" pages
 	// Makes helloSF handle the content for /hello/(.*) urls, but wrapped in a BaseCP with the title "Hello"

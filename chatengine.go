@@ -17,10 +17,6 @@ func NewChatEngine(state *UserState) *ChatEngine {
 	return &ChatEngine{state}
 }
 
-// For other webpages, used internally
-func (ce *ChatEngine) ServeSystem() {
-}
-
 func (ce *ChatEngine) ServePages(basecp BaseCP) {
 	state := ce.state
 
