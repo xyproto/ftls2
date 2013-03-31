@@ -161,7 +161,7 @@ func ServeArchlinuxNo(userState *UserState) {
 	}
 
 	// template content generator
-	tpvf := DynamicMenuFactory
+	tpvf := DynamicMenuFactoryGenerator("", []string{})
 
 	ServeSite(ArchBaseCP, userState, cps, tpvf)
 

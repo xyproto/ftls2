@@ -49,7 +49,9 @@ func main() {
 	adminEngine := genericsite.NewAdminEngine(userState)
 	adminEngine.ServeSystem()
 
-	adminEngine.ServePages(ArchBaseCP, genericsite.DynamicMenuFactory(userState))
+    tvgf := genericsite.DynamicMenuFactoryGenerator("Overview", []string{})
+
+	adminEngine.ServePages(ArchBaseCP, tvgf(userState))
 
 	// The archlinux.no webpage
 	ServeArchlinuxNo(userState)
