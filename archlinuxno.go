@@ -46,12 +46,11 @@ func main() {
 	// The dynamic IP webpage (returns an *IPState)
 	ServeIPs(userState)
 
+	// TODO: Populate this menu somehow
+	menuEntries := genericsite.Links2menuEntries([]string{"Overview:/"})
+    tvgf := genericsite.DynamicMenuFactoryGenerator("/", menuEntries)
+
 	adminEngine := genericsite.NewAdminEngine(userState)
-	adminEngine.ServeSystem()
-
-	menuEntries := genericsite.Links2menuEntries([]string{})
-    tvgf := genericsite.DynamicMenuFactoryGenerator("Overview", menuEntries)
-
 	adminEngine.ServePages(ArchBaseCP, tvgf(userState)) //, menuEntries)
 
 	// The archlinux.no webpage

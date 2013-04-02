@@ -24,7 +24,7 @@ func (ce *ChatEngine) ServePages(basecp BaseCP, menuEntries MenuEntries) {
 	chatCP.ContentTitle = "Chat"
 	chatCP.ExtraCSSurls = append(chatCP.ExtraCSSurls, "/css/chat.css")
 
-	tpvf := DynamicMenuFactoryGenerator("Chat", menuEntries)
+	tpvf := DynamicMenuFactoryGenerator("/chat", menuEntries)
 
 	web.Get("/chat", chatCP.WrapSimpleContextHandle(GenerateChatCurrentUser(state), tpvf(state)))
 	web.Get("/css/chat.css", ce.GenerateCSS(chatCP.ColorScheme))
