@@ -21,37 +21,22 @@ func ArchBaseCP(state *UserState) *ContentPage {
 	cp.Title = "Arch Linux"
 	cp.Subtitle = "no"
 
-	//cp.links = []string{"Overview:/", "Mirrors:/mirrors", "Login:/login", "Register:/register", "Hello:/hello/world", "Count:/counting", "Feedback:/feedback"}
-	//cp.links = []string{"Overview:/", "Text:/text", "Bob:/bob", "JQuery:/jquery", "Register:/register", "Hello:/hello/world", "Count:/counting", "Feedback:/feedback"}
-	//cp.Links = append(cp.Links, "Sample text:/text", "Chat:/chat")
-
-	// The default links contains things like Login and Logout
-	cp.Links = append(cp.Links, "Chat:/chat")
-
 	y := time.Now().Year()
 
-	//cp.footerText = "Alexander Rødseth &lt;rodseth@gmail.com&gt;, " + strconv.Itoa(y)
+	// TODO: Use templates for the footer, for more accurate measurment of the time made to generate the page
 	cp.FooterText = "Alexander Rødseth, " + strconv.Itoa(y)
-
-	// Hide and show the correct menus depending on the /showmenu/ pages for the various parts
-	//cp.HeaderJS += UserMenuJS()
-	//cp.HeaderJS += AdminMenuJS()
-	//cp.HeaderJS += ChatMenuJS()
-
-	// Additional hidden menus (by default)
-	//cp.HiddenMenuIDs = append(cp.HiddenMenuIDs, "menuChat")
-	//cp.HiddenMenuIDs = append(cp.HiddenMenuIDs, "menuAdmin")
 
 	cp.Url = "/" // Is replaced when the contentpage is published
 
 	cp.ColorScheme = NewArchColorScheme()
 
+	// Behind the menu
 	cp.BackgroundTextureURL = "/img/bg2.png"
 
 	return cp
 }
 
-//// Returns a ArchBaseCP with the contentTitle set
+// Returns a ArchBaseCP with the contentTitle set
 func ArchBaseTitleCP(contentTitle string, userState *UserState) *ContentPage {
 	cp := ArchBaseCP(userState)
 	cp.ContentTitle = contentTitle
@@ -73,19 +58,6 @@ func MirrorsCP(userState *UserState, url string) *ContentPage {
 	cp.Url = url
 	return cp
 }
-
-//func PublishArchImages() {
-	// Tried previously:
-	// "rough.png", "longbg.png", "donutbg.png", "donutbg_light.jpg",
-	// "felix_predator2.jpg", "centerimage.png", "underwater.png",
-	// "norway.jpg", "norway2.jpg", "underwater.jpg"
-
-	// Publish and cache images
-	//imgs := []string{"norway4.jpg", "norway3.jpg", "gray.jpg", "darkgray.jpg", "silk.png", "dotted.png"}
-	//for _, img := range imgs {
-	//	Publish("/img/"+img, "static/img/"+img, true)
-	//}
-//}
 
 func CountCP(userState *UserState, url string) *ContentPage {
 	apc := ArchBaseCP(userState)
@@ -148,20 +120,23 @@ func HelloCP(userState *UserState, url string) *ContentPage {
 	return apc
 }
 
+// This is where the possibilities for the menu are listed
 // TODO: Find a way to support many languages
 // TODO: Refactor this ugly function
 func Cps2MenuEntries(cps []ContentPage) MenuEntries {
-	var links []string
-	links = append(links, "Overview:/")
-	links = append(links, "Login:/login")
-	links = append(links, "Register:/register")
-	links = append(links, "Logout:/logout")
+	links := []string{
+		"Overview:/",
+		"Login:/login",
+		"Register:/register",
+		"Logout:/logout",
+		"Admin:/admin",
+		"Chat:/chat",
+		"Text:/text",
+	}
 	//for _, cp := range cps {
 	//	text_and_url := cp.ContentTitle + ":" + cp.Url
 	//	links = append(links, text_and_url)
 	//}
-	links = append(links, "Admin:/admin")
-	links = append(links, "Chat:/chat")
 	return Links2menuEntries(links)
 }
 
