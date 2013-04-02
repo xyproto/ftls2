@@ -49,16 +49,17 @@ func main() {
 	adminEngine := genericsite.NewAdminEngine(userState)
 	adminEngine.ServeSystem()
 
-    tvgf := genericsite.DynamicMenuFactoryGenerator("Overview", []string{})
+	menuEntries := genericsite.Links2menuEntries([]string{})
+    tvgf := genericsite.DynamicMenuFactoryGenerator("Overview", menuEntries)
 
-	adminEngine.ServePages(ArchBaseCP, tvgf(userState))
+	adminEngine.ServePages(ArchBaseCP, tvgf(userState)) //, menuEntries)
 
 	// The archlinux.no webpage
 	ServeArchlinuxNo(userState)
 
 	// The chat system (see also the menu entry in ArchBaseCP)
 	chatEngine := NewChatEngine(userState)
-	chatEngine.ServePages(ArchBaseCP)
+	chatEngine.ServePages(ArchBaseCP, menuEntries)
 
 	// Compilation errors, vim-compatible filename
 	web.Get("/error", browserspeak.GenerateErrorHandle("errors.err"))

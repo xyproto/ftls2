@@ -147,6 +147,22 @@ func HelloCP(userState *UserState, url string) *ContentPage {
 	return apc
 }
 
+// TODO: Find a way to support many languages
+// TODO: Refactor this ugly function
+func Cps2MenuEntries(cps []ContentPage) MenuEntries {
+	var links []string
+	links = append(links, "Overview:/")
+	links = append(links, "Login:/login")
+	links = append(links, "Register:/register")
+	links = append(links, "Logout:/logout")
+	for _, cp := range cps {
+		text_and_url := cp.ContentTitle + ":" + cp.Url
+		links = append(links, text_and_url)
+	}
+	links = append(links, "Chat:/chat")
+	return Links2menuEntries(links)
+}
+
 // Routing for the archlinux.no webpage
 // Admin, search and user management is already provided
 func ServeArchlinuxNo(userState *UserState) {
@@ -160,8 +176,10 @@ func ServeArchlinuxNo(userState *UserState) {
 		*HelloCP(userState, "/feedback"),
 	}
 
+	menuEntries := Cps2MenuEntries(cps)
+
 	// template content generator
-	tpvf := DynamicMenuFactoryGenerator("", []string{})
+	tpvf := DynamicMenuFactoryGenerator("", menuEntries)
 
 	ServeSite(ArchBaseCP, userState, cps, tpvf, "1.9.1")
 

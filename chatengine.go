@@ -17,14 +17,14 @@ func NewChatEngine(state *UserState) *ChatEngine {
 	return &ChatEngine{state}
 }
 
-func (ce *ChatEngine) ServePages(basecp BaseCP) {
+func (ce *ChatEngine) ServePages(basecp BaseCP, menuEntries MenuEntries) {
 	state := ce.state
 
 	chatCP := basecp(state)
 	chatCP.ContentTitle = "Chat"
 	chatCP.ExtraCSSurls = append(chatCP.ExtraCSSurls, "/css/chat.css")
 
-	tpvf := DynamicMenuFactoryGenerator("Chat", []string{})
+	tpvf := DynamicMenuFactoryGenerator("Chat", menuEntries)
 
 	web.Get("/chat", chatCP.WrapSimpleContextHandle(GenerateChatCurrentUser(state), tpvf(state)))
 	web.Get("/css/chat.css", ce.GenerateCSS(chatCP.ColorScheme))
