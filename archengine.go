@@ -16,7 +16,7 @@ import (
 // The default settings for Arch Linux content pages
 func ArchBaseCP(state *UserState) *ContentPage {
 	cp := DefaultCP(state)
-	cp.BgImageURL = "/img/norway4.jpg"
+	cp.BgImageURL = "/img/silk.png" // norway4.jpg"
 	cp.StretchBackground = true
 	cp.Title = "Arch Linux"
 	cp.Subtitle = "no"
@@ -46,6 +46,8 @@ func ArchBaseCP(state *UserState) *ContentPage {
 
 	cp.ColorScheme = NewArchColorScheme()
 
+	cp.BackgroundTextureURL = "/img/bg2.png"
+
 	return cp
 }
 
@@ -72,19 +74,18 @@ func MirrorsCP(userState *UserState, url string) *ContentPage {
 	return cp
 }
 
-func PublishArchImages() {
-
+//func PublishArchImages() {
 	// Tried previously:
 	// "rough.png", "longbg.png", "donutbg.png", "donutbg_light.jpg",
 	// "felix_predator2.jpg", "centerimage.png", "underwater.png",
 	// "norway.jpg", "norway2.jpg", "underwater.jpg"
 
 	// Publish and cache images
-	imgs := []string{"norway4.jpg", "norway3.jpg", "gray.jpg", "darkgray.jpg"}
-	for _, img := range imgs {
-		Publish("/img/"+img, "static/img/"+img, true)
-	}
-}
+	//imgs := []string{"norway4.jpg", "norway3.jpg", "gray.jpg", "darkgray.jpg", "silk.png", "dotted.png"}
+	//for _, img := range imgs {
+	//	Publish("/img/"+img, "static/img/"+img, true)
+	//}
+//}
 
 func CountCP(userState *UserState, url string) *ContentPage {
 	apc := ArchBaseCP(userState)
@@ -155,17 +156,18 @@ func Cps2MenuEntries(cps []ContentPage) MenuEntries {
 	links = append(links, "Login:/login")
 	links = append(links, "Register:/register")
 	links = append(links, "Logout:/logout")
-	for _, cp := range cps {
-		text_and_url := cp.ContentTitle + ":" + cp.Url
-		links = append(links, text_and_url)
-	}
+	//for _, cp := range cps {
+	//	text_and_url := cp.ContentTitle + ":" + cp.Url
+	//	links = append(links, text_and_url)
+	//}
+	links = append(links, "Admin:/admin")
 	links = append(links, "Chat:/chat")
 	return Links2menuEntries(links)
 }
 
 // Routing for the archlinux.no webpage
 // Admin, search and user management is already provided
-func ServeArchlinuxNo(userState *UserState) {
+func ServeArchlinuxNo(userState *UserState, jquery_version string) MenuEntries {
 	cps := []ContentPage{
 		*OverviewCP(userState, "/"),
 		*TextCP(userState, "/text"),
@@ -179,16 +181,18 @@ func ServeArchlinuxNo(userState *UserState) {
 	menuEntries := Cps2MenuEntries(cps)
 
 	// template content generator
-	tpvf := DynamicMenuFactoryGenerator("", menuEntries)
+	tpvf := DynamicMenuFactoryGenerator(menuEntries)
 
-	ServeSite(ArchBaseCP, userState, cps, tpvf, "1.9.1")
+	ServeSite(ArchBaseCP, userState, cps, tpvf, jquery_version)
 
 	// "dynamic" pages
 	// Makes helloSF handle the content for /hello/(.*) urls, but wrapped in a BaseCP with the title "Hello"
 	web.Get("/hello/(.*)", ArchBaseTitleCP("Hello", userState).WrapWebHandle(helloHandle, tpvf(userState)))
 
-	// static images
-	PublishArchImages()
+	// static images are published by web.go
+	//PublishArchImages()
+
+	return menuEntries
 }
 
 func NewArchColorScheme() *ColorScheme {

@@ -10,6 +10,8 @@ import (
 	"github.com/xyproto/web"
 )
 
+const jquery_version = "1.9.1"
+
 func hello(val string) string {
 	return browserspeak.Message("root page", "hello: "+val)
 }
@@ -46,19 +48,16 @@ func main() {
 	// The dynamic IP webpage (returns an *IPState)
 	ServeIPs(userState)
 
-	// TODO: Populate this menu somehow
-	menuEntries := genericsite.Links2menuEntries([]string{"Overview:/"})
-    tvgf := genericsite.DynamicMenuFactoryGenerator("/", menuEntries)
+	// The archlinux.no webpage,
+	mainMenuEntries := ServeArchlinuxNo(userState, jquery_version)
 
+	// The admin engine
 	adminEngine := genericsite.NewAdminEngine(userState)
-	adminEngine.ServePages(ArchBaseCP, tvgf(userState)) //, menuEntries)
-
-	// The archlinux.no webpage
-	ServeArchlinuxNo(userState)
+	adminEngine.ServePages(ArchBaseCP, mainMenuEntries)
 
 	// The chat system (see also the menu entry in ArchBaseCP)
 	chatEngine := NewChatEngine(userState)
-	chatEngine.ServePages(ArchBaseCP, menuEntries)
+	chatEngine.ServePages(ArchBaseCP, mainMenuEntries)
 
 	// Compilation errors, vim-compatible filename
 	web.Get("/error", browserspeak.GenerateErrorHandle("errors.err"))

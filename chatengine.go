@@ -24,7 +24,7 @@ func (ce *ChatEngine) ServePages(basecp BaseCP, menuEntries MenuEntries) {
 	chatCP.ContentTitle = "Chat"
 	chatCP.ExtraCSSurls = append(chatCP.ExtraCSSurls, "/css/chat.css")
 
-	tpvf := DynamicMenuFactoryGenerator("/chat", menuEntries)
+	tpvf := DynamicMenuFactoryGenerator(menuEntries)
 
 	web.Get("/chat", chatCP.WrapSimpleContextHandle(GenerateChatCurrentUser(state), tpvf(state)))
 	web.Get("/css/chat.css", ce.GenerateCSS(chatCP.ColorScheme))
@@ -46,11 +46,13 @@ func GenerateChatCurrentUser(state *UserState) SimpleContextHandle {
 func (ce *ChatEngine) GenerateCSS(cs *ColorScheme) SimpleContextHandle {
 	return func(ctx *web.Context) string {
 		ctx.ContentType("css")
-		return `
-#menuChat {
-	display: none;
-}
 
+		// TODO: Consider if hiding all the menus with CSS is the way to go or not
+		//#menuChat {
+		//	display: none;
+		//}
+
+		return `
 .yes {
 	background-color: #90ff90;
 	color: black;
