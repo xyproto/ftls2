@@ -13,6 +13,12 @@ type ChatEngine struct {
 	state *UserState
 }
 
+type ChatState struct {
+	active *RedisSet       // A list of all users that are in the chat, must correspond to the users in UserState.users
+	said   *RedisSet       // A list of everything that has been said so far
+	pool   *ConnectionPool // A connection pool for Redis
+}
+
 func NewChatEngine(state *UserState) *ChatEngine {
 	return &ChatEngine{state}
 }
@@ -39,6 +45,12 @@ func GenerateChatCurrentUser(state *UserState) SimpleContextHandle {
 		if !state.IsLoggedIn(username) {
 			return "Not logged in"
 		}
+
+		// TODO: Use a list of users in the chat in the database
+		//       add this user to that list and display the list.
+		//       Also have a list for chat content and a form for saying stuff.
+		//       Add a limit to how much can be said in the chat box.
+
 		return username + " is ready for chatting"
 	}
 }
@@ -46,12 +58,6 @@ func GenerateChatCurrentUser(state *UserState) SimpleContextHandle {
 func (ce *ChatEngine) GenerateCSS(cs *ColorScheme) SimpleContextHandle {
 	return func(ctx *web.Context) string {
 		ctx.ContentType("css")
-
-		// TODO: Consider if hiding all the menus with CSS is the way to go or not
-		//#menuChat {
-		//	display: none;
-		//}
-
 		return `
 .yes {
 	background-color: #90ff90;
@@ -77,6 +83,6 @@ func (ce *ChatEngine) GenerateCSS(cs *ColorScheme) SimpleContextHandle {
 .darkgrey:active { color: #404040; }
 
 `
-    //
-    }
+		//
+	}
 }

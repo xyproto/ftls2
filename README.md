@@ -1,7 +1,9 @@
 The website for archlinux.no
 ============================
 
-Under construction
+The beginnings of a website for archlinux.no
+
+At a minimum, a list of Norwegian mirrors will be present.
 
 License
 =======
