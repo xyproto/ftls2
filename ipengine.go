@@ -8,6 +8,7 @@ import (
 	. "github.com/xyproto/browserspeak"
 	. "github.com/xyproto/genericsite"
 	"github.com/xyproto/web"
+	"github.com/xyproto/instapage"
 )
 
 type IPState struct {
@@ -48,7 +49,7 @@ func GenerateGetAllIPs(state *IPState) SimpleWebHandle {
 				s += "IP: " + val + "<br />"
 			}
 		}
-		return Message("IPs", s)
+		return instapage.Message("IPs", s)
 	}
 }
 

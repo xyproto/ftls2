@@ -8,12 +8,13 @@ import (
 	"github.com/xyproto/browserspeak"
 	"github.com/xyproto/genericsite"
 	"github.com/xyproto/web"
+	"github.com/xyproto/instapage"
 )
 
 const jquery_version = "1.9.1"
 
 func hello(val string) string {
-	return browserspeak.Message("root page", "hello: "+val)
+	return instapage.Message("root page", "hello: "+val)
 }
 
 func helloHandle(ctx *web.Context, name string) string {
@@ -22,7 +23,7 @@ func helloHandle(ctx *web.Context, name string) string {
 
 func Hello() string {
 	msg := "Hi"
-	return browserspeak.Message("Hello", msg)
+	return instapage.Message("Hello", msg)
 }
 
 func ParamExample(ctx *web.Context) string {
