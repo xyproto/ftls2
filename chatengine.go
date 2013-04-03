@@ -5,8 +5,8 @@ import (
 
 	. "github.com/xyproto/browserspeak"
 	. "github.com/xyproto/genericsite"
-	"github.com/xyproto/web"
 	"github.com/xyproto/instapage"
+	"github.com/xyproto/web"
 )
 
 // An Engine is a specific piece of a website
@@ -18,10 +18,10 @@ type ChatEngine struct {
 }
 
 type ChatState struct {
-	active *RedisSet       // A list of all users that are in the chat, must correspond to the users in UserState.users
-	said   *RedisList      // A list of everything that has been said so far
-	lastSeen   *RedisHashMap      // A list of everything that has been said so far
-	pool   *ConnectionPool // A connection pool for Redis
+	active   *RedisSet       // A list of all users that are in the chat, must correspond to the users in UserState.users
+	said     *RedisList      // A list of everything that has been said so far
+	lastSeen *RedisHashMap   // A list of everything that has been said so far
+	pool     *ConnectionPool // A connection pool for Redis
 }
 
 func NewChatEngine(userState *UserState) *ChatEngine {

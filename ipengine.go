@@ -7,8 +7,8 @@ package main
 import (
 	. "github.com/xyproto/browserspeak"
 	. "github.com/xyproto/genericsite"
-	"github.com/xyproto/web"
 	"github.com/xyproto/instapage"
+	"github.com/xyproto/web"
 )
 
 type IPState struct {

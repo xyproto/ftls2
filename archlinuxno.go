@@ -7,8 +7,8 @@ import (
 
 	"github.com/xyproto/browserspeak"
 	"github.com/xyproto/genericsite"
-	"github.com/xyproto/web"
 	"github.com/xyproto/instapage"
+	"github.com/xyproto/web"
 )
 
 const jquery_version = "1.9.1"
