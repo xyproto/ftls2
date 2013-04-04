@@ -1,6 +1,6 @@
 #!/bin/sh
 SOURCE=
-for f in *.go ../browserspeak/*.go ../genericsite/*.go ../web/*.go ../instapage/*.go; do
+for f in *.go ../browserspeak/*.go ../genericsite/*.go ../web/*.go ../instapage/*.go ../simpleredis/*.go; do
   SOURCE+="$f "
 done
 BIN=archweb
