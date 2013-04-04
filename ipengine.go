@@ -35,7 +35,7 @@ func GenerateSetIP(state *IPState) WebHandle {
 		if val == "" {
 			return "Empty value, IP not set"
 		}
-		state.data.Store(val)
+		state.data.Add(val)
 		return "OK, set IP to " + val
 	}
 }
