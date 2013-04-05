@@ -166,6 +166,9 @@ func (ce *ChatEngine) GetLastChatText(n int) []string {
 }
 
 func (ce *ChatEngine) chatText(lines int) string {
+	if lines == -1 {
+		return "BANANAS!"
+	}
 	retval := "<div id='chatText'>"
 	// Show N lines of chat text
 	for _, said := range ce.GetLastChatText(lines) {
@@ -212,6 +215,7 @@ func (ce *ChatEngine) GenerateChatCurrentUser() SimpleContextHandle {
 		retval += "<button onClick='say();'>Say</button>"
 		// Focus on the text input
 		retval += JS(Focus("#sayText"))
+		// TODO: Update the chat every 64 seconds. If something happens, update every 200ms, then 400ms, then 800ms etc until it's at 64 seconds again. This should happen in javascript.
 		// Update the chat text every 500 ms
 		retval += JS("setInterval(function(){$.post('/say', {}, function(data) { $('#chatText').html(data); });}, 500);")
 		// A function for setting the preferred number of lines
@@ -220,6 +224,8 @@ func (ce *ChatEngine) GenerateChatCurrentUser() SimpleContextHandle {
 		retval += "<button onClick='setlines(20);'>20</button>"
 		// A button for viewing 50 lines at a time
 		retval += "<button onClick='setlines(50);'>50</button>"
+		// A button for viewing all lines at a time
+		retval += "<button onClick='setlines(-1);'>all</button>"
 		// A button for viewing 99999 lines at a time
 		retval += "<button onClick='setlines(99999);'>99999</button>"
 		// For viewing all the text so far
