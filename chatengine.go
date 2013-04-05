@@ -1,8 +1,8 @@
 package main
 
 import (
-	"time"
 	"strconv"
+	"time"
 
 	. "github.com/xyproto/browserspeak"
 	. "github.com/xyproto/genericsite"
@@ -248,7 +248,7 @@ func (ce *ChatEngine) GenerateSayCurrentUser() SimpleContextHandle {
 
 		ce.Say(username, CleanUpUserInput(said))
 
-        return ce.chatText(ce.GetLines(username))
+		return ce.chatText(ce.GetLines(username))
 	}
 }
 
@@ -266,7 +266,7 @@ func (ce *ChatEngine) GenerateGetChatLinesCurrentUser() SimpleContextHandle {
 		}
 		num := ce.GetLines(username)
 
-        return strconv.Itoa(num)
+		return strconv.Itoa(num)
 	}
 }
 
@@ -288,13 +288,13 @@ func (ce *ChatEngine) GenerateSetChatLinesCurrentUser() SimpleContextHandle {
 		}
 		num, err := strconv.Atoi(lines)
 		if err != nil {
-			return instapage.MessageOKback("Set chat lines", "Invalid number of lines: " + lines)
+			return instapage.MessageOKback("Set chat lines", "Invalid number of lines: "+lines)
 		}
 
 		// Set the preferred number of lines for this user
 		ce.SetLines(username, num)
 
-        return ce.chatText(num)
+		return ce.chatText(num)
 	}
 }
 
