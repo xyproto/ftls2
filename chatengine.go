@@ -192,6 +192,7 @@ func (ce *ChatEngine) GenerateChatCurrentUser() SimpleContextHandle {
 		retval := "Hi " + username + "<br />"
 		retval += "<br />"
 		retval += "Participants:" + "<br />"
+		// TODO: If the person has not been seen the last 96 hours, don't list him/her
 		for _, otherUser := range ce.GetChatUsers() {
 			if otherUser == username {
 				continue
