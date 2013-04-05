@@ -60,6 +60,10 @@ func main() {
 	chatEngine := NewChatEngine(userState)
 	chatEngine.ServePages(ArchBaseCP, mainMenuEntries)
 
+	// Blog engine
+	//blogEngine := NewBlogEngine(userState)
+	//blogEngine.ServePages(ArchBaseCP, mainMenuEntries)
+
 	// Compilation errors, vim-compatible filename
 	web.Get("/error", browserspeak.GenerateErrorHandle("errors.err"))
 	web.Get("/errors", browserspeak.GenerateErrorHandle("errors.err"))
