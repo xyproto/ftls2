@@ -7,8 +7,8 @@ import (
 
 	"github.com/xyproto/browserspeak"
 	"github.com/xyproto/genericsite"
-	"github.com/xyproto/siteengine"
 	"github.com/xyproto/instapage"
+	"github.com/xyproto/siteengine"
 	"github.com/xyproto/web"
 )
 

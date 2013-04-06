@@ -14,7 +14,7 @@ import (
 
 type IPEngine struct {
 	state *UserState
-	data *simpleredis.List
+	data  *simpleredis.List
 }
 
 func NewIPEngine(state *UserState) *IPEngine {
