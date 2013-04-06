@@ -165,9 +165,6 @@ func ServeArchlinuxNo(userState *UserState, jquery_version string) MenuEntries {
 	// Makes helloSF handle the content for /hello/(.*) urls, but wrapped in a BaseCP with the title "Hello"
 	web.Get("/hello/(.*)", ArchBaseTitleCP("Hello", userState).WrapWebHandle(helloHandle, tvgf(userState)))
 
-	// static images are published by web.go
-	//PublishArchImages()
-
 	return menuEntries
 }
 
