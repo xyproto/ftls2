@@ -6,7 +6,7 @@ import (
 
 	. "github.com/xyproto/browserspeak"
 	. "github.com/xyproto/genericsite"
-	. "github.com/xyproto/siteengine"
+	. "github.com/xyproto/siteengines"
 	"github.com/xyproto/web"
 )
 

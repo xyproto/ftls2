@@ -1,14 +1,12 @@
 package main
 
-// OK, "archlinuxno", 23-03-13
-
 import (
 	"fmt"
 
 	"github.com/xyproto/browserspeak"
 	"github.com/xyproto/genericsite"
 	"github.com/xyproto/instapage"
-	"github.com/xyproto/siteengine"
+	"github.com/xyproto/siteengines"
 	"github.com/xyproto/web"
 )
 
@@ -36,6 +34,28 @@ func notFound2(ctx *web.Context, val string) {
 	ctx.ResponseWriter.Write([]byte(browserspeak.NotFound(ctx, val)))
 }
 
+func ServeEngines(userState *genericsite.UserState, mainMenuEntries genericsite.MenuEntries) {
+	// The user engine
+	userEngine := siteengines.NewUserEngine(userState)
+	userEngine.ServePages()
+
+	// The admin engine
+	adminEngine := siteengines.NewAdminEngine(userState)
+	adminEngine.ServePages(ArchBaseCP, mainMenuEntries)
+
+	// The dynamic IP webpage (returns an *IPState)
+	ipEngine := siteengines.NewIPEngine(userState)
+	ipEngine.ServePages()
+
+	// The chat system (see also the menu entry in ArchBaseCP)
+	chatEngine := siteengines.NewChatEngine(userState)
+	chatEngine.ServePages(ArchBaseCP, mainMenuEntries)
+
+	// Blog engine
+	//blogEngine := NewBlogEngine(userState)
+	//blogEngine.ServePages(ArchBaseCP, mainMenuEntries)
+}
+
 // TODO: Caching, login
 func main() {
 
@@ -43,27 +63,10 @@ func main() {
 	userState := genericsite.NewUserState()
 	defer userState.Close()
 
-	userEngine := siteengine.NewUserEngine(userState)
-	userEngine.ServeSystem()
-
 	// The archlinux.no webpage,
 	mainMenuEntries := ServeArchlinuxNo(userState, jquery_version)
 
-	// The dynamic IP webpage (returns an *IPState)
-	ipEngine := NewIPEngine(userState)
-	ipEngine.ServePages()
-
-	// The admin engine
-	adminEngine := siteengine.NewAdminEngine(userState)
-	adminEngine.ServePages(ArchBaseCP, mainMenuEntries)
-
-	// The chat system (see also the menu entry in ArchBaseCP)
-	chatEngine := siteengine.NewChatEngine(userState)
-	chatEngine.ServePages(ArchBaseCP, mainMenuEntries)
-
-	// Blog engine
-	//blogEngine := NewBlogEngine(userState)
-	//blogEngine.ServePages(ArchBaseCP, mainMenuEntries)
+	ServeEngines(userState, mainMenuEntries)
 
 	// Compilation errors, vim-compatible filename
 	web.Get("/error", browserspeak.GenerateErrorHandle("errors.err"))
