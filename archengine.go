@@ -1,15 +1,12 @@
 package main
 
-// OK, only archlinux.no stuff, 23-03-13
-
-// Move to "archlinuxno" once it has settled
-
 import (
 	"strconv"
 	"time"
 
 	. "github.com/xyproto/browserspeak"
 	. "github.com/xyproto/genericsite"
+	. "github.com/xyproto/siteengine"
 	"github.com/xyproto/web"
 )
 
@@ -151,18 +148,22 @@ func ServeArchlinuxNo(userState *UserState, jquery_version string) MenuEntries {
 		*CountCP(userState, "/counting"),
 		*MirrorsCP(userState, "/mirrors"),
 		*HelloCP(userState, "/feedback"),
+		*LoginCP(ArchBaseCP, userState, "/login"),
+		*RegisterCP(ArchBaseCP, userState, "/register"),
 	}
 
 	menuEntries := Cps2MenuEntries(cps)
 
 	// template content generator
-	tpvf := DynamicMenuFactoryGenerator(menuEntries)
+	tvgf := DynamicMenuFactoryGenerator(menuEntries)
 
-	ServeSite(ArchBaseCP, userState, cps, tpvf, jquery_version)
+	// TODO: Simplify ServeSearchPages to take fewer parameters
+	ServeSearchPages(ArchBaseCP, userState, cps, ArchBaseCP(userState).ColorScheme, tvgf(userState))
+	ServeSite(ArchBaseCP, userState, cps, tvgf, jquery_version)
 
 	// "dynamic" pages
 	// Makes helloSF handle the content for /hello/(.*) urls, but wrapped in a BaseCP with the title "Hello"
-	web.Get("/hello/(.*)", ArchBaseTitleCP("Hello", userState).WrapWebHandle(helloHandle, tpvf(userState)))
+	web.Get("/hello/(.*)", ArchBaseTitleCP("Hello", userState).WrapWebHandle(helloHandle, tvgf(userState)))
 
 	// static images are published by web.go
 	//PublishArchImages()

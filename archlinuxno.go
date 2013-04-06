@@ -7,6 +7,7 @@ import (
 
 	"github.com/xyproto/browserspeak"
 	"github.com/xyproto/genericsite"
+	"github.com/xyproto/siteengine"
 	"github.com/xyproto/instapage"
 	"github.com/xyproto/web"
 )
@@ -38,26 +39,26 @@ func notFound2(ctx *web.Context, val string) {
 // TODO: Caching, login
 func main() {
 
-	// Redis Connection Pool
-	pool := genericsite.InitSystem()
-	defer pool.Close()
+	// UserState with a Redis Connection Pool
+	userState := genericsite.NewUserState()
+	defer userState.Close()
 
-	userEngine := genericsite.NewUserEngine(pool)
+	userEngine := siteengine.NewUserEngine(userState)
 	userEngine.ServeSystem()
-	userState := userEngine.GetState()
-
-	// The dynamic IP webpage (returns an *IPState)
-	ServeIPs(userState)
 
 	// The archlinux.no webpage,
 	mainMenuEntries := ServeArchlinuxNo(userState, jquery_version)
 
+	// The dynamic IP webpage (returns an *IPState)
+	ipEngine := NewIPEngine(userState)
+	ipEngine.ServePages()
+
 	// The admin engine
-	adminEngine := genericsite.NewAdminEngine(userState)
+	adminEngine := siteengine.NewAdminEngine(userState)
 	adminEngine.ServePages(ArchBaseCP, mainMenuEntries)
 
 	// The chat system (see also the menu entry in ArchBaseCP)
-	chatEngine := NewChatEngine(userState)
+	chatEngine := siteengine.NewChatEngine(userState)
 	chatEngine.ServePages(ArchBaseCP, mainMenuEntries)
 
 	// Blog engine

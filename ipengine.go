@@ -8,43 +8,45 @@ import (
 	. "github.com/xyproto/browserspeak"
 	. "github.com/xyproto/genericsite"
 	"github.com/xyproto/instapage"
-	. "github.com/xyproto/simpleredis"
+	"github.com/xyproto/simpleredis"
 	"github.com/xyproto/web"
 )
 
-type IPState struct {
-	data *RedisList
-	pool *ConnectionPool
+type IPEngine struct {
+	state *UserState
+	data *simpleredis.List
 }
 
-func InitIPs(pool *ConnectionPool) *IPState {
+func NewIPEngine(state *UserState) *IPEngine {
+
+	pool := state.GetPool()
 
 	// Create a RedisList for storing IP adresses
-	ips := NewRedisList(pool, "IPs")
+	ips := simpleredis.NewList(pool, "IPs")
 
-	state := new(IPState)
-	state.data = ips
-	state.pool = pool
+	ipEngine := new(IPEngine)
+	ipEngine.data = ips
+	ipEngine.state = state
 
-	return state
+	return ipEngine
 }
 
 // Set an IP adress and generate a confirmation page for it
-func GenerateSetIP(state *IPState) WebHandle {
+func (ie *IPEngine) GenerateSetIP() WebHandle {
 	return func(ctx *web.Context, val string) string {
 		if val == "" {
 			return "Empty value, IP not set"
 		}
-		state.data.Add(val)
+		ie.data.Add(val)
 		return "OK, set IP to " + val
 	}
 }
 
 // Get all the stored IP adresses and generate a page for it
-func GenerateGetAllIPs(state *IPState) SimpleWebHandle {
+func (ie *IPEngine) GenerateGetAllIPs() SimpleWebHandle {
 	return func(val string) string {
 		s := ""
-		iplist, err := state.data.GetAll()
+		iplist, err := ie.data.GetAll()
 		if err == nil {
 			for _, val := range iplist {
 				s += "IP: " + val + "<br />"
@@ -55,10 +57,10 @@ func GenerateGetAllIPs(state *IPState) SimpleWebHandle {
 }
 
 // Get the last stored IP adress and generate a page for it
-func GenerateGetLastIP(state *IPState) SimpleWebHandle {
+func (ie *IPEngine) GenerateGetLastIP() SimpleWebHandle {
 	return func(val string) string {
 		s := ""
-		ip, err := state.data.GetLast()
+		ip, err := ie.data.GetLast()
 		if err == nil {
 			s = "IP: " + ip
 		}
@@ -66,10 +68,8 @@ func GenerateGetLastIP(state *IPState) SimpleWebHandle {
 	}
 }
 
-func ServeIPs(userState *UserState) {
-	ipState := InitIPs(userState.GetPool())
-
-	web.Get("/setip/(.*)", GenerateSetIP(ipState))
-	web.Get("/getip/(.*)", GenerateGetLastIP(ipState))
-	web.Get("/getallips/(.*)", GenerateGetAllIPs(ipState))
+func (ie *IPEngine) ServePages() {
+	web.Get("/setip/(.*)", ie.GenerateSetIP())
+	web.Get("/getip/(.*)", ie.GenerateGetLastIP())
+	web.Get("/getallips/(.*)", ie.GenerateGetAllIPs())
 }
