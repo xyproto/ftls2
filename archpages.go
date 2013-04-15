@@ -13,8 +13,6 @@ import (
 // The default settings for Arch Linux content pages
 func ArchBaseCP(state *UserState) *ContentPage {
 	cp := DefaultCP(state)
-	cp.BgImageURL = "/img/silk.png" // norway4.jpg"
-	cp.StretchBackground = true
 	cp.Title = "Arch Linux"
 	cp.Subtitle = "no"
 
@@ -27,8 +25,16 @@ func ArchBaseCP(state *UserState) *ContentPage {
 
 	cp.ColorScheme = NewArchColorScheme()
 
+	// Behind the text
+	//cp.BgImageURL = "/img/silk.png"
+	//cp.BgImageURL = "/img/norway4.jpg"
+	cp.BgImageURL = "/img/ps_neutral.png" //simple_dashed.png"
+	cp.StretchBackground = false
+
 	// Behind the menu
-	cp.BackgroundTextureURL = "/img/bg2.png"
+	//cp.BackgroundTextureURL = "/img/bg2.png"
+	cp.BackgroundTextureURL = "/img/simple_dashed.png"
+	//ps_neutral.png"
 
 	return cp
 }
@@ -128,6 +134,7 @@ func Cps2MenuEntries(cps []ContentPage) MenuEntries {
 		"Logout:/logout",
 		"Admin:/admin",
 		"Chat:/chat",
+		"Wiki:/wiki",
 		"Text:/text",
 	}
 	//for _, cp := range cps {
@@ -176,5 +183,6 @@ func NewArchColorScheme() *ColorScheme {
 	cs.Menu_hover = "#efefe0"  // light gray, somewhat yellow
 	cs.Menu_active = "#ffffff" // white
 	cs.Default_background = "#000030"
+	cs.TitleText = "#e0e0e0" // The first word of the title text
 	return &cs
 }

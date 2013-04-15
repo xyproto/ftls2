@@ -51,6 +51,10 @@ func ServeEngines(userState *genericsite.UserState, mainMenuEntries genericsite.
 	chatEngine := siteengines.NewChatEngine(userState)
 	chatEngine.ServePages(ArchBaseCP, mainMenuEntries)
 
+	// Wiki engine
+	wikiEngine := siteengines.NewWikiEngine(userState)
+	wikiEngine.ServePages(ArchBaseCP, mainMenuEntries)
+
 	// Blog engine
 	//blogEngine := NewBlogEngine(userState)
 	//blogEngine.ServePages(ArchBaseCP, mainMenuEntries)
