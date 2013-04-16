@@ -26,14 +26,20 @@ func ArchBaseCP(state *UserState) *ContentPage {
 	cp.ColorScheme = NewArchColorScheme()
 
 	// Behind the text
-	//cp.BgImageURL = "/img/silk.png"
-	//cp.BgImageURL = "/img/norway4.jpg"
-	cp.BgImageURL = "/img/ps_neutral.png" //simple_dashed.png"
+	//cp.BgImageURL = "/img/nasty_fabric.png"
+	//cp.BgImageURL = "/img/cloth_alike.png"
+	//cp.BgImageURL = "/img/strange_bullseyes.png"
+	cp.BgImageURL = "/img/rough_diagonal.png"
 	cp.StretchBackground = false
 
 	// Behind the menu
 	//cp.BackgroundTextureURL = "/img/bg2.png"
-	cp.BackgroundTextureURL = "/img/simple_dashed.png"
+	//cp.BackgroundTextureURL = "/img/simple_dashed.png"
+	//cp.BackgroundTextureURL = "/img/grey.png"
+	//cp.BackgroundTextureURL = "/img/pw_maze_black.png"
+	//cp.BackgroundTextureURL = "/img/black_twill.png"
+	cp.BackgroundTextureURL = "/img/dark_wood.png"
+	//cp.BackgroundTextureURL = "/img/hixs_pattern_evolution.png"
 	//ps_neutral.png"
 
 	return cp

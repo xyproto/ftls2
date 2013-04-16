@@ -43,6 +43,7 @@ func ServeEngines(userState *genericsite.UserState, mainMenuEntries genericsite.
 	adminEngine := siteengines.NewAdminEngine(userState)
 	adminEngine.ServePages(ArchBaseCP, mainMenuEntries)
 
+	// TODO: Move this one to roboticoverlords instead
 	// The dynamic IP webpage (returns an *IPState)
 	ipEngine := siteengines.NewIPEngine(userState)
 	ipEngine.ServePages()
