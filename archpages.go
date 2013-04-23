@@ -152,7 +152,7 @@ func Cps2MenuEntries(cps []ContentPage) MenuEntries {
 
 // Routing for the archlinux.no webpage
 // Admin, search and user management is already provided
-func ServeArchlinuxNo(userState *UserState, jquery_version string) MenuEntries {
+func ServeArchlinuxNo(userState *UserState, jquerypath string) MenuEntries {
 	cps := []ContentPage{
 		*OverviewCP(userState, "/"),
 		*TextCP(userState, "/text"),
@@ -172,7 +172,7 @@ func ServeArchlinuxNo(userState *UserState, jquery_version string) MenuEntries {
 
 	// TODO: Simplify ServeSearchPages to take fewer parameters
 	ServeSearchPages(ArchBaseCP, userState, cps, ArchBaseCP(userState).ColorScheme, tvgf(userState))
-	ServeSite(ArchBaseCP, userState, cps, tvgf, jquery_version)
+	ServeSite(ArchBaseCP, userState, cps, tvgf, jquerypath)
 
 	// "dynamic" pages
 	// Makes helloSF handle the content for /hello/(.*) urls, but wrapped in a BaseCP with the title "Hello"

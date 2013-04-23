@@ -10,7 +10,7 @@ import (
 	"github.com/xyproto/web"
 )
 
-const JQUERY_VERSION  = "2.0.0"
+const JQUERY_VERSION = "2.0.0"
 
 func hello(val string) string {
 	return instapage.Message("root page", "hello: "+val)
@@ -69,7 +69,7 @@ func main() {
 	defer userState.Close()
 
 	// The archlinux.no webpage,
-	mainMenuEntries := ServeArchlinuxNo(userState, "/js/jquery-" + JQUERY_VERSION + ".min.js")
+	mainMenuEntries := ServeArchlinuxNo(userState, "/js/jquery-"+JQUERY_VERSION+".min.js")
 
 	ServeEngines(userState, mainMenuEntries)
 
