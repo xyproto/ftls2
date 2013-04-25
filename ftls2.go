@@ -41,24 +41,15 @@ func ServeEngines(userState *genericsite.UserState, mainMenuEntries genericsite.
 
 	// The admin engine
 	adminEngine := siteengines.NewAdminEngine(userState)
-	adminEngine.ServePages(ArchBaseCP, mainMenuEntries)
+	adminEngine.ServePages(FTLSBaseCP, mainMenuEntries)
 
-	// TODO: Move this one to roboticoverlords instead
-	// The dynamic IP webpage (returns an *IPState)
-	ipEngine := siteengines.NewIPEngine(userState)
-	ipEngine.ServePages()
-
-	// The chat system (see also the menu entry in ArchBaseCP)
+	// The chat system (see also the menu entry in FTLSBaseCP)
 	chatEngine := siteengines.NewChatEngine(userState)
-	chatEngine.ServePages(ArchBaseCP, mainMenuEntries)
+	chatEngine.ServePages(FTLSBaseCP, mainMenuEntries)
 
 	// Wiki engine
 	wikiEngine := siteengines.NewWikiEngine(userState)
-	wikiEngine.ServePages(ArchBaseCP, mainMenuEntries)
-
-	// Blog engine
-	//blogEngine := NewBlogEngine(userState)
-	//blogEngine.ServePages(ArchBaseCP, mainMenuEntries)
+	wikiEngine.ServePages(FTLSBaseCP, mainMenuEntries)
 }
 
 // TODO: Caching, login
@@ -69,7 +60,7 @@ func main() {
 	defer userState.Close()
 
 	// The archlinux.no webpage,
-	mainMenuEntries := ServeArchlinuxNo(userState, "/js/jquery-"+JQUERY_VERSION+".min.js")
+	mainMenuEntries := ServeFTLS(userState, "/js/jquery-"+JQUERY_VERSION+".min.js")
 
 	ServeEngines(userState, mainMenuEntries)
 

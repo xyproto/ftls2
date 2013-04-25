@@ -11,7 +11,7 @@ import (
 )
 
 // The default settings for Arch Linux content pages
-func ArchBaseCP(state *UserState) *ContentPage {
+func FTLSBaseCP(state *UserState) *ContentPage {
 	cp := DefaultCP(state)
 	cp.Title = "Arch Linux"
 	cp.Subtitle = "no"
@@ -45,15 +45,15 @@ func ArchBaseCP(state *UserState) *ContentPage {
 	return cp
 }
 
-// Returns a ArchBaseCP with the contentTitle set
-func ArchBaseTitleCP(contentTitle string, userState *UserState) *ContentPage {
-	cp := ArchBaseCP(userState)
+// Returns a FTLSBaseCP with the contentTitle set
+func FTLSBaseTitleCP(contentTitle string, userState *UserState) *ContentPage {
+	cp := FTLSBaseCP(userState)
 	cp.ContentTitle = contentTitle
 	return cp
 }
 
 func OverviewCP(userState *UserState, url string) *ContentPage {
-	cp := ArchBaseCP(userState)
+	cp := FTLSBaseCP(userState)
 	cp.ContentTitle = "Overview"
 	cp.ContentHTML = `This site is currently under construction.<br />Visit the <a href="https://bbs.archlinux.org/viewtopic.php?id=4998">Arch Linux Forum</a> in the meantime.<br /><br /><i>- Alexander Rødseth &lt;rodseth / gmail&gt;</i>`
 	cp.Url = url
@@ -61,7 +61,7 @@ func OverviewCP(userState *UserState, url string) *ContentPage {
 }
 
 func MirrorsCP(userState *UserState, url string) *ContentPage {
-	cp := ArchBaseCP(userState)
+	cp := FTLSBaseCP(userState)
 	cp.ContentTitle = "Mirrors"
 	cp.ContentHTML = "List over Norwegian Arch Linux mirrors:"
 	cp.Url = url
@@ -69,7 +69,7 @@ func MirrorsCP(userState *UserState, url string) *ContentPage {
 }
 
 func CountCP(userState *UserState, url string) *ContentPage {
-	apc := ArchBaseCP(userState)
+	apc := FTLSBaseCP(userState)
 	apc.ContentTitle = "Counting"
 	apc.ContentHTML = "1 2 3"
 	apc.Url = url
@@ -77,7 +77,7 @@ func CountCP(userState *UserState, url string) *ContentPage {
 }
 
 func BobCP(userState *UserState, url string) *ContentPage {
-	apc := ArchBaseCP(userState)
+	apc := FTLSBaseCP(userState)
 	apc.ContentTitle = "Bob"
 	if userState.HasUser("bob") {
 		apc.ContentHTML = "has bob, l "
@@ -94,7 +94,7 @@ func BobCP(userState *UserState, url string) *ContentPage {
 }
 
 func JQueryCP(userState *UserState, url string) *ContentPage {
-	apc := ArchBaseCP(userState)
+	apc := FTLSBaseCP(userState)
 	apc.ContentTitle = "JQuery"
 
 	apc.ContentHTML = "<button id=clickme>bob</button><br />"
@@ -115,7 +115,7 @@ func JQueryCP(userState *UserState, url string) *ContentPage {
 }
 
 func TextCP(userState *UserState, url string) *ContentPage {
-	apc := ArchBaseCP(userState)
+	apc := FTLSBaseCP(userState)
 	apc.ContentTitle = "YOLO narwhal"
 	apc.ContentHTML = `<p>Locavore Austin fanny pack pickled.  Marfa hoodie pitchfork american apparel, flexitarian YOLO pickled keytar twee cred craft beer seitan authentic raw denim kogi.  Selvage mixtape blog, pickled cosby sweater williamsburg skateboard brooklyn lo-fi twee.  Blue bottle echo park kale chips, selvage fap skateboard swag chambray tousled.  Street art etsy four loko fap, iphone carles cliche banh mi fashion axe PBR authentic leggings.  Narwhal mumblecore street art tumblr.  Messenger bag vice art party, next level aesthetic church-key tumblr direct trade  typewriter street art.</p><p>Messenger bag blue bottle VHS before they sold out.  Artisan pickled swag, VHS meggings jean shorts blog tonx salvia cosby sweater mumblecore aesthetic literally narwhal.  Brunch tofu gluten-free disrupt blog occupy.  Austin bicycle rights sartorial narwhal, butcher trust fund cred.  Neutra kale chips letterpress literally, williamsburg kogi brunch bicycle rights.  Williamsburg craft beer brunch quinoa, forage YOLO swag put a bird on it four loko mixtape banksy.  Tumblr semiotics yr fixie.</p><p>Iphone banksy wolf squid wayfarers, VHS photo booth banh mi fap.  Tonx flexitarian vinyl scenester terry richardson squid synth deep v.  VHS tousled godard, cardigan american apparel lo-fi flannel.  Vice church-key cliche, hashtag banh mi direct trade  skateboard.  Sriracha meh pitchfork, wayfarers helvetica leggings try-hard viral YOLO lo-fi fingerstache synth ennui next level ugh.  Wayfarers organic american apparel fingerstache craft beer bicycle rights, beard keffiyeh banksy four loko butcher hashtag mumblecore banjo wes anderson.  Williamsburg next level deep v pickled typewriter kogi.</p><p>Meggings gastropub flexitarian, before they sold out DIY wes anderson cred authentic artisan dreamcatcher aesthetic ennui food truck.  Fanny pack selvage synth vegan pug.  YOLO shoreditch pitchfork, letterpress whatever put a bird on it truffaut mumblecore flannel terry richardson irony cray master cleanse ethnic gluten-free.  Fap banksy blog pickled meh ethnic food truck +1, vice leggings retro quinoa.  Small batch vice pop-up mustache.  +1 ethnic echo park semiotics letterpress raw denim.  Keytar photo booth wes anderson, freegan before they sold out skateboard seitan brooklyn.</p><p>Wes anderson high life banksy messenger bag art party plaid disrupt tattooed, next level swag viral raw denim.  Cliche meggings terry richardson cray.  Next level 3 wolf moon retro marfa.  Pork belly authentic banjo, iphone lomo williamsburg letterpress cosby sweater Austin typewriter quinoa skateboard hoodie.  Plaid kale chips godard farm-to-table.  Fashion axe mixtape freegan, pop-up chambray ugh etsy YOLO jean shorts dreamcatcher meggings.  Banh mi letterpress tousled, skateboard stumptown high life vegan fap typewriter shoreditch 8-bit lo-fi master cleanse selfies bespoke.</p>`
 	apc.Url = url
@@ -123,7 +123,7 @@ func TextCP(userState *UserState, url string) *ContentPage {
 }
 
 func HelloCP(userState *UserState, url string) *ContentPage {
-	apc := ArchBaseCP(userState)
+	apc := FTLSBaseCP(userState)
 	apc.ContentTitle = "This is it"
 	apc.Url = url
 	return apc
@@ -152,17 +152,12 @@ func Cps2MenuEntries(cps []ContentPage) MenuEntries {
 
 // Routing for the archlinux.no webpage
 // Admin, search and user management is already provided
-func ServeArchlinuxNo(userState *UserState, jquerypath string) MenuEntries {
+func ServeFTLS(userState *UserState, jquerypath string) MenuEntries {
 	cps := []ContentPage{
 		*OverviewCP(userState, "/"),
 		*TextCP(userState, "/text"),
-		*JQueryCP(userState, "/jquery"),
-		*BobCP(userState, "/bob"),
-		*CountCP(userState, "/counting"),
-		*MirrorsCP(userState, "/mirrors"),
-		*HelloCP(userState, "/feedback"),
-		*LoginCP(ArchBaseCP, userState, "/login"),
-		*RegisterCP(ArchBaseCP, userState, "/register"),
+		*LoginCP(FTLSBaseCP, userState, "/login"),
+		*RegisterCP(FTLSBaseCP, userState, "/register"),
 	}
 
 	menuEntries := Cps2MenuEntries(cps)
@@ -171,12 +166,12 @@ func ServeArchlinuxNo(userState *UserState, jquerypath string) MenuEntries {
 	tvgf := DynamicMenuFactoryGenerator(menuEntries)
 
 	// TODO: Simplify ServeSearchPages to take fewer parameters
-	ServeSearchPages(ArchBaseCP, userState, cps, ArchBaseCP(userState).ColorScheme, tvgf(userState))
-	ServeSite(ArchBaseCP, userState, cps, tvgf, jquerypath)
+	ServeSearchPages(FTLSBaseCP, userState, cps, FTLSBaseCP(userState).ColorScheme, tvgf(userState))
+	ServeSite(FTLSBaseCP, userState, cps, tvgf, jquerypath)
 
 	// "dynamic" pages
 	// Makes helloSF handle the content for /hello/(.*) urls, but wrapped in a BaseCP with the title "Hello"
-	web.Get("/hello/(.*)", ArchBaseTitleCP("Hello", userState).WrapWebHandle(helloHandle, tvgf(userState)))
+	web.Get("/hello/(.*)", FTLSBaseTitleCP("Hello", userState).WrapWebHandle(helloHandle, tvgf(userState)))
 
 	return menuEntries
 }
