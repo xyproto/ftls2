@@ -52,7 +52,7 @@ func ServeEngines(userState *genericsite.UserState, mainMenuEntries genericsite.
 	wikiEngine.ServePages(FTLSBaseCP, mainMenuEntries)
 }
 
-// TODO: Caching, login
+// TODO: Separate database for each site
 func main() {
 
 	// UserState with a Redis Connection Pool
