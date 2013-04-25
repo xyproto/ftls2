@@ -3,7 +3,7 @@ SOURCE=
 for f in *.go ../browserspeak/*.go ../genericsite/*.go ../web/*.go ../instapage/*.go ../simpleredis/*.go ../siteengines/*.go; do
   SOURCE+="$f "
 done
-BIN=archweb
+BIN=ftlsweb
 PIDFILE=/tmp/$BIN.pid
 LOG=errors.err
 M5=nop

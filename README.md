@@ -1,9 +1,7 @@
-The website for archlinux.no
-============================
+The website for ftls
+====================
 
-The beginnings of a website for archlinux.no
-
-At a minimum, a list of Norwegian mirrors will be present.
+The beginnings of a website for ftls
 
 License
 =======
