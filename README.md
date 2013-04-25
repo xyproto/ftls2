@@ -1,7 +1,7 @@
-The website for ftls
-====================
+The website for FTLS II
+=======================
 
-The beginnings of a website for ftls
+The beginnings of a website for FTLS II
 
 License
 =======
