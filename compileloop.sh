@@ -48,7 +48,7 @@ while true; do
       rm "/tmp/$BIN"
     fi
     cp "./$BIN" "/tmp/$BIN"
-    echo 'Starting server'
+    echo 'Starting FTLS II server'
     ./$BIN &
     echo 'Writing pid'
     pgrep $BIN > $PIDFILE
