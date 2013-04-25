@@ -10,14 +10,6 @@ import (
 
 const JQUERY_VERSION = "2.0.0"
 
-func hello(val string) string {
-	return instapage.Message("root page", "hello: "+val)
-}
-
-func helloHandle(ctx *web.Context, name string) string {
-	return "Hello, " + name
-}
-
 func notFound2(ctx *web.Context, val string) {
 	ctx.ResponseWriter.WriteHeader(404)
 	ctx.ResponseWriter.Write([]byte(browserspeak.NotFound(ctx, val)))
@@ -31,10 +23,6 @@ func ServeEngines(userState *genericsite.UserState, mainMenuEntries genericsite.
 	// The admin engine
 	adminEngine := siteengines.NewAdminEngine(userState)
 	adminEngine.ServePages(FTLSBaseCP, mainMenuEntries)
-
-	//// The chat system (see also the menu entry in FTLSBaseCP)
-	//chatEngine := siteengines.NewChatEngine(userState)
-	//chatEngine.ServePages(FTLSBaseCP, mainMenuEntries)
 
 	// Wiki engine
 	wikiEngine := siteengines.NewWikiEngine(userState)
