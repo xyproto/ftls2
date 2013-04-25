@@ -30,7 +30,7 @@ while true; do
     clear
     date
     echo
-    echo -n 'Recompiling...'
+    echo -n 'Recompiling FTLS II...'
     [ -e $LOG ] && rm $LOG
     go build -o $BIN > $LOG
     if [ "$(wc -c $LOG | cut -d' ' -f1)" == '0' ]; then
@@ -48,7 +48,7 @@ while true; do
       rm "/tmp/$BIN"
     fi
     cp "./$BIN" "/tmp/$BIN"
-    echo 'Starting FTLS II server'
+    echo 'Starting server'
     ./$BIN &
     echo 'Writing pid'
     pgrep $BIN > $PIDFILE
