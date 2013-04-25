@@ -1,8 +1,6 @@
 package main
 
 import (
-	"fmt"
-
 	"github.com/xyproto/browserspeak"
 	"github.com/xyproto/genericsite"
 	"github.com/xyproto/instapage"
@@ -20,15 +18,6 @@ func helloHandle(ctx *web.Context, name string) string {
 	return "Hello, " + name
 }
 
-func Hello() string {
-	msg := "Hi"
-	return instapage.Message("Hello", msg)
-}
-
-func ParamExample(ctx *web.Context) string {
-	return fmt.Sprintf("%v\n", ctx.Params)
-}
-
 func notFound2(ctx *web.Context, val string) {
 	ctx.ResponseWriter.WriteHeader(404)
 	ctx.ResponseWriter.Write([]byte(browserspeak.NotFound(ctx, val)))
@@ -43,9 +32,9 @@ func ServeEngines(userState *genericsite.UserState, mainMenuEntries genericsite.
 	adminEngine := siteengines.NewAdminEngine(userState)
 	adminEngine.ServePages(FTLSBaseCP, mainMenuEntries)
 
-	// The chat system (see also the menu entry in FTLSBaseCP)
-	chatEngine := siteengines.NewChatEngine(userState)
-	chatEngine.ServePages(FTLSBaseCP, mainMenuEntries)
+	//// The chat system (see also the menu entry in FTLSBaseCP)
+	//chatEngine := siteengines.NewChatEngine(userState)
+	//chatEngine.ServePages(FTLSBaseCP, mainMenuEntries)
 
 	// Wiki engine
 	wikiEngine := siteengines.NewWikiEngine(userState)
@@ -69,7 +58,7 @@ func main() {
 	web.Get("/errors", browserspeak.GenerateErrorHandle("errors.err"))
 
 	// Various .php and .asp urls that showed up in the log
-	ServeForFun()
+	genericsite.ServeForFun()
 
 	// TODO: Incorporate this check into web.go, to only return
 	// stuff in the header when the HEAD method is requested:
@@ -77,5 +66,5 @@ func main() {
 	// See also: curl -I
 
 	// Serve on port 3000 for the Nginx instance to use
-	web.Run("0.0.0.0:3000")
+	web.Run("0.0.0.0:3002")
 }
