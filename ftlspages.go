@@ -4,17 +4,15 @@ import (
 	"strconv"
 	"time"
 
-	. "github.com/xyproto/browserspeak"
 	. "github.com/xyproto/genericsite"
 	. "github.com/xyproto/siteengines"
-	"github.com/xyproto/web"
 )
 
 // The default settings for FTLS content pages
 func FTLSBaseCP(state *UserState) *ContentPage {
 	cp := DefaultCP(state)
-	cp.Title = "FTLS"
-	cp.Subtitle = "II"
+	cp.Title = "Timeliste System"
+	cp.Subtitle = "2"
 
 	y := time.Now().Year()
 
@@ -38,9 +36,11 @@ func FTLSBaseCP(state *UserState) *ContentPage {
 	//cp.BackgroundTextureURL = "/img/grey.png"
 	//cp.BackgroundTextureURL = "/img/pw_maze_black.png"
 	//cp.BackgroundTextureURL = "/img/black_twill.png"
-	cp.BackgroundTextureURL = "/img/dark_wood.png"
-	//cp.BackgroundTextureURL = "/img/hixs_pattern_evolution.png"
+	//cp.BackgroundTextureURL = "/img/dark_wood.png"
+	cp.BackgroundTextureURL = "/img/hixs_pattern_evolution.png"
 	//ps_neutral.png"
+
+	cp.SearchBox = false
 
 	return cp
 }
@@ -54,8 +54,8 @@ func FTLSBaseTitleCP(contentTitle string, userState *UserState) *ContentPage {
 
 func OverviewCP(userState *UserState, url string) *ContentPage {
 	cp := FTLSBaseCP(userState)
-	cp.ContentTitle = "Overview"
-	cp.ContentHTML = `FTLS 2 - under construction`
+	cp.ContentTitle = "Om"
+	cp.ContentHTML = `FTLS 2 - under utvikling`
 	cp.Url = url
 	return cp
 }
@@ -63,7 +63,7 @@ func OverviewCP(userState *UserState, url string) *ContentPage {
 func TextCP(userState *UserState, url string) *ContentPage {
 	apc := FTLSBaseCP(userState)
 	apc.ContentTitle = "Text"
-	apc.ContentHTML = `<p>hi</p>`
+	apc.ContentHTML = `<p id='textparagraph'>Hei<br/>der<br/></p>`
 	apc.Url = url
 	return apc
 }
@@ -71,13 +71,13 @@ func TextCP(userState *UserState, url string) *ContentPage {
 // This is where the possibilities for the menu are listed
 func Cps2MenuEntries(cps []ContentPage) MenuEntries {
 	links := []string{
-		"Overview:/",
-		"Login:/login",
-		"Register:/register",
-		"Logout:/logout",
+		"Om:/",
+		"Logg inn:/login",
+		"Registrer:/register",
+		"Logg ut:/logout",
 		"Admin:/admin",
 		"Wiki:/wiki",
-		"Text:/text",
+		"Tekst:/text",
 	}
 	return Links2menuEntries(links)
 }
@@ -97,7 +97,7 @@ func ServeFTLS(userState *UserState, jquerypath string) MenuEntries {
 	// template content generator
 	tvgf := DynamicMenuFactoryGenerator(menuEntries)
 
-	ServeSearchPages(FTLSBaseCP, userState, cps, FTLSBaseCP(userState).ColorScheme, tvgf(userState))
+	//ServeSearchPages(FTLSBaseCP, userState, cps, FTLSBaseCP(userState).ColorScheme, tvgf(userState))
 	ServeSite(FTLSBaseCP, userState, cps, tvgf, jquerypath)
 
 	return menuEntries
@@ -106,7 +106,7 @@ func ServeFTLS(userState *UserState, jquerypath string) MenuEntries {
 func NewFTLSColorScheme() *ColorScheme {
 	var cs ColorScheme
 	cs.Darkgray = "#202020"
-	cs.Nicecolor = "#D08050"   // some sort of orange
+	cs.Nicecolor = "#d80000"   // bright orange!
 	cs.Menu_link = "#c0c0c0"   // light gray
 	cs.Menu_hover = "#efefe0"  // light gray, somewhat yellow
 	cs.Menu_active = "#ffffff" // white

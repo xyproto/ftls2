@@ -3,10 +3,12 @@ package main
 import (
 	"github.com/xyproto/browserspeak"
 	"github.com/xyproto/genericsite"
-	"github.com/xyproto/instapage"
 	"github.com/xyproto/siteengines"
 	"github.com/xyproto/web"
 )
+
+// TODO: Norwegian everywhere
+// TODO: Different Redis database than the other sites
 
 const JQUERY_VERSION = "2.0.0"
 
@@ -53,6 +55,6 @@ func main() {
 	// if ctx.Request.Method == "HEAD" { return }
 	// See also: curl -I
 
-	// Serve on port 3000 for the Nginx instance to use
+	// Serve on port 3002 for the Nginx instance to use
 	web.Run("0.0.0.0:3002")
 }
