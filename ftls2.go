@@ -29,9 +29,12 @@ func ServeEngines(userState *genericsite.UserState, mainMenuEntries genericsite.
 	// Wiki engine
 	wikiEngine := siteengines.NewWikiEngine(userState)
 	wikiEngine.ServePages(FTLSBaseCP, mainMenuEntries)
+
+	// FTLS engine
+	ftlsEngine := siteengines.NewFTLSEngine(userState)
+	ftlsEngine.ServePages(FTLSBaseCP, mainMenuEntries)
 }
 
-// TODO: Separate database for each site
 func main() {
 
 	// UserState with a Redis Connection Pool
