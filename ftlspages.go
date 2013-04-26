@@ -76,8 +76,8 @@ func Cps2MenuEntries(cps []ContentPage) MenuEntries {
 		"Registrer:/register",
 		"Logg ut:/logout",
 		"Admin:/admin",
+		"Timer:/ftls",
 		"Wiki:/wiki",
-		"Tekst:/text",
 	}
 	return Links2menuEntries(links)
 }
