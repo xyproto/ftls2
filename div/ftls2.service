@@ -1,0 +1,13 @@
+[Unit]
+Description=FTLS2 development server
+
+[Service]
+Type=simple
+User=alexander
+ExecStart=/home/alexander/go/src/github.com/xyproto/ftls2/compileloop.sh &
+WorkingDirectory=/home/alexander/go/src/github.com/xyproto/ftls2
+PIDFile=/tmp/ftlsweb.pid
+Environment=GOPATH=/home/alexander/go
+
+[Install]
+WantedBy=multi-user.target
