@@ -1,9 +1,9 @@
 package main
 
 import (
-	"time"
 	"fmt"
 	"strconv"
+	"time"
 
 	"github.com/xyproto/norwegiantime"
 )
@@ -20,9 +20,9 @@ type PersonPlan struct {
 }
 
 type PeriodPlan struct {
-	year int
-	fromMonth int
-	uptoMonth int
+	year        int
+	fromMonth   int
+	uptoMonth   int
 	personPlans []*PersonPlan
 }
 
@@ -76,13 +76,13 @@ func (pp *PeriodPlan) String() string {
 
 func main() {
 	ppAlexander := NewPersonPlan("Alexander")
-	ppAlexander.AddWorkday(time.Monday, 8, 15) // monday, from 8, up to 15
+	ppAlexander.AddWorkday(time.Monday, 8, 15)     // monday, from 8, up to 15
 	ppAlexander.AddWorkday(time.Wednesday, 12, 17) // wednesday, from 12, up to 17
 
 	fmt.Println(ppAlexander.String())
 
 	ppBob := NewPersonPlan("Bob")
-	ppBob.AddWorkday(time.Tuesday, 9, 11) // monday, from 9, up to 11
+	ppBob.AddWorkday(time.Tuesday, 9, 11)  // monday, from 9, up to 11
 	ppBob.AddWorkday(time.Thursday, 8, 10) // wednesday, from 8, up to 10
 
 	fmt.Println(ppBob.String())
@@ -93,4 +93,3 @@ func main() {
 
 	fmt.Println(periodplan.String())
 }
-
