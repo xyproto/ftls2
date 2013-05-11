@@ -2,21 +2,21 @@ package main
 
 import (
 	"fmt"
-	"strconv"
 	"time"
 
 	"github.com/xyproto/norwegiantime"
 )
 
-type Day struct {
+type WorkDayAndLocation struct {
 	dayoftheweek time.Weekday
 	fromHour     int
 	uptoHour     int
+	location     string
 }
 
 type PersonPlan struct {
 	who      string
-	workdays []*Day
+	workdays []*WorkDayAndLocation
 }
 
 type PeriodPlan struct {
@@ -32,8 +32,8 @@ func NewPersonPlan(who string) *PersonPlan {
 	return &pp
 }
 
-func (pp *PersonPlan) AddWorkday(dayoftheweek time.Weekday, fromHour, uptoHour int) {
-	newday := &Day{dayoftheweek, fromHour, uptoHour}
+func (pp *PersonPlan) AddWorkday(dayoftheweek time.Weekday, fromHour, uptoHour int, location string) {
+	newday := &WorkDayAndLocation{dayoftheweek, fromHour, uptoHour, location}
 	pp.workdays = append(pp.workdays, newday)
 }
 
@@ -43,8 +43,9 @@ func (pp *PersonPlan) String() string {
 	for _, day := range pp.workdays {
 		s += "\n"
 		s += "\t" + norwegiantime.N2d(day.dayoftheweek, "en") + " (" + norwegiantime.N2d(day.dayoftheweek, "no") + ")\n"
-		s += "\tFrom this hour: \t" + strconv.Itoa(day.fromHour) + "\n"
-		s += "\tUp to this hour:\t" + strconv.Itoa(day.uptoHour) + "\n"
+		s += fmt.Sprintf("\tFrom this hour: \t%d\n", day.fromHour)
+		s += fmt.Sprintf("\tUp to this hour:\t%d\n", day.uptoHour)
+		s += fmt.Sprintf("\tAt this location:\t%s\n", day.location)
 	}
 	return s
 }
@@ -58,15 +59,17 @@ func (pp *PeriodPlan) AddPersonPlan(persplan *PersonPlan) {
 	pp.personPlans = append(pp.personPlans, persplan)
 }
 
-func (pp *PeriodPlan) String() string {
-	s := fmt.Sprintf("From %d, month %d\n", pp.year, pp.fromMonth)
-	s += fmt.Sprintf("Up to %d, month %d\n", pp.year, pp.uptoMonth)
+func (pp *PeriodPlan) ForAllWeekdays(fn func(string, time.Weekday, int, string) string) string {
+	s := ""
 	for day := 0; day < 7; day++ {
-		for _, persplan := range pp.personPlans {
-			for _, personday := range persplan.workdays {
-				if personday.dayoftheweek == time.Weekday(day) {
-					s += persplan.who + " on " + time.Weekday(day).String() + "\n"
-					// TODO: Add hours too?
+		for hour := 8; hour < 21; hour++ {
+			for _, persplan := range pp.personPlans {
+				for _, personday := range persplan.workdays {
+					if personday.dayoftheweek == time.Weekday(day) {
+						if (hour >= personday.fromHour) && (hour < personday.uptoHour) {
+							s += fn(persplan.who, time.Weekday(day), hour, personday.location)
+						}
+					}
 				}
 			}
 		}
@@ -74,16 +77,59 @@ func (pp *PeriodPlan) String() string {
 	return s
 }
 
+func infoline(who string, weekday time.Weekday, hour int, location string) string {
+	return fmt.Sprintf("%s on %s hour that starts at %d at %s\n", who, weekday, hour, location)
+}
+
+func (pp *PeriodPlan) String() string {
+	s := fmt.Sprintf("From %d, month %d\n", pp.year, pp.fromMonth)
+	s += fmt.Sprintf("Up to %d, month %d\n", pp.year, pp.uptoMonth)
+	s += pp.ForAllWeekdays(infoline)
+	return s
+}
+
+// TODO: Broken, fix
+// TODO: Return an HourInfo struct or something instead
+func (pp *PeriodPlan) HourInfo(t time.Time) string {
+	s := ""
+	for dayoftheweek := 0; dayoftheweek < 7; dayoftheweek++ {
+		for _, persplan := range pp.personPlans {
+			for _, personday := range persplan.workdays {
+				// Right day of the week?
+				if personday.dayoftheweek == t.Weekday() {
+					s += fmt.Sprintf("%s on %s, at the hour that starts at %d, at %s\n", persplan.who, t.Weekday(), t.Hour(), personday.location)
+				}
+			}
+		}
+	}
+	return s
+}
+
+// TODO: Broken, fix
+// Find info for a given hour for all given period plans
+// Note that if period plans are overlapping, this function will only return info for the first hour it finds!
+// TODO: Separate day and day of the week more clearly
+func HourInfo(allPlans []*PeriodPlan, t time.Time) string {
+	fmt.Printf("year %d, month %d, day of the month %d, hour %d\n", t.Year(), t.Month(), t.Day(), t.Hour())
+	for _, pp := range allPlans {
+		if (pp.year == t.Year()) && (pp.fromMonth <= int(t.Month())) && (int(t.Month()) < pp.uptoMonth) {
+			return pp.HourInfo(t)
+		}
+	}
+	// TODO: Introduce err
+	return "No hour info found"
+}
+
 func main() {
 	ppAlexander := NewPersonPlan("Alexander")
-	ppAlexander.AddWorkday(time.Monday, 8, 15)     // monday, from 8, up to 15
-	ppAlexander.AddWorkday(time.Wednesday, 12, 17) // wednesday, from 12, up to 17
+	ppAlexander.AddWorkday(time.Monday, 8, 15, "KNH")     // monday, from 8, up to 15
+	ppAlexander.AddWorkday(time.Wednesday, 12, 17, "KOH") // wednesday, from 12, up to 17
 
 	fmt.Println(ppAlexander.String())
 
 	ppBob := NewPersonPlan("Bob")
-	ppBob.AddWorkday(time.Tuesday, 9, 11)  // monday, from 9, up to 11
-	ppBob.AddWorkday(time.Thursday, 8, 10) // wednesday, from 8, up to 10
+	ppBob.AddWorkday(time.Tuesday, 9, 11, "KOH")  // monday, from 9, up to 11
+	ppBob.AddWorkday(time.Thursday, 8, 10, "KNH") // wednesday, from 8, up to 10
 
 	fmt.Println(ppBob.String())
 
@@ -92,4 +138,13 @@ func main() {
 	periodplan.AddPersonPlan(ppBob)
 
 	fmt.Println(periodplan.String())
+
+	fmt.Println("Hour info:")
+	fmt.Println(periodplan.HourInfo(time.Date(2013, 3, 1, 12, 0, 0, 0, time.UTC)))
+
+	var allPlans []*PeriodPlan
+	allPlans = append(allPlans, periodplan)
+
+	fmt.Println("Hour info for all plans:")
+	fmt.Println(HourInfo(allPlans, time.Date(2013, 3, 3, 15, 0, 0, 0, time.UTC))) // y m d h
 }
