@@ -38,11 +38,15 @@ func (pp *PersonPlan) AddWorkday(dayoftheweek time.Weekday, fromHour, uptoHour i
 }
 
 func (pp *PersonPlan) String() string {
+	cal, err := norwegiantime.NewCalendar("nb_NO", true)
+	if err != nil {
+		panic("No calendar available for nb_NO")
+	}
 	s := "User: " + pp.who + "\n"
 	s += "-----------------------------------------------\n"
 	for _, day := range pp.workdays {
 		s += "\n"
-		s += "\t" + norwegiantime.N2d(day.dayoftheweek, "en") + " (" + norwegiantime.N2d(day.dayoftheweek, "no") + ")\n"
+		s += "\t" + day.dayoftheweek.String() + " (" + cal.DayName(day.dayoftheweek) + ")\n"
 		s += fmt.Sprintf("\tFrom this hour: \t%d\n", day.fromHour)
 		s += fmt.Sprintf("\tUp to this hour:\t%d\n", day.uptoHour)
 		s += fmt.Sprintf("\tAt this location:\t%s\n", day.location)
