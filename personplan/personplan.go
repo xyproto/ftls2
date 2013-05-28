@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/xyproto/norwegiantime"
+	"github.com/xyproto/moskus"
 )
 
 type WorkDayAndLocation struct {
@@ -38,7 +38,7 @@ func (pp *PersonPlan) AddWorkday(dayoftheweek time.Weekday, fromHour, uptoHour i
 }
 
 func (pp *PersonPlan) String() string {
-	cal, err := norwegiantime.NewCalendar("nb_NO", true)
+	cal, err := moskus.NewCalendar("nb_NO", true)
 	if err != nil {
 		panic("No calendar available for nb_NO")
 	}
