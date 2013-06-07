@@ -9,18 +9,18 @@ import (
 
 const (
 	FIRSTHOUR = 8
-	LASTHOUR = 22
+	LASTHOUR  = 22
 )
 
 // Info about one thing that can happen during an hour
-type HourInfoSnippet struct {
-	who string
-	when time.Time
+type HourInfoPerson struct {
+	who   string
+	when  time.Time
 	where string
 }
 
-// Info about everything that happens during an hour
-type HourInfo []*HourInfoSnippet
+// Info about everything that happens during an hour, per person
+type HourInfo []*HourInfoPerson
 
 // A plan is a collecion of plans for just a few months at a time
 type Plans struct {
@@ -213,7 +213,7 @@ func main() {
 	fmt.Println(ppAlexander.String())
 
 	ppBob := NewPersonPlan("Bob")
-	ppBob.AddWorkday(time.Monday, 9, 11, "KOH")  // monday, from 9, up to 11
+	ppBob.AddWorkday(time.Monday, 9, 11, "KOH")   // monday, from 9, up to 11
 	ppBob.AddWorkday(time.Thursday, 8, 10, "KNH") // wednesday, from 8, up to 10
 
 	fmt.Println(ppBob.String())
@@ -239,4 +239,3 @@ func main() {
 
 	allPlans.HourInfo(time.Date(2013, 3, 7, 9, 14, 0, 0, time.UTC))
 }
-
