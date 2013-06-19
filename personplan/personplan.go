@@ -20,7 +20,7 @@ type HourInfoPerson struct {
 }
 
 // Info about everything that happens during an hour, per person
-type HourInfo []*HourInfoPerson
+type HourInfo []HourInfoPerson
 
 // A plan is a collecion of plans for just a few months at a time
 type Plans struct {
@@ -114,53 +114,10 @@ func (pp *PeriodPlan) String() string {
 
 func (pp *PeriodPlan) ViewHour(t time.Time) string {
 	s := ""
-
-	//PeriodPlan
-	//year        int
-	//fromMonth   int
-	//uptoMonth   int
-	//personPlans []*PersonPlan
-
-	// if not the right year
-	if t.Year() != pp.year {
-		return ""
+    hourinfo := pp.GetHourInfoPersonStructs(t)
+	for _, hip := range hourinfo {
+		s += fmt.Sprintf("%s %s at %s, %v at hour %v\n", hip.when.String()[:10], hip.who, hip.where, hip.when.Weekday(), hip.when.Hour())
 	}
-
-	// if not within the month range
-	if !((t.Month() >= time.Month(pp.fromMonth)) && (t.Month() < time.Month(pp.uptoMonth))) {
-		return ""
-	}
-
-	for _, persplan := range pp.personPlans {
-		// PersonPlan
-		//who      string
-		//workdays []*WorkDayAndLocation
-		for _, wd := range persplan.workdays {
-			// WorkDayAndLocation
-			// dayoftheweek time.Weekday
-			// fromHour     int
-			// uptoHour     int
-			// location     string
-
-			//fmt.Printf("persplan %d, workday %d\n", i1, i2)
-
-			// If not the right day of the week
-			if wd.dayoftheweek != t.Weekday() {
-				//fmt.Printf("Wrong day of the week! (%v and %v)\n", wd.dayoftheweek, t.Weekday())
-				continue
-			}
-
-			// If not within the hour range
-			if !((t.Hour() >= wd.fromHour) && (t.Hour() < wd.uptoHour)) {
-				//fmt.Printf("Wrong hour range! (%v is not between %v and %v)\n", t.Hour(), wd.fromHour, wd.uptoHour)
-				continue
-			}
-
-			// Found!
-			s += fmt.Sprintf("%s %s at %s, %v at hour %v\n", t.String()[:10], persplan.who, wd.location, t.Weekday(), t.Hour())
-		}
-	}
-
 	return s
 }
 
@@ -191,7 +148,7 @@ func (plans *Plans) AddPeriodPlan(pp *PeriodPlan) {
 	plans.all = append(plans.all, pp)
 }
 
-// TODO: Create a function just like this that returns an HourInfo type instead of strings
+// TODO: Create a function just like this that returns a list of HourInfoPerson structs
 func (plans *Plans) HourInfo(date time.Time) {
 	fmt.Printf("What's up at %s?\n", date.String())
 	s := ""
@@ -203,6 +160,49 @@ func (plans *Plans) HourInfo(date time.Time) {
 	} else {
 		fmt.Println(s)
 	}
+}
+
+// Given an hour, gets information from all the person plans in the period plan
+func (pp *PeriodPlan) GetHourInfoPersonStructs(t time.Time) HourInfo {
+
+	hips := make(HourInfo, 0)
+
+	// if not the right year
+	if t.Year() != pp.year {
+		return hips
+	}
+
+	// if not within the month range
+	if !((t.Month() >= time.Month(pp.fromMonth)) && (t.Month() < time.Month(pp.uptoMonth))) {
+		return hips
+	}
+
+	var hip HourInfoPerson
+	for _, persplan := range pp.personPlans {
+		for _, wd := range persplan.workdays {
+
+			// If not the right day of the week
+			if wd.dayoftheweek != t.Weekday() {
+				//fmt.Printf("Wrong day of the week! (%v and %v)\n", wd.dayoftheweek, t.Weekday())
+				continue
+			}
+
+			// If not within the hour range
+			if !((t.Hour() >= wd.fromHour) && (t.Hour() < wd.uptoHour)) {
+				//fmt.Printf("Wrong hour range! (%v is not between %v and %v)\n", t.Hour(), wd.fromHour, wd.uptoHour)
+				continue
+			}
+
+			// Found!
+			hip.who = persplan.who
+			hip.when = t
+			hip.where = wd.location
+			hips = append(hips, hip)
+		}
+	}
+
+	// HourInfoPerson structs
+	return hips
 }
 
 func main() {
