@@ -1,4 +1,4 @@
-package main
+package ftls2
 
 import (
 	"github.com/hoisie/web"
