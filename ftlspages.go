@@ -1,4 +1,4 @@
-package ftls2
+package main
 
 import (
 	"strconv"
