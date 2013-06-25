@@ -31,8 +31,8 @@ func ServeEngines(userState *genericsite.UserState, mainMenuEntries genericsite.
 	wikiEngine := siteengines.NewWikiEngine(userState)
 	wikiEngine.ServePages(FTLSBaseCP, mainMenuEntries)
 
-	// FTLS engine
-	ftlsEngine := siteengines.NewFTLSEngine(userState)
+	// Timetable engine
+	ftlsEngine := siteengines.NewTimeTableEngine(userState)
 	ftlsEngine.ServePages(FTLSBaseCP, mainMenuEntries)
 }
 

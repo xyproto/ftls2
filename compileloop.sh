@@ -1,6 +1,6 @@
 #!/bin/sh
 SOURCE=
-for f in *.go ../browserspeak/*.go ../genericsite/*.go ../instapage/*.go ../simpleredis/*.go ../siteengines/*.go ../personplan/*.go; do
+for f in *.go ../browserspeak/*.go ../genericsite/*.go ../instapage/*.go ../simpleredis/*.go ../siteengines/*.go ../personplan/*.go ../moskus/*.go; do
   SOURCE+="$f "
 done
 BIN=ftlsweb
