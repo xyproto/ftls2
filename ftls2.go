@@ -38,8 +38,8 @@ func ServeEngines(userState *genericsite.UserState, mainMenuEntries genericsite.
 
 func main() {
 
-	// UserState with a Redis Connection Pool
-	userState := genericsite.NewUserState()
+	// UserState with a Redis Connection Pool, using database index 2
+	userState := genericsite.NewUserState(2)
 	defer userState.Close()
 
 	// The archlinux.no webpage,
