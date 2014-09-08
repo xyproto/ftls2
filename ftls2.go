@@ -60,5 +60,5 @@ func main() {
 	// See also: curl -I
 
 	// Serve on port 3002 for the Nginx instance to use
-	web.Run("0.0.0.0:3002")
+	web.Run(":3002")
 }
