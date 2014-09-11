@@ -5,11 +5,12 @@ import (
 	"time"
 
 	. "github.com/xyproto/genericsite"
+	"github.com/xyproto/permissions"
 	. "github.com/xyproto/siteengines"
 )
 
 // The default settings for FTLS content pages
-func FTLSBaseCP(state *UserState) *ContentPage {
+func FTLSBaseCP(state *permissions.UserState) *ContentPage {
 	cp := DefaultCP(state)
 	cp.Title = "Timeliste System"
 	cp.Subtitle = "2"
@@ -46,13 +47,13 @@ func FTLSBaseCP(state *UserState) *ContentPage {
 }
 
 // Returns a FTLSBaseCP with the contentTitle set
-func FTLSBaseTitleCP(contentTitle string, userState *UserState) *ContentPage {
+func FTLSBaseTitleCP(contentTitle string, userState *permissions.UserState) *ContentPage {
 	cp := FTLSBaseCP(userState)
 	cp.ContentTitle = contentTitle
 	return cp
 }
 
-func OverviewCP(userState *UserState, url string) *ContentPage {
+func OverviewCP(userState *permissions.UserState, url string) *ContentPage {
 	cp := FTLSBaseCP(userState)
 	cp.ContentTitle = "Om"
 	cp.ContentHTML = `FTLS 2 - under utvikling`
@@ -60,7 +61,7 @@ func OverviewCP(userState *UserState, url string) *ContentPage {
 	return cp
 }
 
-func TextCP(userState *UserState, url string) *ContentPage {
+func TextCP(userState *permissions.UserState, url string) *ContentPage {
 	apc := FTLSBaseCP(userState)
 	apc.ContentTitle = "Text"
 	apc.ContentHTML = `<p id='textparagraph'>Hei<br/>der<br/></p>`
@@ -84,7 +85,7 @@ func Cps2MenuEntries(cps []ContentPage) MenuEntries {
 
 // Routing for the archlinux.no webpage
 // Admin, search and user management is already provided
-func ServeFTLS(userState *UserState, jquerypath string) MenuEntries {
+func ServeFTLS(userState *permissions.UserState, jquerypath string) MenuEntries {
 	cps := []ContentPage{
 		*OverviewCP(userState, "/"),
 		*TextCP(userState, "/text"),

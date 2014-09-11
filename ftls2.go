@@ -3,6 +3,7 @@ package main
 import (
 	"github.com/hoisie/web"
 	"github.com/xyproto/genericsite"
+	"github.com/xyproto/permissions"
 	"github.com/xyproto/siteengines"
 	"github.com/xyproto/webhandle"
 	//"github.com/xyproto/personplan"
@@ -18,7 +19,7 @@ func notFound2(ctx *web.Context, val string) {
 	ctx.ResponseWriter.Write([]byte(webhandle.NotFound(ctx, val)))
 }
 
-func ServeEngines(userState *genericsite.UserState, mainMenuEntries genericsite.MenuEntries) {
+func ServeEngines(userState *permissions.UserState, mainMenuEntries genericsite.MenuEntries) {
 	// The user engine
 	userEngine := siteengines.NewUserEngine(userState)
 	userEngine.ServePages("ftls2.roboticoverlords.org")
@@ -39,7 +40,7 @@ func ServeEngines(userState *genericsite.UserState, mainMenuEntries genericsite.
 func main() {
 
 	// UserState with a Redis Connection Pool, using database index 2
-	userState := genericsite.NewUserState(2)
+	userState := permissions.NewUserState(2, true, ":6379")
 	defer userState.Close()
 
 	// The archlinux.no webpage,
