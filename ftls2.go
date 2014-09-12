@@ -1,11 +1,14 @@
 package main
 
 import (
-	"github.com/hoisie/web"
+	"net/http"
+
+	"github.com/codegangsta/negroni"
 	"github.com/xyproto/genericsite"
+	"github.com/xyproto/handlers"
 	"github.com/xyproto/permissions"
 	"github.com/xyproto/siteengines"
-	"github.com/xyproto/webhandle"
+
 	//"github.com/xyproto/personplan"
 )
 
@@ -13,11 +16,6 @@ import (
 // TODO: Different Redis database than the other sites
 
 const JQUERY_VERSION = "2.0.0"
-
-func notFound2(ctx *web.Context, val string) {
-	ctx.ResponseWriter.WriteHeader(404)
-	ctx.ResponseWriter.Write([]byte(webhandle.NotFound(ctx, val)))
-}
 
 func ServeEngines(userState *permissions.UserState, mainMenuEntries genericsite.MenuEntries) {
 	// The user engine
@@ -38,6 +36,9 @@ func ServeEngines(userState *permissions.UserState, mainMenuEntries genericsite.
 }
 
 func main() {
+	// Create a Negroni and a ServeMux instance
+	n := negroni.Classic()
+	mux := http.NewServeMux()
 
 	// UserState with a Redis Connection Pool, using database index 2
 	userState := permissions.NewUserState(2, true, ":6379")
@@ -49,8 +50,8 @@ func main() {
 	ServeEngines(userState, mainMenuEntries)
 
 	// Compilation errors, vim-compatible filename
-	web.Get("/error", webhandle.GenerateErrorHandle("errors.err"))
-	web.Get("/errors", webhandle.GenerateErrorHandle("errors.err"))
+	mux.HandleFunc("/error", handlers.GenerateErrorHandler("errors.err"))
+	mux.HandleFunc("/errors", handlers.GenerateErrorHandler("errors.err"))
 
 	// Various .php and .asp urls that showed up in the log
 	genericsite.ServeForFun()
@@ -61,5 +62,5 @@ func main() {
 	// See also: curl -I
 
 	// Serve on port 3002 for the Nginx instance to use
-	web.Run(":3002")
+	n.Run(":3002")
 }
