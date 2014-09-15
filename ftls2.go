@@ -5,9 +5,9 @@ import (
 
 	"github.com/codegangsta/negroni"
 	"github.com/xyproto/genericsite"
-	"github.com/xyproto/handlers"
 	"github.com/xyproto/permissions"
 	"github.com/xyproto/siteengines"
+	"github.com/xyproto/webhandle"
 
 	//"github.com/xyproto/personplan"
 )
@@ -50,8 +50,8 @@ func main() {
 	ServeEngines(userState, mainMenuEntries)
 
 	// Compilation errors, vim-compatible filename
-	mux.HandleFunc("/error", handlers.GenerateErrorHandler("errors.err"))
-	mux.HandleFunc("/errors", handlers.GenerateErrorHandler("errors.err"))
+	mux.HandleFunc("/error", webhandle.GenerateErrorHandler("errors.err"))
+	mux.HandleFunc("/errors", webhandle.GenerateErrorHandler("errors.err"))
 
 	// Various .php and .asp urls that showed up in the log
 	genericsite.ServeForFun()
