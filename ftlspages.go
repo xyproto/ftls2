@@ -1,6 +1,7 @@
 package main
 
 import (
+	"net/http"
 	"strconv"
 	"time"
 
@@ -85,7 +86,7 @@ func Cps2MenuEntries(cps []ContentPage) MenuEntries {
 
 // Routing for the archlinux.no webpage
 // Admin, search and user management is already provided
-func ServeFTLS(userState *permissions.UserState, jquerypath string) MenuEntries {
+func ServeFTLS(mux *http.ServeMux, userState *permissions.UserState, jquerypath string) MenuEntries {
 	cps := []ContentPage{
 		*OverviewCP(userState, "/"),
 		*TextCP(userState, "/text"),
@@ -99,7 +100,7 @@ func ServeFTLS(userState *permissions.UserState, jquerypath string) MenuEntries 
 	tvgf := DynamicMenuFactoryGenerator(menuEntries)
 
 	//ServeSearchPages(FTLSBaseCP, userState, cps, FTLSBaseCP(userState).ColorScheme, tvgf(userState))
-	ServeSite(FTLSBaseCP, userState, cps, tvgf, jquerypath)
+	ServeSite(mux, FTLSBaseCP, userState, cps, tvgf, jquerypath)
 
 	return menuEntries
 }

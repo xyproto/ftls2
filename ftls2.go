@@ -17,22 +17,22 @@ import (
 
 const JQUERY_VERSION = "2.0.0"
 
-func ServeEngines(userState *permissions.UserState, mainMenuEntries genericsite.MenuEntries) {
+func ServeEngines(mux *http.ServeMux, userState *permissions.UserState, mainMenuEntries genericsite.MenuEntries) {
 	// The user engine
 	userEngine := siteengines.NewUserEngine(userState)
-	userEngine.ServePages("ftls2.roboticoverlords.org")
+	userEngine.ServePages(mux, "ftls2.roboticoverlords.org")
 
 	// The admin engine
 	adminEngine := siteengines.NewAdminEngine(userState)
-	adminEngine.ServePages(FTLSBaseCP, mainMenuEntries)
+	adminEngine.ServePages(mux, FTLSBaseCP, mainMenuEntries)
 
 	// Wiki engine
 	wikiEngine := siteengines.NewWikiEngine(userState)
-	wikiEngine.ServePages(FTLSBaseCP, mainMenuEntries)
+	wikiEngine.ServePages(mux, FTLSBaseCP, mainMenuEntries)
 
 	// Timetable engine
 	ftlsEngine := siteengines.NewTimeTableEngine(userState)
-	ftlsEngine.ServePages(FTLSBaseCP, mainMenuEntries)
+	ftlsEngine.ServePages(mux, FTLSBaseCP, mainMenuEntries)
 }
 
 func main() {
@@ -45,16 +45,16 @@ func main() {
 	defer userState.Close()
 
 	// The archlinux.no webpage,
-	mainMenuEntries := ServeFTLS(userState, "/js/jquery-"+JQUERY_VERSION+".min.js")
+	mainMenuEntries := ServeFTLS(mux, userState, "/js/jquery-"+JQUERY_VERSION+".min.js")
 
-	ServeEngines(userState, mainMenuEntries)
+	ServeEngines(mux, userState, mainMenuEntries)
 
 	// Compilation errors, vim-compatible filename
 	mux.HandleFunc("/error", webhandle.GenerateErrorHandler("errors.err"))
 	mux.HandleFunc("/errors", webhandle.GenerateErrorHandler("errors.err"))
 
 	// Various .php and .asp urls that showed up in the log
-	genericsite.ServeForFun()
+	genericsite.ServeForFun(mux)
 
 	// TODO: Incorporate this check into web.go, to only return
 	// stuff in the header when the HEAD method is requested:
