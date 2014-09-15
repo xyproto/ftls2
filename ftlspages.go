@@ -100,7 +100,7 @@ func ServeFTLS(mux *http.ServeMux, userState *permissions.UserState, jquerypath 
 	tvgf := DynamicMenuFactoryGenerator(menuEntries)
 
 	//ServeSearchPages(FTLSBaseCP, userState, cps, FTLSBaseCP(userState).ColorScheme, tvgf(userState))
-	ServeSite(mux, FTLSBaseCP, userState, cps, tvgf, jquerypath)
+	ServeSite(FTLSBaseCP, userState, cps, tvgf, jquerypath)
 
 	return menuEntries
 }

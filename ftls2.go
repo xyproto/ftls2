@@ -20,19 +20,19 @@ const JQUERY_VERSION = "2.0.0"
 func ServeEngines(mux *http.ServeMux, userState *permissions.UserState, mainMenuEntries genericsite.MenuEntries) {
 	// The user engine
 	userEngine := siteengines.NewUserEngine(userState)
-	userEngine.ServePages(mux, "ftls2.roboticoverlords.org")
+	userEngine.ServePages("ftls2.roboticoverlords.org")
 
 	// The admin engine
 	adminEngine := siteengines.NewAdminEngine(userState)
-	adminEngine.ServePages(mux, FTLSBaseCP, mainMenuEntries)
+	adminEngine.ServePages(FTLSBaseCP, mainMenuEntries)
 
 	// Wiki engine
 	wikiEngine := siteengines.NewWikiEngine(userState)
-	wikiEngine.ServePages(mux, FTLSBaseCP, mainMenuEntries)
+	wikiEngine.ServePages(FTLSBaseCP, mainMenuEntries)
 
 	// Timetable engine
 	ftlsEngine := siteengines.NewTimeTableEngine(userState)
-	ftlsEngine.ServePages(mux, FTLSBaseCP, mainMenuEntries)
+	ftlsEngine.ServePages(FTLSBaseCP, mainMenuEntries)
 }
 
 func main() {
@@ -54,7 +54,7 @@ func main() {
 	mux.HandleFunc("/errors", webhandle.GenerateErrorHandler("errors.err"))
 
 	// Various .php and .asp urls that showed up in the log
-	genericsite.ServeForFun(mux)
+	genericsite.ServeForFun()
 
 	// TODO: Incorporate this check into web.go, to only return
 	// stuff in the header when the HEAD method is requested:
