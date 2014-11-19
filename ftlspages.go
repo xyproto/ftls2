@@ -5,12 +5,12 @@ import (
 	"time"
 
 	. "github.com/xyproto/genericsite"
-	"github.com/xyproto/permissions"
+	"github.com/xyproto/permissions2"
 	. "github.com/xyproto/siteengines"
 )
 
 // The default settings for FTLS content pages
-func FTLSBaseCP(state *permissions.UserState) *ContentPage {
+func FTLSBaseCP(state permissions.UserStateKeeper) *ContentPage {
 	cp := DefaultCP(state)
 	cp.Title = "Timeliste System"
 	cp.Subtitle = "2"

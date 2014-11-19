@@ -3,7 +3,7 @@ package main
 import (
 	"github.com/hoisie/web"
 	"github.com/xyproto/genericsite"
-	"github.com/xyproto/permissions"
+	"github.com/xyproto/permissions2"
 	"github.com/xyproto/siteengines"
 	"github.com/xyproto/webhandle"
 	//"github.com/xyproto/personplan"
@@ -19,7 +19,7 @@ func notFound2(ctx *web.Context, val string) {
 	ctx.ResponseWriter.Write([]byte(webhandle.NotFound(ctx, val)))
 }
 
-func ServeEngines(userState *permissions.UserState, mainMenuEntries genericsite.MenuEntries) {
+func ServeEngines(userState permissions.UserStateKeeper, mainMenuEntries genericsite.MenuEntries) {
 	// The user engine
 	userEngine := siteengines.NewUserEngine(userState)
 	userEngine.ServePages("ftls2.roboticoverlords.org")
