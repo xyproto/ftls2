@@ -41,7 +41,6 @@ func main() {
 
 	// UserState with a Redis Connection Pool, using database index 2
 	userState := permissions.NewUserState(2, true, ":6379")
-	userState.SetPasswordAlgo("any")
 	defer userState.Close()
 
 	// The archlinux.no webpage,
