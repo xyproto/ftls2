@@ -8,6 +8,7 @@ ExecStart=/home/alexander/go/src/github.com/xyproto/ftls2/compileloop.sh &
 WorkingDirectory=/home/alexander/go/src/github.com/xyproto/ftls2
 PIDFile=/tmp/ftlsweb.pid
 Environment=GOPATH=/home/alexander/go
+After=redis.service
 
 [Install]
 WantedBy=multi-user.target
