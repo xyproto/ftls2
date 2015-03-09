@@ -1,7 +1,7 @@
 #!/bin/sh
 SOURCE=
 for f in *.go; do
-#../onthefly/*.go ../genericsite/*.go ../instapage/*.go ../simpleredis/*.go ../siteengines/*.go ../personplan/*.go ../moskus/*.go ../webhandle/*.go; do
+#../onthefly/*.go ../genericsite/*.go ../simpleredis/*.go ../siteengines/*.go ../personplan/*.go ../moskus/*.go ../webhandle/*.go; do
   SOURCE+="$f "
 done
 BIN=ftlsweb

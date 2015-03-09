@@ -24,4 +24,6 @@ _testmain.go
 
 # Binaries
 ftls2
+*~
+.nfs*
 ftlsweb
