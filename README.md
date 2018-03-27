@@ -1,11 +1,12 @@
 The website for FTLS II
 =======================
 
-# Work in progress, depends on xyproto/siteengines that currently doesn't build
+* Work in progress
+* A web system for registering hours and managing calendars
+* Everything is currently in Norwegian
 
 License
 =======
 
 * License: MIT
-* Version: 1.0
-* Author: Alexander F Rødseth &lt;xyproto@archlinux.org&gt;
+* Author: Alexander F Rødseth
