@@ -18,29 +18,20 @@ func FTLSBaseCP(state pinterface.IUserState) *ContentPage {
 
 	y := time.Now().Year()
 
-	// TODO: Use templates for the footer, for more accurate measurment of the time made to generate the page
-	cp.FooterText = "Alexander Rødseth, " + strconv.Itoa(y)
+	// TODO: Use templates for the footer, for more accurate measurment of the
+	//       time made to generate the page.
+	cp.FooterText = "Alexander F Rødseth, " + strconv.Itoa(y)
 
 	cp.Url = "/" // Is replaced when the contentpage is published
 
 	cp.ColorScheme = NewFTLSColorScheme()
 
 	// Behind the text
-	//cp.BgImageURL = "/img/nasty_fabric.png"
-	//cp.BgImageURL = "/img/cloth_alike.png"
-	//cp.BgImageURL = "/img/strange_bullseyes.png"
 	cp.BgImageURL = "/img/rough_diagonal.png"
 	cp.StretchBackground = false
 
 	// Behind the menu
-	//cp.BackgroundTextureURL = "/img/bg2.png"
-	//cp.BackgroundTextureURL = "/img/simple_dashed.png"
-	//cp.BackgroundTextureURL = "/img/grey.png"
-	//cp.BackgroundTextureURL = "/img/pw_maze_black.png"
-	//cp.BackgroundTextureURL = "/img/black_twill.png"
-	//cp.BackgroundTextureURL = "/img/dark_wood.png"
 	cp.BackgroundTextureURL = "/img/hixs_pattern_evolution.png"
-	//ps_neutral.png"
 
 	cp.SearchBox = false
 
@@ -77,7 +68,7 @@ func Cps2MenuEntries(cps []ContentPage) MenuEntries {
 	return Links2menuEntries(links)
 }
 
-// Routing for the archlinux.no webpage
+// Routing for the FTLS2 webpage
 // Admin, search and user management is already provided
 func ServeFTLS(userState *permissions.UserState, jquerypath string) MenuEntries {
 	cps := []ContentPage{
@@ -101,10 +92,10 @@ func ServeFTLS(userState *permissions.UserState, jquerypath string) MenuEntries 
 func NewFTLSColorScheme() *ColorScheme {
 	var cs ColorScheme
 	cs.Darkgray = "#202020"
-	cs.Nicecolor = "#d80000"   // bright orange!
-	cs.Menu_link = "#c0c0c0"   // light gray
-	cs.Menu_hover = "#efefe0"  // light gray, somewhat yellow
-	cs.Menu_active = "#ffffff" // white
+	cs.Nicecolor = "#d80000"
+	cs.Menu_link = "#c0c0c0"
+	cs.Menu_hover = "#efefe0"
+	cs.Menu_active = "#ffffff"
 	cs.Default_background = "#000030"
 	cs.TitleText = "#e0e0e0" // The first word of the title text
 	return &cs

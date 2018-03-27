@@ -16,6 +16,7 @@ import (
 const JQUERY_VERSION = "2.0.0"
 
 func ServeEngines(userState pinterface.IUserState, mainMenuEntries genericsite.MenuEntries) error {
+
 	// The user engine
 	userEngine, err := siteengines.NewUserEngine(userState)
 	if err != nil {
@@ -48,12 +49,11 @@ func ServeEngines(userState pinterface.IUserState, mainMenuEntries genericsite.M
 }
 
 func main() {
-
 	// UserState with a Redis Connection Pool, using database index 2
 	userState := permissions.NewUserState(2, true, ":6379")
 	defer userState.Close()
 
-	// The archlinux.no webpage,
+	// The FTLS2 webpage,
 	mainMenuEntries := ServeFTLS(userState, "/js/jquery-"+JQUERY_VERSION+".min.js")
 
 	ServeEngines(userState, mainMenuEntries)
@@ -65,10 +65,7 @@ func main() {
 	// Various .php and .asp urls that showed up in the log
 	genericsite.ServeForFun()
 
-	// TODO: Incorporate this check into web.go, to only return
-	// stuff in the header when the HEAD method is requested:
-	// if ctx.Request.Method == "HEAD" { return }
-	// See also: curl -I
+	// TODO: Consider adding support for the HEAD HTTP verb
 
 	// Serve on port 3002 for the Nginx instance to use
 	web.Run(":3002")
