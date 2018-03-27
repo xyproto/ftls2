@@ -4,6 +4,7 @@ import (
 	"github.com/hoisie/web"
 	"github.com/xyproto/genericsite"
 	"github.com/xyproto/permissions2"
+	"github.com/xyproto/pinterface"
 	"github.com/xyproto/siteengines"
 	"github.com/xyproto/webhandle"
 	//"github.com/xyproto/personplan"
@@ -14,27 +15,36 @@ import (
 
 const JQUERY_VERSION = "2.0.0"
 
-func notFound2(ctx *web.Context, val string) {
-	ctx.ResponseWriter.WriteHeader(404)
-	ctx.ResponseWriter.Write([]byte(webhandle.NotFound(ctx, val)))
-}
-
-func ServeEngines(userState permissions.UserStateKeeper, mainMenuEntries genericsite.MenuEntries) {
+func ServeEngines(userState pinterface.IUserState, mainMenuEntries genericsite.MenuEntries) error {
 	// The user engine
-	userEngine := siteengines.NewUserEngine(userState)
+	userEngine, err := siteengines.NewUserEngine(userState)
+	if err != nil {
+		return err
+	}
 	userEngine.ServePages("ftls2.roboticoverlords.org")
 
 	// The admin engine
-	adminEngine := siteengines.NewAdminEngine(userState)
+	adminEngine, err := siteengines.NewAdminEngine(userState)
+	if err != nil {
+		return err
+	}
 	adminEngine.ServePages(FTLSBaseCP, mainMenuEntries)
 
 	// Wiki engine
-	wikiEngine := siteengines.NewWikiEngine(userState)
+	wikiEngine, err := siteengines.NewWikiEngine(userState)
+	if err != nil {
+		return err
+	}
 	wikiEngine.ServePages(FTLSBaseCP, mainMenuEntries)
 
 	// Timetable engine
-	ftlsEngine := siteengines.NewTimeTableEngine(userState)
+	ftlsEngine, err := siteengines.NewTimeTableEngine(userState)
+	if err != nil {
+		return err
+	}
 	ftlsEngine.ServePages(FTLSBaseCP, mainMenuEntries)
+
+	return nil
 }
 
 func main() {
