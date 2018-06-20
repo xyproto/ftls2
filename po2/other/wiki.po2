@@ -1,0 +1,56 @@
+
+<!doctype html>
+<html>
+  <head>
+    <title>Timeliste System 2</title>
+    <link rel="stylesheet" href="/css/style.css" type="text/css" />
+    <link rel="stylesheet" href="/css/menu.css" type="text/css" />
+    <link type="text/css" rel="stylesheet" href="/css/wiki.css" />
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.0/jquery.min.js" type="text/javascript"> </script>
+    <link href="/img/favicon.ico" rel="shortcut icon" />
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type" />
+    <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Armata" type="text/css" />
+    <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=IM+Fell+English+SC" type="text/css" />
+  </head>
+  <body>
+    <div id="topbox">
+      <div id="titlebox">
+        <a id="homelink" href="/">
+          <div id="whitetitle" class="titletext">Timeliste</div>
+          <div id="bluetitle" class="titletext">System</div>
+          <div id="graytitle" class="titletext">2</div>
+        </a>
+      </div>
+    </div>
+    <div id="menubox"><ul class="menuList">
+<li class="menuEntry" id="menu0O">
+  <a class="menulink" href="/">Om</a>
+</li>
+<li class="menuEntry" id="menu4A">
+  <div class="separator">|</div>
+  <a class="menulink" href="/admin">Admin</a>
+</li>
+<li id="menu5T" class="menuEntry">
+  <div class="separator">|</div>
+  <a class="menulink" href="/timetable">Timer</a>
+</li>
+<li class="menuEntry" id="menu6W">
+  <div class="separator">|</div>
+  <a class="menulink" href="/wiki">Wiki</a>
+</li>
+<li id="menu3L" class="menuEntry">
+  <div class="separator">|</div>
+  <a class="menulink" href="/logout">Logg ut</a>
+</li>
+
+</ul></div>
+    <div id="content">
+      <h2 id="textheader">Wiki</h2>
+      <p id="textparagraph"><h1>No such page: main</h1><br /><button id='btnCreate'>Create</button><script type="text/javascript">$("#btnCreate").click(function() { window.location.href = "/wikiedit/main"; });</script><button onClick='history.go(-1);'>Back</button></p>
+    </div>
+    <div id="notice">
+      <div id="innernotice">Generated in 45.264µs | Alexander F Rødseth, 2018</div>
+    </div>
+  </body>
+</html>
+

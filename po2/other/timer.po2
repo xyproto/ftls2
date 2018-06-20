@@ -1,0 +1,56 @@
+
+<!doctype html>
+<html>
+  <head>
+    <title>Timeliste System 2</title>
+    <link rel="stylesheet" href="/css/style.css" type="text/css" />
+    <link rel="stylesheet" href="/css/menu.css" type="text/css" />
+    <link rel="stylesheet" href="/css/timetable.css" type="text/css" />
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.0/jquery.min.js" type="text/javascript"> </script>
+    <link rel="shortcut icon" href="/img/favicon.ico" />
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Armata" type="text/css" />
+    <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=IM+Fell+English+SC" type="text/css" />
+  </head>
+  <body>
+    <div id="topbox">
+      <div id="titlebox">
+        <a href="/" id="homelink">
+          <div id="whitetitle" class="titletext">Timeliste</div>
+          <div id="bluetitle" class="titletext">System</div>
+          <div id="graytitle" class="titletext">2</div>
+        </a>
+      </div>
+    </div>
+    <div id="menubox"><ul class="menuList">
+<li class="menuEntry" id="menu0O">
+  <a class="menulink" href="/">Om</a>
+</li>
+<li class="menuEntry" id="menu4A">
+  <div class="separator">|</div>
+  <a href="/admin" class="menulink">Admin</a>
+</li>
+<li class="menuEntry" id="menu5T">
+  <div class="separator">|</div>
+  <a class="menulink" href="/timetable">Timer</a>
+</li>
+<li class="menuEntry" id="menu6W">
+  <div class="separator">|</div>
+  <a href="/wiki" class="menulink">Wiki</a>
+</li>
+<li class="menuEntry" id="menu3L">
+  <div class="separator">|</div>
+  <a class="menulink" href="/logout">Logg ut</a>
+</li>
+
+</ul></div>
+    <div id="content">
+      <h2 id="textheader">TimeTable</h2>
+      <p id="textparagraph"><h1>En uke fra 2018-06-20</h1><table><tr><td></td><td><b>20. juni</b></td><td><b>21. juni</b></td><td><b>22. juni</b></td><td><b>23. juni</b></td><td><b>24. juni</b></td><td><b>25. juni</b></td><td><b>26. juni</b></td></tr><tr><td>kl. 08:00</td><td></td><td></td><td></td><td></td><td bgcolor='#ffb0b0'>Søndag</td><td></td><td></td></tr><tr><td>kl. 09:00</td><td></td><td></td><td></td><td></td><td bgcolor='#ffb0b0'>Søndag</td><td></td><td></td></tr><tr><td>kl. 10:00</td><td></td><td></td><td></td><td></td><td bgcolor='#ffb0b0'>Søndag</td><td></td><td></td></tr><tr><td>kl. 11:00</td><td></td><td></td><td></td><td></td><td bgcolor='#ffb0b0'>Søndag</td><td></td><td></td></tr><tr><td>kl. 12:00</td><td></td><td></td><td></td><td></td><td bgcolor='#ffb0b0'>Søndag</td><td></td><td></td></tr><tr><td>kl. 13:00</td><td></td><td></td><td></td><td></td><td bgcolor='#ffb0b0'>Søndag</td><td></td><td></td></tr><tr><td>kl. 14:00</td><td></td><td></td><td></td><td></td><td bgcolor='#ffb0b0'>Søndag</td><td></td><td></td></tr><tr><td>kl. 15:00</td><td></td><td></td><td></td><td></td><td bgcolor='#ffb0b0'>Søndag</td><td></td><td></td></tr><tr><td>kl. 16:00</td><td></td><td></td><td></td><td></td><td bgcolor='#ffb0b0'>Søndag</td><td></td><td></td></tr><tr><td>kl. 17:00</td><td></td><td></td><td></td><td></td><td bgcolor='#ffb0b0'>Søndag</td><td></td><td></td></tr><tr><td>kl. 18:00</td><td></td><td></td><td></td><td></td><td bgcolor='#ffb0b0'>Søndag</td><td></td><td></td></tr><tr><td>kl. 19:00</td><td></td><td></td><td></td><td></td><td bgcolor='#ffb0b0'>Søndag</td><td></td><td></td></tr><tr><td>kl. 20:00</td><td></td><td></td><td></td><td></td><td bgcolor='#ffb0b0'>Søndag</td><td></td><td></td></tr><tr><td>kl. 21:00</td><td></td><td></td><td></td><td></td><td bgcolor='#ffb0b0'>Søndag</td><td></td><td></td></tr></table><button onClick='history.go(-1);'>Back</button></p>
+    </div>
+    <div id="notice">
+      <div id="innernotice">Generated in 57.167µs | Alexander F Rødseth, 2018</div>
+    </div>
+  </body>
+</html>
+

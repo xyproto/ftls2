@@ -1,0 +1,289 @@
+body {
+  background: url('../img/graybg.png');
+  margin: 1em;
+  font-family: Verdana, Geneva, sans-serif;
+  background-color: #000030;
+}
+
+#titlebox {
+  height: 3.1em;
+  width: 100%;
+  background: url('../img/darkpattern.png');
+  display: block;
+  position: fixed;
+  margin: 0 0 0 0;
+  padding: 1.2em 0 0 1.8em;
+}
+
+#menubox {
+  position: fixed;
+  top: 4.3em;
+  background: url('../img/darkgray.jpg');
+  box-shadow: 1px 3px 5px rgba(0,0,0, .8);
+  display: block;
+  width: 100%;
+  margin: 0;
+  padding: 0.1em 0 0.2em 0;
+  left: 0;
+  background-color: #0c0c0c;
+}
+
+#topbox {
+  position: fixed;
+  display: block;
+  width: 100%;
+  margin: 0;
+  padding: 0 0 1em 0;
+  top: 0;
+  left: 0;
+  background-color: #202020;
+}
+
+#homelink {
+  text-decoration: none;
+}
+
+#whitetitle {
+  color: #e0e0e0;
+  font-family: Verdana, Geneva, sans-serif;
+  font-size: 2.0em;
+  font-weight: bolder;
+}
+
+#colortitle {
+  color: #1D6142;
+  font-family: Verdana, Geneva, sans-serif;
+  font-size: 2.0em;
+  font-weight: bold;
+  overflow: hidden;
+}
+
+#graytitle {
+  overflow: hidden;
+  font-size: 1.25em;
+  color: #707070;
+  font-family: Armata, Verdana, Geneva, sans-serif;
+  font-weight: normal;
+}
+
+#content {
+  position: relative;
+  margin-right: 5em;
+  padding-left: 4em;
+  background-color: rgba(255,255,255,0.92);
+  z-index: -1;
+  margin-left: 4%;
+  margin-top: 9.5em;
+  padding-bottom: 3em;
+  filter: progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#dcffffff', endColorstr='#dcffffff');
+  min-width: 30%;
+  float: left;
+  padding-right: 5em;
+  padding-top: 2em;
+  text-align: justify;
+  border-radius: 10px;
+  box-shadow: 1px 1px 3px rgba(0,0,0, .5);
+  color: black;
+  min-height: 80%;
+  border: solid 1px #b4b4b4;
+}
+
+#textheader {
+  font-family: Armata, Verdana, Geneva, sans-serif;
+}
+
+#textparagraph {
+  font-family: Verdana, Geneva, sans-serif;
+  font-size: 1.0em;
+  color: black;
+  margin-top: 0.5em;
+}
+
+#notice {
+  padding: 0;
+  font-size: 0.6em;
+  text-align: right;
+  position: fixed;
+  left: 0;
+  display: block;
+  margin: 0;
+  background-color: black;
+  box-shadow: 1px -2px 3px rgba(0,0,0, .5);
+  bottom: 0;
+  width: 100%;
+}
+
+#innernotice {
+  color: #303040;
+  padding: 0 2em 0 0;
+  margin: 0;
+}
+
+a {
+  text-decoration: none;
+  color: #303030;
+  font-weight: regular;
+}
+
+a:link {
+  color: #c0c0c0;
+}
+
+a:visited {
+  color: #c0c0c0;
+}
+
+a:hover {
+  color: #efefe0;
+}
+
+a:active {
+  color: #ffffff;
+}
+
+.menuEntry {
+  display: inline;
+}
+
+.menuList {
+  list-style-type: none;
+  float: left;
+  margin: 0;
+}
+
+.separator {
+  display: inline;
+  color: #a0a0a0;
+}
+
+.titletext {
+  display: inline;
+}
+
+button {
+  color: black;
+  background-color: #a0a0a0;
+  font-size: 1em;
+  width: 5em;
+  height: 2em;
+  margin-top: 0.2em;
+  display: inline-block;
+  float: right;
+}
+
+label {
+  display: inline-block;
+  float: left;
+  clear: left;
+  width: 20em;
+  text-align: right;
+  margin-right: 2em;
+  margin-bottom: 0.4em;
+}
+
+input {
+  display: inline-block;
+  float: right;
+  width: 17em;
+}
+
+form.div {
+  margin: 1em;
+}
+
+.even {
+	background-color: #a0a0a0;
+}
+
+.odd {
+	background-color: #f0f0f0;
+}
+
+.yes {
+	background-color: #90ff90;
+	color: black;
+}
+
+.no {
+	background-color: #ff9090;
+	color: black;
+}
+
+table {
+	border-collapse: collapse;
+	padding: 1em;
+	margin-top: 1.5em;
+}
+table, th, tr, td {
+	border: 1px solid black;
+	padding: 1em;
+}
+
+.username:link {
+  color: green;
+}
+
+.username:visited {
+  color: green;
+}
+
+.username:hover {
+  color: green;
+}
+
+.username:active {
+  color: green;
+}
+
+.whitebg {
+	background-color: white;
+}
+
+.darkgrey:link {
+  color: #404040;
+}
+
+.darkgrey:visited {
+  color: #404040;
+}
+
+.darkgrey:hover {
+  color: #404040;
+}
+
+.darkgrey:active {
+  color: #404040;
+}
+
+.somewhatcareful:link {
+  color: #e09000;
+}
+
+.somewhatcareful:visited {
+  color: #e09000;
+}
+
+.somewhatcareful:hover {
+  color: #e09000;
+}
+
+.somewhatcareful:active {
+  color: #e09000;
+}
+
+.careful:link {
+  color: #e00000;
+}
+
+.careful:visited {
+  color: #e00000;
+}
+
+.careful:hover {
+  color: #e00000;
+}
+
+.careful:active {
+  color: #e00000;
+}
+

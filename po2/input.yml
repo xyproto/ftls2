@@ -1,0 +1,43 @@
+homelink: "/"
+menu:
+  - entry:
+    title: About
+    link: "/"
+  - entry:
+    title: Login
+    link: "/login"
+  - entry:
+    title: Register
+    link: "/register"
+fontcss:
+  - "http://fonts.googleapis.com/css?family=Armata"
+  - "http://fonts.googleapis.com/css?family=IM+Fell+English+SC"
+footer:
+  - "Alexander F. Rødseth, 2018"
+page:
+  title1: T
+  title2: System
+  title3: 2
+  header: Register
+form:
+  id: registerForm
+  action: "/register"
+  method: POST
+  fields:
+    - input:
+      id: username
+      label: Username
+    - input:
+      id: password1
+      label: Password
+      type: password
+    - input:
+      id: password2
+      label: Confirm password
+      type: password
+    - input:
+      id: email
+      label: Email
+  button:
+    id: registerButton
+    label: Register

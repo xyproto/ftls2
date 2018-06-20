@@ -1,0 +1,54 @@
+<!doctype html>
+<html>
+  <head>
+    <title>{{page.title1}} {{page.title2}} {{page.title3}}</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <link href="img/favicon.ico" rel="shortcut icon" />
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js" type="text/javascript"></script>
+    <link type="text/css" rel="stylesheet" href="css/style.css" />
+    {% for fonturl in fontcss %}
+    <link rel="stylesheet" href="{{fonturl}}" type="text/css" />
+    {% endfor %}
+  </head>
+  <body>
+    <div id="topbox">
+      <div id="titlebox">
+        <a id="homelink" href="{{homelink}}">
+          <div id="whitetitle" class="titletext">{{page.title1}}</div>
+          <div id="colortitle" class="titletext">{{page.title2}}</div>
+          <div id="graytitle" class="titletext">{{page.title3}}</div>
+        </a>
+      </div>
+    </div>
+    <div id="menubox">
+      <ul class="menuList">
+        {% for entry in menu %}
+        <li class="menuEntry" id="menuEntry{{forloop.Counter}}">
+          <a class="menuLink" href="{{entry.link}}">{{entry.title}}</a>
+        </li>
+        {% if not forloop.Last %}<div class="separator">|</div>{% endif %}
+        {% endfor %}
+      </ul>
+    </div>
+    <div id="content">
+      <h2 id="textheader">{{page.header}}</h2>
+      <p id="textparagraph">
+        <form id="{{form.id}}" action="{{form.action}}" method="{{form.method}}">
+          <div>
+            {% for input in form.fields %}
+            <label for="{{input.id}}">{{input.label}}:</label>
+            <input id="{{input.id}}" type="{{input.type}}" name="{{input.id}}" {% if forloop.First %}autofocus{% endif %}><br/>
+            {% endfor %}
+          </div>
+          <p>
+            <button id="{{form.button.id}}">{{form.button.label}}</button>
+          </p>
+        </form>
+        <script type="text/javascript">$(document).ready(function() { $("#{{form.button.id}}").click(function() { $('#{{form.id}}').get(0).setAttribute('action', '{{form.action}}/' + $('#username').val()); }); });</script>
+      </p>
+    </div>
+    <div id="notice">
+      <div id="innernotice">{{footer}}</div>
+    </div>
+  </body>
+</html>
