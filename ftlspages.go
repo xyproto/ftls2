@@ -20,7 +20,7 @@ func FTLSBaseCP(state pinterface.IUserState) *ContentPage {
 
 	// TODO: Use templates for the footer, for more accurate measurment of the
 	//       time made to generate the page.
-	cp.FooterText = "Alexander F Rødseth, " + strconv.Itoa(y)
+	cp.FooterText = "Alexander F. Rødseth, " + strconv.Itoa(y)
 
 	cp.Url = "/" // Is replaced when the contentpage is published
 
