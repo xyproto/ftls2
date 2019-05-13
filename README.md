@@ -1,12 +1,10 @@
-The website for FTLS II
-=======================
+# WORK IN PROGRESS - brushing up some old code
 
-* Work in progress
-* A web system for registering hours and managing calendars
-* Everything is currently in Norwegian
+Currently does not build.
 
-License
-=======
+* A web system for registering hours and managing calendars.
+
+## General Info
 
 * License: MIT
-* Author: Alexander F Rødseth
+* Author: Alexander F. Rødseth
