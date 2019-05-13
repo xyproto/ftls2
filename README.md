@@ -1,6 +1,8 @@
-# WORK IN PROGRESS - brushing up some old code
+# DEPRECATED
 
 Currently does not build.
+
+---
 
 * A web system for registering hours and managing calendars.
 
