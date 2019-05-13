@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/hoisie/web"
+	//"github.com/hoisie/web"
 	"github.com/xyproto/genericsite"
 	"github.com/xyproto/permissions2"
 	"github.com/xyproto/pinterface"
@@ -58,9 +58,11 @@ func main() {
 
 	ServeEngines(userState, mainMenuEntries)
 
+	mux := http.NewServeMux()
+
 	// Compilation errors, vim-compatible filename
-	web.Get("/error", webhandle.GenerateErrorHandle("errors.err"))
-	web.Get("/errors", webhandle.GenerateErrorHandle("errors.err"))
+	mux.HandleFunc("/error", webhandle.GenerateErrorHandle("errors.err"))
+	mux.HandleFunc("/errors", webhandle.GenerateErrorHandle("errors.err"))
 
 	// Various .php and .asp urls that showed up in the log
 	genericsite.ServeForFun()
@@ -68,5 +70,7 @@ func main() {
 	// TODO: Consider adding support for the HEAD HTTP verb
 
 	// Serve on port 3002 for the Nginx instance to use
-	web.Run(":3002")
+	n := negroni.Classic()
+	n.UseHandler(mux)
+	http.ListenAndServe(":3002", n)
 }
